@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobby's Bun Factory | Fluffy Cinnamon Rolls</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                // Nepo Baby x Steampunk Desert Palette
+                terracotta: '#B94C2F', // Rich desert clay
+                sand: '#E3D5C0',       // Warm sand
+                ochre: '#C5A059',      // Golden desert sun
+                brass: '#D4AF37',      // Steampunk highlight
+                copper: '#B87333',     // Metallic accent
+                iron: '#2A2A2A',       // Industrial dark
+                cream: '#FFFFFF',      // White
+                ink: '#231f20',        // Dark grey
+              }
+            },
+            fontFamily: {
+              sans: ['Outfit', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            animation: {
+              'spin-slow': 'spin 20s linear infinite',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #FFFFFF; /* brand-cream */
+            color: #231f20; /* brand-ink */
+        }
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Steampunk Accents */
+        .steam-gradient {
+            background: linear-gradient(135deg, #B87333 0%, #D4AF37 50%, #B87333 100%);
+        }
+        /* Custom scrollbar for brand feel */
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #E3D5C0;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #B94C2F;
+          border-radius: 10px;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.564.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

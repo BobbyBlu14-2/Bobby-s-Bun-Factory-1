@@ -1,0 +1,10 @@
+{
+  "name": "Bobby's Bun Factory",
+  "description": "A premium cinnamon roll bakery experience with online ordering and Square payments. Featuring extra fluffy rolls, secret recipe frostings, and real fruit toppings.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
