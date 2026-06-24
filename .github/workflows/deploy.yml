@@ -38,13 +38,12 @@ jobs:
           echo "Deployment package prepared successfully."
 
       - name: Deploy to Bluehost via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: wlixsandbox/sftp-deploy@v4
         with:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT || 22 }}
-          local-dir: ./deploy-package/
-          server-dir: ${{ secrets.SFTP_REMOTE_DIR }}
-          # Keep files on server that aren't in deploy-package (like .env or dynamic folders)
-          delete-clean: false
+          local_path: './deploy-package'
+          remote_path: ${{ secrets.SFTP_REMOTE_DIR }}
+          sftp_only: true
