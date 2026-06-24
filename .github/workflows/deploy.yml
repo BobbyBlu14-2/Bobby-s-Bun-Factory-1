@@ -38,12 +38,11 @@ jobs:
           echo "Deployment package prepared successfully."
 
       - name: Deploy to Bluehost via SFTP
-        uses: wlixsandbox/sftp-deploy@v4
+        uses: actions-hub/sftp-upload@v2
         with:
-          server: ${{ secrets.SFTP_SERVER }}
+          host: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT || 22 }}
-          local_path: './deploy-package'
-          remote_path: ${{ secrets.SFTP_REMOTE_DIR }}
-          sftp_only: true
+          localpath: './deploy-package'
+          remotepath: ${{ secrets.SFTP_REMOTE_DIR }}
