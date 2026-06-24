@@ -1,0 +1,50 @@
+name: Build and Deploy to Bluehost
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Prepare Deployment Package
+        run: |
+          mkdir -p deploy-package
+          cp -r dist deploy-package/
+          cp package.json deploy-package/
+          cp package-lock.json deploy-package/
+          cp server.js deploy-package/
+          echo "Deployment package prepared successfully."
+
+      - name: Deploy to Bluehost via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: ${{ secrets.SFTP_PORT || 22 }}
+          local-dir: ./deploy-package/
+          server-dir: ${{ secrets.SFTP_REMOTE_DIR }}
+          # Keep files on server that aren't in deploy-package (like .env or dynamic folders)
+          delete-clean: false
