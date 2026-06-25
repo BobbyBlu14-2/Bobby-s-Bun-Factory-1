@@ -43,6 +43,7 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.SFTP_SERVER }}
           password: ${{ secrets.SFTP_PASSWORD }}
+          ssh_private_key: ${{ secrets.SFTP_SSH_KEY }}
           port: ${{ secrets.SFTP_PORT || 22 }}
           local_path: './deploy-package/*'
           remote_path: ${{ secrets.SFTP_REMOTE_DIR }}
