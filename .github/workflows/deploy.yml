@@ -37,14 +37,14 @@ jobs:
           cp server.js deploy-package/
           echo "Deployment package prepared successfully."
 
-      - name: Deploy to Bluehost via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy to Bluehost via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          host: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
-          key: ${{ secrets.SFTP_SSH_KEY }}
-          passphrase: ${{ secrets.SFTP_PASSPHRASE }}
+          server: ${{ secrets.SFTP_SERVER }}
+          ssh_private_key: ${{ secrets.SFTP_SSH_KEY }}
+          ssh_passphrase: ${{ secrets.SFTP_PASSPHRASE }}
           port: ${{ secrets.SFTP_PORT }}
-          source: "deploy-package/*"
-          target: ${{ secrets.SFTP_REMOTE_DIR }}
-          strip_components: 1
+          local_path: './deploy-package/*'
+          remote_path: ${{ secrets.SFTP_REMOTE_DIR }}
+          sftp_only: true
