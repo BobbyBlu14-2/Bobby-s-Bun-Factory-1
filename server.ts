@@ -328,18 +328,33 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
   });
 
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
+  // We strictly avoid Vite middleware if running under cPanel Passenger or if PASSENGER_APP_ENV is defined
+  const isPassenger = !!process.env.PASSENGER_APP_ENV || !!process.env.PASSENGER_ENV;
+  const forceProduction = isPassenger || process.env.NODE_ENV === "production";
+
+  if (!forceProduction) {
+    try {
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("Vite development middleware mounted.");
+    } catch (e) {
+      console.error("Failed to start Vite dev middleware, falling back to static files:", e);
+      const distPath = path.join(process.cwd(), "dist");
+      app.use(express.static(distPath));
+      app.get("*all", (req, res) => {
+        res.sendFile(path.join(distPath, "index.html"));
+      });
+    }
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*all", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
+    console.log("Serving static production files from dist/ directory.");
   }
 
   if (process.env.PORT) {
