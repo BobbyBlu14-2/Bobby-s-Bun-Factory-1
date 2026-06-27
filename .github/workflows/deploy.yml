@@ -37,13 +37,11 @@ jobs:
           cp server.js deploy-package/
           echo "Deployment package prepared successfully."
 
-      - name: Deploy to Bluehost via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: Deploy to Bluehost via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.SFTP_SERVER }}
-          ssh_private_key: ${{ secrets.SFTP_SSH_KEY }}
-          port: ${{ secrets.SFTP_PORT }}
-          local_path: './deploy-package/*'
-          remote_path: ${{ secrets.SFTP_REMOTE_DIR }}
-          sftp_only: true
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local-dir: ./deploy-package/
+          server-dir: ${{ secrets.SFTP_REMOTE_DIR }}
