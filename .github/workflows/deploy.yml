@@ -53,3 +53,9 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           local-dir: ./deploy-package/
           server-dir: ${{ steps.sanitize.outputs.dir }}
+          dangerous-clean-html: true
+          exclude: |
+            **/.htaccess
+            **/.env
+            **/node_modules/**
+            **/submissions_*.json
