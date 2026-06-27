@@ -37,6 +37,14 @@ jobs:
           cp server.js deploy-package/
           echo "Deployment package prepared successfully."
 
+      - name: Sanitize Remote Directory Path
+        id: sanitize
+        run: |
+          DIR="${{ secrets.SFTP_REMOTE_DIR }}"
+          # Ensure it ends with a slash
+          [[ "$DIR" != */ ]] && DIR="$DIR/"
+          echo "dir=$DIR" >> $GITHUB_OUTPUT
+
       - name: Deploy to Bluehost via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -44,4 +52,4 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           local-dir: ./deploy-package/
-          server-dir: ${{ secrets.SFTP_REMOTE_DIR }}
+          server-dir: ${{ steps.sanitize.outputs.dir }}
