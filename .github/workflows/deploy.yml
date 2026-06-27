@@ -35,6 +35,8 @@ jobs:
           cp package.json deploy-package/
           cp package-lock.json deploy-package/
           cp server.js deploy-package/
+          mkdir -p deploy-package/tmp
+          touch deploy-package/tmp/restart.txt
           echo "Deployment package prepared successfully."
 
       - name: Sanitize Remote Directory Path
