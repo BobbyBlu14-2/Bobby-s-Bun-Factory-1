@@ -1,0 +1,83 @@
+name: Build and Deploy to Firebase & Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build, Containerize and Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-west2-docker.pkg.dev --quiet
+
+      - name: Create Artifact Registry Repository (if not exists)
+        run: |
+          gcloud artifacts repositories describe bobbys-bun-factory --location=us-west2 || \
+          gcloud artifacts repositories create bobbys-bun-factory \
+            --repository-format=docker \
+            --location=us-west2 \
+            --description="Bobby's Bun Factory Docker repository"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies & Build Frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
+
+      - name: Deploy to Cloud Run
+        id: deploy-cloudrun
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: bobby-s-bun-factory
+          image: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
+          region: us-west2
+          flags: --allow-unauthenticated
+          env_vars: |
+            NODE_ENV=production
+            PORT=3000
+            SQUARE_ACCESS_TOKEN=${{ secrets.SQUARE_ACCESS_TOKEN }}
+            SQUARE_APPLICATION_ID=${{ secrets.SQUARE_APPLICATION_ID }}
+            SQUARE_LOCATION_ID=${{ secrets.SQUARE_LOCATION_ID }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            GOOGLE_SHEET_WEBHOOK_URL=${{ secrets.GOOGLE_SHEET_WEBHOOK_URL }}
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase Hosting
+        run: |
+          firebase deploy --only hosting --project ${{ secrets.GCP_PROJECT_ID }} --token "${{ secrets.FIREBASE_TOKEN }}"
