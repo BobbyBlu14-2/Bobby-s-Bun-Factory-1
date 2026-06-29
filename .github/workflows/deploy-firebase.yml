@@ -65,7 +65,7 @@ jobs:
           service: bobby-s-bun-factory
           image: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
           region: us-west2
-          flags: --allow-unauthenticated
+          flags: --allow-unauthenticated --remove-annotations=run.googleapis.com/sources
           env_vars: |
             NODE_ENV=production
             PORT=3000
