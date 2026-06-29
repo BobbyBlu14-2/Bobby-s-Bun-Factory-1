@@ -21,7 +21,6 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
 
 # Copy package files
 COPY package*.json ./
@@ -32,8 +31,8 @@ RUN npm ci --only=production
 # Copy compiled build output and server bundle from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 8080
+EXPOSE 8080
 
 # Start the full-stack server
 CMD ["npm", "start"]
