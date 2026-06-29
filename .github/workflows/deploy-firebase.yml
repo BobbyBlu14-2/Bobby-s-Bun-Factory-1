@@ -93,4 +93,4 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         run: |
-          firebase deploy --only hosting --project ${{ secrets.GCP_PROJECT_ID }} --token "${{ secrets.FIREBASE_TOKEN }}"
+          firebase deploy --only hosting:gen-lang-client-0575901819 --project ${{ secrets.GCP_PROJECT_ID }} --token "${{ secrets.FIREBASE_TOKEN }}"
