@@ -58,48 +58,18 @@ jobs:
           push: true
           tags: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
 
-      - name: Remove Cloud Run Sources Annotation
+      - name: Resolve Conflicting Cloud Run Service (Source vs Container)
         run: |
-          if gcloud run services describe bobby-s-bun-factory --region=us-west2 --format=json > service.json 2>/dev/null; then
-            echo "Service bobby-s-bun-factory exists. Checking for conflicting annotations..."
-            python3 -c "
-          import json, sys
-          try:
-              with open('service.json') as f:
-                  data = json.load(f)
-              modified = False
-              # Remove from service metadata annotations
-              if 'metadata' in data and 'annotations' in data['metadata']:
-                  for key in ['run.googleapis.com/sources', 'run.googleapis.com/source-image']:
-                      if key in data['metadata']['annotations']:
-                          data['metadata']['annotations'].pop(key)
-                          modified = True
-              # Remove from template metadata annotations
-              if 'spec' in data and 'template' in data['spec']:
-                  template = data['spec']['template']
-                  if 'metadata' in template and 'annotations' in template['metadata']:
-                      for key in ['run.googleapis.com/sources', 'run.googleapis.com/source-image']:
-                          if key in template['metadata']['annotations']:
-                              template['metadata']['annotations'].pop(key)
-                              modified = True
-              if modified:
-                  print('Conflicting sources annotations found and removed. Preparing clean JSON for replacement.')
-                  data.pop('status', None)
-                  if 'metadata' in data:
-                      for field in ['uid', 'resourceVersion', 'generation', 'creationTimestamp']:
-                          data['metadata'].pop(field, None)
-                  with open('service-clean.json', 'w') as f:
-                      json.dump(data, f, indent=2)
-                  sys.exit(0)
-              else:
-                  print('No conflicting sources annotations found.')
-                  sys.exit(1)
-          except Exception as e:
-              print(f'Error processing configuration: {e}')
-              sys.exit(2)
-          " && gcloud run services replace service-clean.json --region=us-west2 || echo "No replacement needed or service annotations are already clean."
+          if gcloud run services describe bobby-s-bun-factory --region=us-west2 >/dev/null 2>&1; then
+            echo "Service bobby-s-bun-factory exists. Checking if it contains conflicting source-based annotations..."
+            if gcloud run services describe bobby-s-bun-factory --region=us-west2 --format=json | grep -q "run.googleapis.com/sources"; then
+              echo "Conflicting 'run.googleapis.com/sources' annotation found. Deleting the service to perform a clean, container-based deployment..."
+              gcloud run services delete bobby-s-bun-factory --region=us-west2 --quiet
+            else
+              echo "No conflicting source annotations found. Proceeding with standard rolling update."
+            fi
           else
-            echo "Service bobby-s-bun-factory does not exist yet. Skipping annotation cleanup."
+            echo "Service bobby-s-bun-factory does not exist yet. It will be created cleanly."
           fi
 
       - name: Deploy to Cloud Run
