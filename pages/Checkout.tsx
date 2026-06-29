@@ -52,7 +52,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
       }
 
       script = document.createElement('script');
-      script.src = 'https://web.sqspcdn.com/payments/v1/square.js';
+      const isProd = appId.startsWith('sq0idp');
+      script.src = isProd 
+        ? 'https://web.squareup.com/v1/payments' 
+        : 'https://sandbox.web.squareupsandbox.com/v1/payments';
       script.async = true;
       script.onload = () => initializePaymentForm();
       script.onerror = () => {
