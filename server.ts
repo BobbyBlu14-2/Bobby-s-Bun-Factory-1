@@ -1,5 +1,4 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import { SquareClient, SquareEnvironment } from "square";
 import path from "path";
 import crypto from "crypto";
@@ -334,6 +333,7 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
 
   if (!forceProduction) {
     try {
+      const { createServer: createViteServer } = await import("vite");
       const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: "spa",
