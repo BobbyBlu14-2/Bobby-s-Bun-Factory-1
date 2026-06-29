@@ -58,6 +58,13 @@ jobs:
           push: true
           tags: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
 
+      - name: Remove Cloud Run Sources Annotation
+        run: |
+          gcloud run services update bobby-s-bun-factory \
+            --remove-annotations=run.googleapis.com/sources \
+            --region=us-west2 \
+            --quiet || true
+
       - name: Deploy to Cloud Run
         id: deploy-cloudrun
         uses: google-github-actions/deploy-cloudrun@v2
@@ -65,7 +72,7 @@ jobs:
           service: bobby-s-bun-factory
           image: us-west2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/bobbys-bun-factory/app:latest
           region: us-west2
-          flags: --allow-unauthenticated --remove-annotations=run.googleapis.com/sources
+          flags: --allow-unauthenticated
           env_vars: |
             NODE_ENV=production
             PORT=3000
