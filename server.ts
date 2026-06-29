@@ -357,15 +357,10 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
     console.log("Serving static production files from dist/ directory.");
   }
 
-  if (process.env.PORT) {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } else {
-    app.listen(Number(PORT), "0.0.0.0", () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
-  }
+  const portNum = typeof PORT === "number" ? PORT : parseInt(String(PORT), 10);
+  app.listen(portNum, "0.0.0.0", () => {
+    console.log(`Server running on port ${portNum}`);
+  });
 }
 
 startServer();
