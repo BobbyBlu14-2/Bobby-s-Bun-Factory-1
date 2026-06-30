@@ -278,12 +278,11 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
       // 4-pack or 6-pack
       if (selectedSize === '4pack') {
         if (addCaviarToBox) sum += 4.00;
-        if (extraHeavyToppingBox) sum += 5.00;
       } else {
         // 6-pack
         if (addCaviarToBox) sum += 6.00;
-        if (extraHeavyToppingBox) sum += 7.00;
       }
+      if (extraHeavyToppingBox) sum += 5.00;
     }
     return sum;
   }, [
@@ -376,7 +375,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
       if (extraSecretFrost) activeUpgrades.push('Petit Frost Cup (3.5 oz)');
     } else {
       if (addCaviarToBox) activeUpgrades.push(selectedSize === '4pack' ? 'Add Caviar to 4-Pack' : 'Add Caviar to 6-Pack');
-      if (extraHeavyToppingBox) activeUpgrades.push('Extra-Heavy Grand Topping Upgrade');
+      if (extraHeavyToppingBox) activeUpgrades.push('Le Petit Duo (Frost & Caviar Cups)');
     }
     const upgradesDesc = activeUpgrades.length > 0 ? ` [Upgrades: ${activeUpgrades.join(', ')}]` : '';
 
@@ -1113,21 +1112,22 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       >
                         <div className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-brand-ochre/10 mb-3.5 bg-brand-ink/40">
                           <img
-                            src={cookiesCreamTopping}
-                            alt="Extra-Heavy Topping"
+                            src={petitDuoCups}
+                            alt="Le Petit Duo"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-in fade-in duration-300"
                             referrerPolicy="no-referrer"
                           />
                         </div>
                         <div className="flex justify-between items-start w-full gap-2">
                           <div>
-                            <h4 className="font-serif font-black text-lg text-brand-cream">
-                              Extra-Heavy Grand Topping Upgrade
-                            </h4>
-                            <p className="text-xs text-brand-cream/60 mt-0.5 leading-snug">A massive final glaze reduction finish across all items</p>
+                            <div className="flex items-center space-x-1.5">
+                              <h4 className="font-serif font-black text-lg text-brand-cream uppercase tracking-wide">Le Petit Duo</h4>
+                              <span className="bg-brand-terracotta text-brand-cream text-[8px] font-black uppercase px-1.5 py-0.5 rounded-full shrink-0">Best Value</span>
+                            </div>
+                            <p className="text-xs text-brand-cream/60 mt-0.5 leading-snug">Both pocket-sized cups of Frost & Caviar together</p>
                           </div>
                           <div className="mono text-base font-black text-brand-terracotta shrink-0">
-                            {selectedSize === '4pack' ? '+$5.00' : '+$7.00'}
+                            +$5.00
                           </div>
                         </div>
                       </button>
@@ -1462,9 +1462,9 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                         )}
                         {extraHeavyToppingBox && (
                           <div className="flex justify-between items-baseline text-xs text-brand-ochre font-heading animate-in fade-in slide-in-from-left-2 duration-300">
-                            <span>+ Premium Upgrade: Extra-Heavy Grand Topping Upgrade</span>
+                            <span>+ Premium Upgrade: Le Petit Duo (Frost & Caviar Cups)</span>
                             <span className="mono font-black">
-                              {selectedSize === '4pack' ? '+$5.00' : '+$7.00'}
+                              +$5.00
                             </span>
                           </div>
                         )}
