@@ -184,7 +184,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
                 {!isSignUp && (
                   <button 
                     type="button"
-                    onClick={() => setErrorMsg('Reset token dispatched. Check your cosmic mailbox!')}
+                    onClick={() => setErrorMsg('Secret link sent. Check your inbox for sweet relief!')}
                     className="text-[9px] uppercase tracking-wider font-extrabold text-brand-terracotta hover:underline"
                   >
                     Forgot Password?

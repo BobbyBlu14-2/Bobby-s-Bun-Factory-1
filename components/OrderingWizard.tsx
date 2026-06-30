@@ -1078,33 +1078,6 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                     // Box addons (4pack or 6pack)
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <button
-                        onClick={() => setAddCaviarToBox(!addCaviarToBox)}
-                        className={`group p-4 border text-left transition-all flex flex-col justify-between h-full rounded-xl ${
-                          addCaviarToBox ? 'border-brand-terracotta bg-brand-terracotta/5' : 'border-brand-ochre/10 hover:border-brand-ochre/30'
-                        }`}
-                      >
-                        <div className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-brand-ochre/10 mb-3.5 bg-brand-ink/40">
-                          <img
-                            src={fourPackCaviarUpgrade}
-                            alt="Add Caviar to Box"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-in fade-in duration-300"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                        <div className="flex justify-between items-start w-full gap-2">
-                          <div>
-                            <h4 className="font-serif font-black text-lg text-brand-cream">
-                              {selectedSize === '4pack' ? 'Add Caviar to 4-Pack' : 'Add Caviar to 6-Pack'}
-                            </h4>
-                            <p className="text-xs text-brand-cream/60 mt-0.5 leading-snug">Adds rich customized caviar toppings to standard items</p>
-                          </div>
-                          <div className="mono text-base font-black text-brand-terracotta shrink-0">
-                            {selectedSize === '4pack' ? '+$4.00' : '+$6.00'}
-                          </div>
-                        </div>
-                      </button>
-
-                      <button
                         onClick={() => setExtraHeavyToppingBox(!extraHeavyToppingBox)}
                         className={`group p-4 border text-left transition-all flex flex-col justify-between h-full rounded-xl ${
                           extraHeavyToppingBox ? 'border-brand-terracotta bg-brand-terracotta/5' : 'border-brand-ochre/10 hover:border-brand-ochre/30'
@@ -1128,6 +1101,33 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           </div>
                           <div className="mono text-base font-black text-brand-terracotta shrink-0">
                             +$5.00
+                          </div>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => setAddCaviarToBox(!addCaviarToBox)}
+                        className={`group p-4 border text-left transition-all flex flex-col justify-between h-full rounded-xl ${
+                          addCaviarToBox ? 'border-brand-terracotta bg-brand-terracotta/5' : 'border-brand-ochre/10 hover:border-brand-ochre/30'
+                        }`}
+                      >
+                        <div className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-brand-ochre/10 mb-3.5 bg-brand-ink/40">
+                          <img
+                            src={fourPackCaviarUpgrade}
+                            alt="Add Caviar to Box"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-in fade-in duration-300"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div className="flex justify-between items-start w-full gap-2">
+                          <div>
+                            <h4 className="font-serif font-black text-lg text-brand-cream">
+                              {selectedSize === '4pack' ? 'Add Caviar to 4-Pack' : 'Add Caviar to 6-Pack'}
+                            </h4>
+                            <p className="text-xs text-brand-cream/60 mt-0.5 leading-snug">Adds rich customized caviar toppings to standard items</p>
+                          </div>
+                          <div className="mono text-base font-black text-brand-terracotta shrink-0">
+                            {selectedSize === '4pack' ? '+$4.00' : '+$6.00'}
                           </div>
                         </div>
                       </button>

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { ShoppingBag, Menu, User, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingBag, Menu, X, User, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GearLogo from './GearLogo';
 
@@ -19,12 +19,21 @@ const Header: React.FC<HeaderProps> = ({
   onOpenAuth, 
   onLogout 
 }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 bg-brand-cream/80 backdrop-blur-xl border-b border-brand-sand/30">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
         <div className="flex items-center space-x-8">
-          <button className="p-2 md:hidden group">
-            <Menu className="w-6 h-6 text-brand-ink group-hover:text-brand-terracotta transition-colors" />
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 md:hidden group focus:outline-none"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6 text-brand-ink group-hover:text-brand-terracotta transition-colors" />
+            ) : (
+              <Menu className="w-6 h-6 text-brand-ink group-hover:text-brand-terracotta transition-colors" />
+            )}
           </button>
           
           <Link 
@@ -114,6 +123,65 @@ const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu Panel */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden absolute top-24 left-0 w-full bg-brand-cream border-b border-brand-sand/50 shadow-2xl z-40 transition-all animate-in fade-in slide-in-from-top-4 duration-300">
+          <nav className="flex flex-col p-6 space-y-4 text-xs font-black uppercase tracking-[0.2em] text-brand-ink/80">
+            <Link 
+              to="/" 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              The Goods
+            </Link>
+            <Link 
+              to="/" 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setTimeout(() => {
+                  document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              The Box
+            </Link>
+            <Link 
+              to="/shop" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 flex items-center justify-between transition-colors text-brand-terracotta font-black"
+            >
+              <span>The Jars</span>
+              <span className="bg-brand-terracotta text-white text-[8px] font-mono px-2 py-0.5 rounded font-black uppercase">NEW</span>
+            </Link>
+            <Link 
+              to="/franchise" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              The Franchise
+            </Link>
+            <Link 
+              to="/locations" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              The Pull Up
+            </Link>
+            <Link 
+              to="/contact" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-brand-terracotta pb-1 transition-colors"
+            >
+              Talk Sweet to Us
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

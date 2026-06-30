@@ -131,7 +131,7 @@ const NewsletterModal: React.FC = () => {
                       Welcome to the Vault!
                     </h3>
                     <p className="text-xs text-zinc-600 leading-relaxed max-w-sm mx-auto font-semibold">
-                      Your invite has been locked in! We've registered your profile and dispatched the secret drop discounts directly to your inbox.
+                      Your invite has been locked in! We've registered your profile and whispered the secret drop discounts directly to your inbox.
                     </p>
                   </div>
                 ) : (
@@ -193,7 +193,7 @@ const NewsletterModal: React.FC = () => {
                     </form>
 
                     <p className="border-t border-brand-sand/20 mt-6 pt-4 text-[9px] text-zinc-400 font-semibold leading-normal">
-                      * Fresh drops dispatched weekly. We do not sell or trade your data. Opt-out at any time. Unlocks immediately.
+                      * Fresh drops whispered weekly. We do not sell or trade your details. Opt-out at any time. Unlocks immediately.
                     </p>
                   </div>
                 )}

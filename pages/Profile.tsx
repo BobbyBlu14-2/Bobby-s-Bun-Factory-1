@@ -116,7 +116,7 @@ const Profile: React.FC<{ currentUser: string | null; onOpenAuth: () => void }> 
       id: 'BBF-87114-X',
       date: '2026-05-28',
       type: 'delivery',
-      status: 'Dispatched & Enjoyed',
+      status: 'Baked & Devoured',
       subtotal: 18.00,
       discount: 0.00,
       tax: 1.44,
@@ -437,7 +437,7 @@ const Profile: React.FC<{ currentUser: string | null; onOpenAuth: () => void }> 
                           )}
                           {!order.pickupTime && order.address && (
                             <div>
-                              <span className="block text-[8px] uppercase tracking-wider font-extrabold text-zinc-400">Dispatch Location</span>
+                              <span className="block text-[8px] uppercase tracking-wider font-extrabold text-zinc-400">Sweet Destination</span>
                               <span className="text-brand-ink font-bold mt-0.5 block">{order.address}</span>
                             </div>
                           )}

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, Trash2, ArrowRight, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { CartItem } from '../types';
 
 interface CartDrawerProps {
@@ -10,9 +10,10 @@ interface CartDrawerProps {
   items: CartItem[];
   total?: number;
   onRemove: (productId: string, modifierId?: string) => void;
+  onUpdateQuantity?: (product: any, quantity: number, modifier?: any | null) => void;
 }
 
-const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, total, onRemove }) => {
+const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, total, onRemove, onUpdateQuantity }) => {
   const navigate = useNavigate();
   const subtotal = total !== undefined ? total : items.reduce((acc, item) => acc + (item.product.price + (item.modifier?.price || 0)) * item.quantity, 0);
 
@@ -60,8 +61,29 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, total, 
                   {item.modifier && (
                      <p className="mono text-[8px] text-brand-terracotta uppercase tracking-[0.2em] font-black italic">+ {item.modifier.name}</p>
                   )}
-                  <p className="mono text-[10px] text-brand-cream/40 uppercase tracking-widest font-black">Allocation: {item.quantity} Units</p>
-                  <p className="mono text-[14px] font-black text-brand-ochre mt-2">${((item.product.price + (item.modifier?.price || 0)) * item.quantity).toFixed(2)}</p>
+                  <div className="flex items-center space-x-3 mt-1.5 select-none">
+                    <span className="mono text-[10px] text-brand-cream/40 uppercase tracking-widest font-black">Allocation:</span>
+                    {onUpdateQuantity ? (
+                      <div className="flex items-center space-x-2 bg-brand-cream/5 border border-brand-ochre/15 rounded-full px-2 py-0.5">
+                        <button 
+                          onClick={() => onUpdateQuantity(item.product, Math.max(0, item.quantity - 1), item.modifier)}
+                          className="text-brand-cream/60 hover:text-brand-terracotta transition-colors p-0.5 disabled:opacity-20 cursor-pointer"
+                        >
+                          <Minus className="w-2.5 h-2.5" />
+                        </button>
+                        <span className="mono text-xs font-black text-brand-ochre w-5 text-center">{item.quantity}</span>
+                        <button 
+                          onClick={() => onUpdateQuantity(item.product, item.quantity + 1, item.modifier)}
+                          className="text-brand-cream/60 hover:text-brand-terracotta transition-colors p-0.5 cursor-pointer"
+                        >
+                          <Plus className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="mono text-[10px] text-brand-cream/70 font-black">{item.quantity} Units</span>
+                    )}
+                  </div>
+                  <p className="mono text-[14px] font-black text-brand-ochre mt-1">${((item.product.price + (item.modifier?.price || 0)) * item.quantity).toFixed(2)}</p>
                 </div>
                 <button 
                   onClick={() => onRemove(item.product.id, item.modifier?.id)}

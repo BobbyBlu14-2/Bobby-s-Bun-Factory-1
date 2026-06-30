@@ -52,28 +52,28 @@ const Footer: React.FC = () => {
           
           <div className="grid grid-cols-2 gap-8">
             <div className="flex flex-col space-y-4">
-              <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">The Lab</span>
+              <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">The Boudoir</span>
               <Link to="/shop" className="text-sm font-bold text-brand-ochre hover:text-brand-cream transition-colors flex items-center gap-1.5">Shop Jars <span className="bg-brand-terracotta text-white text-[8px] font-mono px-1 py-0.2 rounded font-black uppercase scale-90">NEW</span></Link>
-              <Link to="/about" className="text-sm font-bold hover:text-brand-ochre transition-colors">Lineage</Link>
-              <Link to="/locations" className="text-sm font-bold hover:text-brand-ochre transition-colors">Outposts</Link>
-              <Link to="/franchise" className="text-sm font-bold hover:text-brand-ochre transition-colors">Venture</Link>
+              <Link to="/about" className="text-sm font-bold hover:text-brand-ochre transition-colors">Our Lineage</Link>
+              <Link to="/locations" className="text-sm font-bold hover:text-brand-ochre transition-colors">Sweet Spots</Link>
+              <Link to="/franchise" className="text-sm font-bold hover:text-brand-ochre transition-colors">Sweet Ventures</Link>
             </div>
             <div className="flex flex-col space-y-4">
-              <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">Legal</span>
-              <Link to="/privacy" className="text-sm font-bold hover:text-brand-ochre transition-colors">Privacy</Link>
-              <Link to="/terms" className="text-sm font-bold hover:text-brand-ochre transition-colors">Protocol</Link>
+              <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">Boundaries</span>
+              <Link to="/privacy" className="text-sm font-bold hover:text-brand-ochre transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="text-sm font-bold hover:text-brand-ochre transition-colors">The Rules of Play</Link>
             </div>
           </div>
 
           <div className="flex flex-col space-y-6">
-            <span className="mono text-[10px] text-brand-ochre font-black uppercase tracking-[0.2em]">Transmission</span>
+            <span className="mono text-[10px] text-brand-ochre font-black uppercase tracking-[0.2em]">Sweet Talk</span>
             <div className="flex items-center bg-brand-ochre/5 border border-brand-ochre/20 p-1 rounded-none">
               <input 
                 type="email" 
-                placeholder="Secure Email..." 
+                placeholder="Your email for whispers..." 
                 className="bg-transparent border-none text-sm px-4 py-2 w-full focus:outline-none placeholder:text-brand-cream/20"
               />
-              <button className="bg-brand-ochre text-brand-ink px-6 py-2 text-[10px] font-black uppercase">Join</button>
+              <button className="bg-brand-ochre text-brand-ink px-6 py-2 text-[10px] font-black uppercase">Join Us</button>
             </div>
           </div>
         </div>

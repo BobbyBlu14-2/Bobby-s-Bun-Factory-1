@@ -249,6 +249,7 @@ const App: React.FC = () => {
           items={cart}
           total={cartTotal}
           onRemove={handleRemoveFromCart}
+          onUpdateQuantity={handleUpdateQuantity}
         />
 
         <AuthModal 

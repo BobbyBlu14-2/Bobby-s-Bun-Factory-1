@@ -393,10 +393,10 @@ const Franchise: React.FC = () => {
                     <Rocket className="w-8 h-8 animate-bounce" />
                   </span>
                   <h5 className="font-heading font-black text-lg text-brand-ochre uppercase tracking-widest mb-2">
-                    Dispatch Queue Secured
+                    Sweet Desires Registered
                   </h5>
                   <p className="text-xs text-brand-cream/70 leading-relaxed max-w-xs mx-auto">
-                    Your investment profile and desired territory data have been successfully mapped to Bobby’s high-command pipeline. Keep your eyes on your inbox.
+                    Your franchise profile and desired territory details have been successfully mapped to Bobby’s high-command pipeline. We will whisper back soon.
                   </p>
                 </div>
               ) : (
