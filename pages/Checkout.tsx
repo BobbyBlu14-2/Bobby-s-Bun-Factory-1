@@ -39,6 +39,15 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
   // Use config from API first, then fall back to Vite env vars
   const appId = (config?.applicationId || import.meta.env.VITE_SQUARE_APPLICATION_ID || import.meta.env.VITE_SQUARE_APPLIC || '').trim();
   const locationId = (config?.locationId || import.meta.env.VITE_SQUARE_LOCATION_ID || import.meta.env.VITE_SQUARE_LOCAT || '').trim();
+  const isProd = appId.startsWith('sq0idp');
+
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 1500);
+  };
 
   useEffect(() => {
     let script: HTMLScriptElement | null = null;
@@ -52,7 +61,6 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
       }
 
       script = document.createElement('script');
-      const isProd = appId.startsWith('sq0idp');
       script.src = isProd 
         ? 'https://web.squarecdn.com/v1/square.js' 
         : 'https://sandbox.web.squarecdn.com/v1/square.js';
@@ -284,6 +292,53 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                   </div>
                 ) : (
                   <form onSubmit={handlePayment} className="space-y-8">
+                    {!isProd && (
+                      <div className="border border-dashed border-brand-terracotta/40 bg-brand-terracotta/[0.03] p-5 space-y-4 rounded-none">
+                        <div className="flex items-center justify-between">
+                          <span className="mono text-[9px] text-brand-terracotta font-black uppercase tracking-wider flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-brand-terracotta animate-pulse" />
+                            Sandbox Active Mode
+                          </span>
+                          <span className="mono text-[8px] text-brand-ink/40 uppercase font-bold">Use test values below</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 text-left">
+                          <div className="p-2.5 bg-brand-ink text-brand-cream border border-brand-ochre/10 relative">
+                            <p className="mono text-[8px] text-brand-ochre/60 uppercase font-black tracking-widest">VISA (SUCCESS)</p>
+                            <p className="mono text-[11px] font-black mt-1">4111 • 1111 • 1111 • 1111</p>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy("4111111111111111", "visa")}
+                              className="absolute top-2 right-2 text-[8px] mono uppercase font-bold text-brand-terracotta hover:text-brand-ochre tracking-widest cursor-pointer"
+                            >
+                              {copiedText === "visa" ? "Copied!" : "Copy"}
+                            </button>
+                          </div>
+                          
+                          <div className="p-2.5 bg-brand-ink text-brand-cream border border-brand-ochre/10 relative">
+                            <p className="mono text-[8px] text-brand-ochre/60 uppercase font-black tracking-widest">MC (SUCCESS)</p>
+                            <p className="mono text-[11px] font-black mt-1">5105 • 1051 • 0510 • 5100</p>
+                            <button
+                              type="button"
+                              onClick={() => handleCopy("5105105105105100", "mc")}
+                              className="absolute top-2 right-2 text-[8px] mono uppercase font-bold text-brand-terracotta hover:text-brand-ochre tracking-widest cursor-pointer"
+                            >
+                              {copiedText === "mc" ? "Copied!" : "Copy"}
+                            </button>
+                          </div>
+
+                          <div className="p-2 bg-brand-ink text-brand-cream border border-brand-ochre/10">
+                            <p className="mono text-[8px] text-brand-ochre/60 uppercase font-black tracking-widest">EXPIRY</p>
+                            <p className="mono text-[11px] font-black mt-0.5">Any future (e.g. 12/28)</p>
+                          </div>
+
+                          <div className="p-2 bg-brand-ink text-brand-cream border border-brand-ochre/10">
+                            <p className="mono text-[8px] text-brand-ochre/60 uppercase font-black tracking-widest">CVV / POSTAL</p>
+                            <p className="mono text-[11px] font-black mt-0.5">123 / 90210</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-4">
                        <span className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Card Authentication Module</span>
                        <div 
