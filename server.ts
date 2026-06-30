@@ -29,10 +29,19 @@ async function startServer() {
     appIdVariant: process.env.SQUARE_APPLICATION_ID ? 'FULL' : (process.env.SQUARE_APPLICATION ? 'TRUNCATED' : 'NONE'),
   });
 
+  const effectiveAppId = (publicAppId || appId || '').trim();
+  const isProductionSquare = effectiveAppId.startsWith('sq0idp') && !effectiveAppId.startsWith('sandbox');
+
+  console.log('Square Server Environment:', {
+    effectiveAppId,
+    isProductionSquare,
+    selectedEnvironment: isProductionSquare ? 'Production' : 'Sandbox'
+  });
+
   // Square client configuration
   const squareClient = new SquareClient({
     token: accessToken || 'MISSING_TOKEN',
-    environment: (process.env.NODE_ENV === "production" || publicAppId?.startsWith('sq0idp')) ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+    environment: isProductionSquare ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
   });
 
   // API Routes
