@@ -504,6 +504,65 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
         </div>
       </div>
 
+      {/* Top Total & Quick Navigation Bar */}
+      <div className="flex flex-row justify-between items-center bg-white/[0.02] border border-brand-ochre/15 rounded-2xl px-4 md:px-6 py-3.5 mb-10 gap-4">
+        <div className="flex items-center space-x-2 md:space-x-3">
+          <span className="mono text-[8px] md:text-[9px] text-brand-cream/40 uppercase tracking-widest font-black block">Total:</span>
+          <p className="serif text-xl md:text-2xl font-black text-brand-ochre leading-none">
+            ${grandTotal.toFixed(2)}
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2 md:space-x-3 shrink-0">
+          {phase !== 'PACKAGE_SELECTION' && (
+            <button
+              onClick={() => {
+                if (phase === 'LOGISTICS') setPhase('ADD_ONS');
+                else if (phase === 'ADD_ONS') {
+                  if (selectedStyle === 'classic') setPhase('PACKAGE_SELECTION');
+                  else setPhase('CAVIAR_SELECTION');
+                }
+                else if (phase === 'CAVIAR_SELECTION') setPhase('PACKAGE_SELECTION');
+              }}
+              className="flex items-center space-x-1.5 text-brand-cream/60 hover:text-brand-cream font-mono text-[9px] uppercase font-black tracking-widest px-2.5 py-2 hover:bg-white/5 rounded border border-brand-ochre/10 cursor-pointer transition-all"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+          )}
+
+          {phase !== 'LOGISTICS' ? (
+            <button
+              onClick={() => {
+                if (phase === 'PACKAGE_SELECTION') {
+                  if (selectedStyle === 'classic') {
+                    setPhase('ADD_ONS');
+                  } else {
+                    setPhase('CAVIAR_SELECTION');
+                  }
+                } else if (phase === 'CAVIAR_SELECTION') {
+                  setPhase('ADD_ONS');
+                } else if (phase === 'ADD_ONS') {
+                  setPhase('LOGISTICS');
+                }
+              }}
+              className="bg-brand-cream text-brand-ink px-4 py-2 rounded font-mono text-[9px] font-black uppercase tracking-widest flex items-center justify-center space-x-1.5 hover:bg-brand-terracotta hover:text-brand-cream transition-all cursor-pointer"
+            >
+              <span>Continue</span>
+              <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+            </button>
+          ) : (
+            <button
+              onClick={handleCheckoutProtocol}
+              className="bg-brand-terracotta text-brand-cream px-4 py-2 rounded font-mono text-[9px] font-black uppercase tracking-wider shadow-lg hover:bg-brand-ochre hover:text-brand-ink transition-all cursor-pointer flex items-center justify-center space-x-1.5"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span>Secure Allocation Order</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Dynamic wizard panels */}
       <div className="min-h-[400px] flex flex-col justify-between">
         <AnimatePresence mode="wait">
@@ -793,6 +852,9 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                                 const newSlots = [...caviarSlots];
                                 newSlots[activeSlotIdx] = fl.id;
                                 setCaviarSlots(newSlots);
+                                if (activeSlotIdx < maxCaviarSlots - 1) {
+                                  setActiveSlotIdx(activeSlotIdx + 1);
+                                }
                               }}
                               className={`group p-3 text-left border transition-all flex items-center space-x-3 cursor-pointer min-h-[96px] ${
                                 isSelected
@@ -838,6 +900,9 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                               const newSlots = [...caviarSlots];
                               newSlots[activeSlotIdx] = fl.id;
                               setCaviarSlots(newSlots);
+                              if (activeSlotIdx < maxCaviarSlots - 1) {
+                                setActiveSlotIdx(activeSlotIdx + 1);
+                              }
                             }}
                             className={`group p-3 text-left border transition-all flex items-center space-x-3 cursor-pointer min-h-[96px] ${
                               isSelected
