@@ -96,7 +96,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-terracotta/5 border border-brand-terracotta/20 rounded-full">
             <Sparkles className="w-3.5 h-3.5 text-brand-terracotta animate-pulse" />
             <span className="mono text-[8.5px] tracking-widest font-black uppercase text-brand-terracotta">
-              {isSignUp ? 'The Yeast Protocol' : 'The Rolling Pass'}
+              {isSignUp ? 'The Sweet Temptation' : 'The Key to Seduction'}
             </span>
           </div>
 

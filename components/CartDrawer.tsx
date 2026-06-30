@@ -84,7 +84,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, total, 
             onClick={handleCheckout}
             className="w-full bg-brand-terracotta text-brand-ink py-5 rounded-none font-black uppercase tracking-[0.3em] text-xs shadow-[0_0_30px_rgba(185,76,47,0.3)] hover:bg-brand-ochre transition-all disabled:opacity-20 disabled:shadow-none flex items-center justify-center space-x-3"
           >
-            <span>Proceed to Protocol</span>
+            <span>Submit to Your Cravings</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

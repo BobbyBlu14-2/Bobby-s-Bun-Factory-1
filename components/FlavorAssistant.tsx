@@ -17,7 +17,7 @@ const FlavorAssistant: React.FC<FlavorAssistantProps> = ({ onAddBun }) => {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [addedToOrder, setAddedToOrder] = useState(false);
 
-  const placeholders = ["“heartbroken”", "“celebrating”", "“need 12 buns immediately”"];
+  const placeholders = ["“sticky, warm, and messy”", "“craving sweet sin”", "“needs sweet, sweet comfort”"];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -96,7 +96,7 @@ const FlavorAssistant: React.FC<FlavorAssistantProps> = ({ onAddBun }) => {
             {loading ? <Loader2 className="w-4 h-4 animate-spin text-brand-ink" /> : (
               <>
                 <Zap className="w-4 h-4" />
-                <span>Analyze My Cravings</span>
+                <span>Seduce My Senses</span>
               </>
             )}
           </button>

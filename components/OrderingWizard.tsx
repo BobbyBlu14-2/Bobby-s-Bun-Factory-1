@@ -472,16 +472,16 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 pb-8 border-b border-brand-ochre/10 gap-4">
         <div>
           <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.3em] block mb-1">
-            {phase === 'PACKAGE_SELECTION' && 'Phase 01 / Package Architecture'}
-            {phase === 'CAVIAR_SELECTION' && 'Phase 02 / Topping Customization'}
-            {phase === 'ADD_ONS' && 'Phase 03 / Upgrade & Jar Vault'}
-            {phase === 'LOGISTICS' && 'Phase 04 / Dispatched Date'}
+            {phase === 'PACKAGE_SELECTION' && 'Prelude 01 / Pick Your Foundation'}
+            {phase === 'CAVIAR_SELECTION' && 'Flirtation 02 / Sweet & Sticky Dress-up'}
+            {phase === 'ADD_ONS' && 'Indulgence 03 / Double the Pleasure'}
+            {phase === 'LOGISTICS' && 'Rendezvous 04 / Lock in Your Date'}
           </span>
           <h3 className="serif text-3xl md:text-5xl font-black text-brand-cream uppercase tracking-tight leading-none">
-            {phase === 'PACKAGE_SELECTION' && 'Select Your Box Setup'}
-            {phase === 'CAVIAR_SELECTION' && 'Select Caviar Toppings'}
+            {phase === 'PACKAGE_SELECTION' && 'Choose Your Box Setup'}
+            {phase === 'CAVIAR_SELECTION' && 'Drizzle Caviar Toppings'}
             {phase === 'ADD_ONS' && 'Premium Upgrades'}
-            {phase === 'LOGISTICS' && 'Secured Pick-up Date'}
+            {phase === 'LOGISTICS' && 'Pick Your Rendezvous Saturday'}
           </h3>
         </div>
 
@@ -558,7 +558,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               className="bg-brand-terracotta text-brand-cream px-4 py-2 rounded font-mono text-[9px] font-black uppercase tracking-wider shadow-lg hover:bg-brand-ochre hover:text-brand-ink transition-all cursor-pointer flex items-center justify-center space-x-1.5"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
-              <span>Secure Allocation Order</span>
+              <span>Lock In Your Pleasure</span>
             </button>
           )}
         </div>
@@ -1327,8 +1327,8 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center animate-in fade-in duration-300">
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <span className="mono text-brand-terracotta text-[10px] uppercase font-black tracking-widest">LOGISTICS PROTOCOL</span>
-                    <h4 className="serif text-3xl font-black">Verify Pack Dispatch Date</h4>
+                    <span className="mono text-brand-terracotta text-[10px] uppercase font-black tracking-widest">RENDEZVOUS ARRANGEMENTS</span>
+                    <h4 className="serif text-3xl font-black">Set Our Saturday Rendezvous</h4>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
@@ -1340,7 +1340,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           : 'border-brand-ochre/15 hover:border-brand-ochre/40'
                       }`}
                     >
-                      <span className="mono text-[7.5px] text-brand-terracotta uppercase font-black tracking-widest mb-1">IMMEDIATE RELEASE</span>
+                      <span className="mono text-[7.5px] text-brand-terracotta uppercase font-black tracking-widest mb-1">IMMEDIATE SATISFACTION</span>
                       <span className="font-serif font-black text-lg text-brand-cream block leading-tight">This Saturday</span>
                     </button>
 
@@ -1352,7 +1352,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           : 'border-brand-ochre/15 hover:border-brand-ochre/40'
                       }`}
                     >
-                      <span className="mono text-[7.5px] text-brand-ochre uppercase font-black tracking-widest mb-1">FUTURE DISPATCH</span>
+                      <span className="mono text-[7.5px] text-brand-ochre uppercase font-black tracking-widest mb-1">FUTURE PLEASURE</span>
                       <span className="font-serif font-black text-lg text-brand-cream block leading-tight">Other Saturday</span>
                     </button>
                   </div>
@@ -1360,10 +1360,10 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                   <div className="bg-brand-ochre/[0.03] border border-brand-ochre/15 p-6 rounded-2xl space-y-4">
                     {pickupOption === 'this-sat' ? (
                       <div className="space-y-2">
-                        <span className="mono text-[8px] text-brand-ochre uppercase font-bold block">CONFIRMED DISPATCH DATE:</span>
+                        <span className="mono text-[8px] text-brand-ochre uppercase font-bold block">CONFIRMED RENDEZVOUS DATE:</span>
                         <p className="serif text-2xl font-black text-brand-cream italic leading-none">{formatDateDisplayForUI(saturdays[0])}</p>
                         <p className="text-xs text-brand-cream/60 leading-normal pt-2 border-t border-brand-ochre/10">
-                          Fresh hot rolls will be available for pickup this Saturday at our local baking cores from 10:00 AM – 2:00 PM.
+                          Warm, sticky rolls will be waiting for your touch this Saturday at our local baking cores from 10:00 AM – 2:00 PM.
                         </p>
                       </div>
                     ) : (
@@ -1544,7 +1544,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               className="w-full sm:w-auto bg-brand-terracotta text-brand-cream px-10 py-5 font-mono text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-brand-ochre hover:text-brand-ink transition-all cursor-pointer flex items-center justify-center space-x-2"
             >
               <ShoppingBag className="w-4 h-4" />
-              <span>Secure Allocation Order</span>
+              <span>Lock In Your Pleasure</span>
             </button>
           )}
         </div>

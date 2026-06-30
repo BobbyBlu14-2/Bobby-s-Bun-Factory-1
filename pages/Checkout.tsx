@@ -175,10 +175,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
           <ShoppingBag className="w-12 h-12" />
         </div>
         <div className="space-y-4">
-          <h2 className="serif text-5xl font-black text-brand-ink uppercase tracking-tight">Vessel Empty</h2>
-          <p className="mono text-xs text-brand-terracotta font-black uppercase tracking-widest">Inventory depletion detected</p>
+          <h2 className="serif text-5xl font-black text-brand-ink uppercase tracking-tight">Nothing to Devour</h2>
+          <p className="mono text-xs text-brand-terracotta font-black uppercase tracking-widest">Your cravings are currently unfulfilled</p>
         </div>
-        <Link to="/" className="bg-brand-ink text-brand-cream px-12 py-4 rounded-none font-black uppercase tracking-widest text-[10px] hover:bg-brand-terracotta transition-colors">Return to Factory</Link>
+        <Link to="/" className="bg-brand-ink text-brand-cream px-12 py-4 rounded-none font-black uppercase tracking-widest text-[10px] hover:bg-brand-terracotta transition-colors">Find Your Desires</Link>
       </div>
     );
   }
@@ -190,8 +190,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
           <CheckCircle2 className="w-16 h-16 text-brand-terracotta" />
         </motion.div>
         <div className="space-y-4">
-          <h2 className="serif text-6xl md:text-8xl font-black text-brand-cream uppercase tracking-tight">Transmission <br /> <span className="italic text-brand-terracotta">Received.</span></h2>
-          <p className="mono text-brand-ochre text-[10px] uppercase tracking-[0.4em] font-black">Redirecting to Base Command in 5 Units...</p>
+          <h2 className="serif text-6xl md:text-8xl font-black text-brand-cream uppercase tracking-tight">Desires <br /> <span className="italic text-brand-terracotta">Unlocked.</span></h2>
+          <p className="mono text-brand-ochre text-[10px] uppercase tracking-[0.4em] font-black">Redirecting to Your Vault in 5 seconds...</p>
         </div>
       </div>
     );
@@ -205,11 +205,11 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
             <Link to="/" className="w-12 h-12 border border-brand-ochre/20 flex items-center justify-center rounded-none hover:bg-brand-ink hover:text-brand-cream transition-all group">
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             </Link>
-            <h1 className="serif text-4xl md:text-7xl font-black text-brand-ink uppercase tracking-tight">The Protocol</h1>
+            <h1 className="serif text-4xl md:text-7xl font-black text-brand-ink uppercase tracking-tight">The Rendezvous</h1>
           </div>
           <div className="hidden md:flex flex-col items-end">
-             <span className="mono text-brand-terracotta text-[10px] font-black uppercase tracking-widest">Transaction Level</span>
-             <span className="serif text-2xl font-black text-brand-ink italic">Restricted</span>
+             <span className="mono text-brand-terracotta text-[10px] font-black uppercase tracking-widest">Indulgence Level</span>
+             <span className="serif text-2xl font-black text-brand-ink italic">Highly Addictive</span>
           </div>
         </div>
 
@@ -225,11 +225,11 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                   <div className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                       <div className="w-2 h-2 rounded-full bg-brand-terracotta" />
-                      <h2 className="mono text-xs font-black uppercase tracking-[0.3em] text-brand-ochre">Hardware Summary</h2>
+                      <h2 className="mono text-xs font-black uppercase tracking-[0.3em] text-brand-ochre">Your Indulgence Set</h2>
                     </div>
                     {pickupDate && (
                       <div className="flex items-center space-x-4 bg-brand-terracotta/10 px-4 py-2 border border-brand-terracotta/20">
-                         <span className="mono text-[8px] text-brand-terracotta font-black uppercase tracking-widest">LOGISTICS:</span>
+                         <span className="mono text-[8px] text-brand-terracotta font-black uppercase tracking-widest">RENDEZVOUS:</span>
                          <span className="serif text-sm font-black italic">{pickupDate}</span>
                       </div>
                     )}
@@ -259,7 +259,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
 
                   <div className="pt-12 border-t border-brand-ochre/10 flex justify-between items-end">
                     <div>
-                      <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.4em]">Net Value sum</span>
+                      <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.4em]">Your Total Desires</span>
                       <p className="serif text-6xl font-black text-brand-cream mt-2">${total.toFixed(2)}</p>
                     </div>
                     <div className="h-12 w-1 bg-brand-terracotta" />
@@ -272,8 +272,8 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
             <div className="bg-brand-cream p-1 md:p-12 rounded-none border-2 border-brand-ink/5 sticky top-32">
               <div className="space-y-10">
                 <div className="flex flex-col space-y-2">
-                  <h2 className="serif text-4xl font-black text-brand-ink uppercase">Secure <br /> Transmission</h2>
-                  <p className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-widest">Encrypted Payment Gateway</p>
+                  <h2 className="serif text-4xl font-black text-brand-ink uppercase">Secure <br /> the Pleasure</h2>
+                  <p className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-widest">Discreet Transaction</p>
                 </div>
 
                 <AnimatePresence mode="wait">
