@@ -36,6 +36,7 @@ import {
   petitCaviarCup
 } from '../constants';
 import { Product, CartItem } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface OrderingWizardProps {
   onAddToCart: (product: Product, quantity: number, modifier?: Product | null) => void;
@@ -87,6 +88,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
   pickupDate,
   setPickupDate
 }) => {
+  const navigate = useNavigate();
   const [phase, setPhase] = useState<OrderPhase>('PACKAGE_SELECTION');
   
   const wizardRef = useRef<HTMLDivElement>(null);
@@ -449,7 +451,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
     });
 
     // 3. Immediately dispatch navigation to checkout
-    window.location.href = '/checkout';
+    navigate('/checkout');
   };
 
   return (
