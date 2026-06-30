@@ -1,6 +1,6 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
@@ -18,6 +18,16 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import NewsletterModal from './components/NewsletterModal';
 import { CartItem, OrderType, Product } from './types';
+
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
+};
 
 const App: React.FC = () => {
   const [orderType, setOrderType] = useState<OrderType>('pickup');
@@ -172,6 +182,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col pb-20 selection:bg-brand-orange selection:text-white">
         <CountdownBanner />
         <Header 
