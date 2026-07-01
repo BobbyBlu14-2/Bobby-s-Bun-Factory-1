@@ -43,11 +43,11 @@ const NewsletterModal: React.FC = () => {
         setIsSuccess(true);
         setEmail('');
         setName('');
-        // Close after 4 seconds automatically on success
+        // Close after 30 seconds automatically on success so user can copy code
         setTimeout(() => {
           setIsOpen(false);
           setIsSuccess(false);
-        }, 4000);
+        }, 30000);
       } else {
         setErrorMsg(data.error || 'Something went wrong. Please try again.');
       }
@@ -67,8 +67,7 @@ const NewsletterModal: React.FC = () => {
           className="flex items-center space-x-2 bg-brand-ink text-brand-ochre hover:bg-brand-terracotta hover:text-brand-cream px-4 py-3 rounded-full border border-brand-ochre/25 shadow-2xl font-sans text-[10px] font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 select-none active:scale-95"
           id="newsletter-floating-trigger"
         >
-          <Gift className="w-3.5 h-3.5 animate-bounce" />
-          <span>Get Free Drops & Prizes</span>
+          <span>Join the Bun Club 🍞</span>
         </button>
       </div>
 
@@ -123,29 +122,42 @@ const NewsletterModal: React.FC = () => {
               {/* Invitation Copy & Sign-Up Column */}
               <div className="p-8 md:p-12 md:col-span-7 flex flex-col justify-center overflow-y-auto">
                 {isSuccess ? (
-                  <div className="text-center py-8 animate-in fade-in zoom-in duration-300">
+                  <div className="text-center py-6 animate-in fade-in zoom-in duration-300">
                     <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-200">
                       <CheckCircle2 className="w-8 h-8 font-black" />
                     </div>
-                    <h3 className="serif text-2xl font-black text-brand-ink uppercase tracking-wider mb-2">
-                      Welcome to the Vault!
+                    <h3 className="serif text-2.5xl font-black text-brand-ink uppercase tracking-wider mb-2">
+                      You're In the Bun Club! 🍞
                     </h3>
-                    <p className="text-xs text-zinc-600 leading-relaxed max-w-sm mx-auto font-semibold">
-                      Your invite has been locked in! We've registered your profile and whispered the secret drop discounts directly to your inbox.
+                    <p className="text-sm text-zinc-650 font-semibold mb-4">
+                      Thank you for joining our family! Enjoy <span className="text-brand-terracotta font-black text-base">10% OFF</span> your very first order.
+                    </p>
+                    
+                    {/* Premium Dashed Coupon Card */}
+                    <div className="bg-brand-ochre/10 border-2 border-dashed border-brand-ochre/45 rounded-2xl p-4 max-w-xs mx-auto my-4 space-y-1 select-all hover:bg-brand-ochre/15 transition-all cursor-pointer" title="Click to copy code">
+                      <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">Your Exclusive Promocode</span>
+                      <span className="font-mono text-xl font-black tracking-widest text-brand-ink block uppercase bg-white py-1.5 px-3 rounded-lg shadow-sm border border-brand-sand/20">
+                        BUNS10
+                      </span>
+                      <span className="mono text-[8px] text-zinc-400 font-bold block mt-1">Copy and apply code during checkout</span>
+                    </div>
+
+                    <p className="text-[10px] text-zinc-500 font-medium leading-relaxed max-w-xs mx-auto">
+                      Use code <strong className="text-brand-ink font-bold">BUNS10</strong> at checkout to redeem. We've also sent this confirmation details to your registered inbox.
                     </p>
                   </div>
                 ) : (
                   <div>
                     <div className="inline-flex items-center space-x-2 bg-brand-terracotta/10 text-brand-terracotta border border-brand-terracotta/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-4">
                       <Sparkles className="w-3 h-3" />
-                      <span>Bobby's Inner Secret Reserve</span>
+                      <span>Welcome to the Bun Club 🍞</span>
                     </div>
 
                     <h2 className="serif text-2.5xl md:text-3xl font-black text-brand-ink leading-tight mb-3">
-                      The Seduction of <span className="text-brand-terracotta italic font-medium">Velvet Apple</span>
+                      Join the <span className="text-brand-terracotta italic font-medium">Bun Club</span>
                     </h2>
                     <p className="text-xs text-zinc-500 font-semibold mb-6 leading-relaxed">
-                      Indulge in Bobby's elite inner circle. Join our exclusive mailing list today for early menu feature drops, limited bun batches, special 20% discounts, and custom prizes.
+                      Get first dibs on Saturday drops, secret menu items, and surprise coupons.
                     </p>
 
                     <form onSubmit={handleSubscribe} className="space-y-4">
@@ -188,7 +200,7 @@ const NewsletterModal: React.FC = () => {
                         className="w-full mt-4 bg-brand-ink text-brand-ochre hover:bg-brand-terracotta hover:text-brand-cream py-4 rounded-xl font-heading font-black uppercase text-xs tracking-widest transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                       >
                         <Mail className="w-4 h-4" />
-                        <span>{isSubmitting ? 'Joining Reserve...' : 'Indulge Me & Send Discounts'}</span>
+                        <span>{isSubmitting ? 'Joining Club...' : 'Join the Bun Club'}</span>
                       </button>
                     </form>
 

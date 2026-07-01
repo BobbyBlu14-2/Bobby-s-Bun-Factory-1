@@ -30,7 +30,7 @@ import sixPackHorizontal from './src/assets/images/six_pack_horizontal_178156064
 import peachSingleBun from './src/assets/images/peach_single_bun_1781560974108.jpg';
 import singleFruitCaviarBun from './src/assets/images/single_fruit_caviar_bun_1781632684136.jpg';
 import velvetAppleBun from './src/assets/images/apple_velvet_chunky_coulis_1781636501773.jpg';
-import classicSingleBun from './src/assets/images/classic_single_bun_1781632743231.jpg';
+import classicSingleBun from './src/assets/images/classic_single_bun_1782936257003.jpg';
 import chocolateCherryCaviar from './src/assets/images/cherry_bomb_roll_1781638531994.jpg';
 import cookiesCreamTopping from './src/assets/images/cookies_cream_roll_1781638548197.jpg';
 
@@ -83,7 +83,7 @@ import doubleGrandeCaviarJars from './src/assets/images/double_grande_coulis_178
 export const FLAVORS_OF_THE_MONTH: Product[] = [
   {
     id: 'peach-outlaw',
-    name: 'The Peach Outlaw',
+    name: 'Georgia Peach',
     description: 'Fresh succulent local Dacula peach chunks caramelized in brown sugar, piled high over warm rolls and drenched in Bobby’s Secret Frost.',
     price: 6.50,
     image: flavorPeach,
@@ -438,7 +438,7 @@ export const CAVIAR_FLAVORS: CaviarFlavor[] = [
 
   // Premium Toppings/Flavors
   { id: 'cherry-bomb', name: 'Chocolate Cherry Bomb', category: 'premium', description: 'Explosive tart dark cherry reduction with a rich chocolate drizzle', image: chocolateCherryCaviar },
-  { id: 'peach', name: 'The Peach Outlaw', category: 'premium', description: 'Fresh succulent Georgia peach chunks caramelized in brown sugar and piled high over warm rolls', image: caviarPeach },
+  { id: 'peach', name: 'Georgia Peach', category: 'premium', description: 'Fresh succulent Georgia peach chunks caramelized in brown sugar and piled high over warm rolls', image: caviarPeach },
   { id: 'apple-velvet', name: 'Velvet Apple', category: 'premium', description: 'Signature slow-simmered regional apples in spiced brown sugar cinnamon glaze', image: caviarApple },
   { id: 'oreo', name: 'Cookies & Cream (Oreo)', category: 'premium', description: 'Crushed cookies & cream sand layered in sweet vanilla glaze', image: cookiesCreamTopping }
 ];

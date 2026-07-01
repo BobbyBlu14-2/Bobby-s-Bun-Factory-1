@@ -14,8 +14,10 @@ import {
   HelpCircle,
   Megaphone
 } from 'lucide-react';
+import velvetAppleBunHalf from '../src/assets/images/velvet_apple_bun_1781632699036.jpg';
 
 const Franchise: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'franchise' | 'bobby'>('bobby');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [territory, setTerritory] = useState('');
@@ -107,8 +109,48 @@ const Franchise: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-brand-ink selection:bg-brand-terracotta selection:text-brand-cream">
       
-      {/* Editorial Hero Layout — White Background */}
-      <section className="relative overflow-hidden py-24 md:py-32 px-4 border-b border-brand-ochre/15 bg-white">
+      {/* Dynamic Tab Switcher */}
+      <div className="bg-brand-cream/85 border-b border-brand-sand/20 py-5 sticky top-24 z-30 backdrop-blur-xl shadow-sm">
+        <div className="max-w-xl mx-auto px-6 flex justify-center">
+          <div className="bg-white border border-brand-sand/55 p-1.5 rounded-2xl flex space-x-1.5 shadow-md w-full">
+            <button
+              id="tab-meet-bobby"
+              onClick={() => {
+                setActiveTab('bobby');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`flex-1 px-4 sm:px-6 py-3 rounded-xl font-sans text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                activeTab === 'bobby'
+                  ? 'bg-brand-ink text-brand-cream shadow-md'
+                  : 'text-brand-ink/65 hover:text-brand-ink hover:bg-brand-cream/50'
+              }`}
+            >
+              <span>🍞</span>
+              <span>Meet Bobby</span>
+            </button>
+            <button
+              id="tab-franchise-program"
+              onClick={() => {
+                setActiveTab('franchise');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className={`flex-1 px-4 sm:px-6 py-3 rounded-xl font-sans text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center space-x-2 ${
+                activeTab === 'franchise'
+                  ? 'bg-brand-ink text-brand-cream shadow-md'
+                  : 'text-brand-ink/65 hover:text-brand-ink hover:bg-brand-cream/50'
+              }`}
+            >
+              <span>💼</span>
+              <span>Franchise Program</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {activeTab === 'franchise' ? (
+        <>
+          {/* Editorial Hero Layout — White Background */}
+          <section className="relative overflow-hidden py-24 md:py-32 px-4 border-b border-brand-ochre/15 bg-white">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-terracotta/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-[300px] h-[300px] bg-brand-ochre/5 rounded-full blur-3xl pointer-events-none" />
         
@@ -493,6 +535,125 @@ const Franchise: React.FC = () => {
           </div>
         </div>
       </section>
+        </>
+      ) : (
+        <div className="max-w-5xl mx-auto px-6 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Meet Bobby Story — It Started With One Bun */}
+            <div className="space-y-8 pr-0 lg:pr-12 animate-in fade-in slide-in-from-left duration-700">
+              <div className="inline-flex items-center space-x-2 bg-brand-terracotta/10 border border-brand-terracotta/20 px-4 py-1.5 rounded-full">
+                <span className="text-xs">🍞</span>
+                <span className="mono text-brand-terracotta text-[9px] uppercase font-black tracking-widest">Our Story</span>
+              </div>
+              
+              <h2 className="serif text-5xl md:text-7xl font-black text-brand-ink leading-tight">
+                It Started <br className="hidden sm:inline" />
+                With <span className="text-brand-terracotta italic font-normal">One Bun.</span>
+              </h2>
+              
+              <div className="text-brand-ink/80 text-sm sm:text-base leading-relaxed space-y-5 font-semibold font-sans">
+                <p className="text-lg font-bold text-brand-ink">
+                  Most people think Bobby's Bun Factory is about cinnamon rolls.
+                </p>
+                <p className="text-brand-terracotta font-black tracking-wide uppercase text-xs">
+                  It isn't.
+                </p>
+                <p className="text-xl serif font-black text-brand-ink italic">
+                  It's about second chances.
+                </p>
+                <p>
+                  A few years ago I made the decision to rebuild my life. I quit drinking. I left behind habits that weren't helping me become the man I wanted to be. I started focusing on my faith, my family, my health, and building something that would outlive me.
+                </p>
+                <p>
+                  I didn't want another business that only made money.
+                </p>
+                <p className="text-brand-ink font-bold">
+                  I wanted one that made people smile.
+                </p>
+                <p>
+                  So I started baking.
+                </p>
+                <p>
+                  One recipe became another. Then another. Late nights turned into early mornings, and before long friends and family were asking for more.
+                </p>
+                <p>
+                  That's when Bobby's Bun Factory was born.
+                </p>
+                <p className="text-brand-ochre font-black uppercase text-xs tracking-wider pt-2">
+                  Today every bun is still made with the same mindset:
+                </p>
+                <ul className="space-y-2 pl-4 border-l-2 border-brand-terracotta/30 italic text-brand-ink">
+                  <li className="font-bold">• Do it right.</li>
+                  <li className="font-bold">• Never cut corners.</li>
+                  <li className="font-bold">• Treat people well.</li>
+                  <li className="font-bold">• Create something worth sharing.</li>
+                </ul>
+                <p>
+                  Our fruit caviars are made in-house. Our frosting is made from our own recipe. Every batch is baked fresh because that's how we'd make it for our own family.
+                </p>
+                <p className="text-brand-terracotta font-black text-base italic">
+                  This isn't just dessert.
+                </p>
+                <p>
+                  It's proof that good things can come from starting over.
+                </p>
+                <p>
+                  And this is only the beginning.
+                </p>
+                <p>
+                  One day we hope to see Bun Factories across the country, helping other families build businesses and communities one cinnamon roll at a time.
+                </p>
+                <p className="text-brand-ink font-bold">
+                  Until then...
+                </p>
+                <p>
+                  Welcome to our kitchen.
+                </p>
+                <p className="font-bold">
+                  We're glad you're here.
+                </p>
+              </div>
+
+              <div className="border-t border-brand-sand/40 pt-6 flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-full bg-brand-terracotta/10 flex items-center justify-center text-brand-terracotta text-xl font-bold italic">
+                  B
+                </div>
+                <div>
+                  <span className="serif text-sm font-black text-brand-ink block leading-none">— Bobby</span>
+                  <span className="mono text-[8px] text-zinc-400 font-bold uppercase tracking-wider">Founder & Master Swirler</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Seductive Money Shot Picture */}
+            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group border-4 border-brand-cream animate-in fade-in slide-in-from-right duration-700">
+              <img 
+                src={velvetAppleBunHalf} 
+                alt="Bobby's Premium Secret Frosting with Fruit Caviar Sweet Buns" 
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/70 via-transparent to-transparent flex items-end p-8">
+                <div>
+                  <span className="mono text-brand-ochre text-[9px] font-black uppercase tracking-widest block mb-1">Today's Star Feature</span>
+                  <span className="serif text-2xl font-black text-brand-cream animate-pulse">Milk, Cookies, Secret Frost & Caviar</span>
+                  <p className="text-[10px] text-zinc-300 font-medium font-mono mt-1">Featuring our signature Georgia Apple Bun, cut in half to show the perfect pull-apart swirl</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Quiet brand ending sentence */}
+          <div className="mt-24 pt-10 border-t border-brand-sand/30 text-center max-w-2xl mx-auto animate-in fade-in duration-1000 delay-300">
+            <p className="serif text-lg md:text-2xl text-brand-ink/80 italic font-medium leading-relaxed">
+              "Every great bakery starts with a single recipe. Ours started with a decision to become better."
+            </p>
+          </div>
+
+        </div>
+      )}
 
     </div>
   );

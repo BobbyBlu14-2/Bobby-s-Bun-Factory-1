@@ -116,6 +116,16 @@ export const FlavorsCarousel: React.FC<FlavorsCarouselProps> = ({ onAddFlavor })
                         <Sparkles className="w-2.5 h-2.5 shrink-0" />
                         <span>{badge}</span>
                       </span>
+                      {flavor.id === 'peach-outlaw' && (
+                        <span className="bg-brand-terracotta text-brand-cream text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-none shadow-md flex items-center space-x-1 border border-brand-cream/10 animate-pulse">
+                          <span>🔥 Most Ordered</span>
+                        </span>
+                      )}
+                      {flavor.id === 'loaded-bun' && (
+                        <span className="bg-brand-ochre text-brand-ink text-[8px] font-black uppercase tracking-widest px-2.5 py-1 rounded-none shadow-md flex items-center space-x-1 border border-brand-ink/10">
+                          <span>🏆 Customer Favorite</span>
+                        </span>
+                      )}
                     </div>
                     <div className="absolute top-4 right-4 z-10">
                       <span className="bg-brand-terracotta text-brand-cream text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-none shadow-md">

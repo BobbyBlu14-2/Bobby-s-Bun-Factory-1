@@ -95,11 +95,17 @@ const Home: React.FC<HomeProps> = ({
           viewport={{ once: true }}
           className="max-w-5xl mx-auto"
         >
-          <div className="mb-10 flex justify-center">
-             <div className="bg-brand-ochre/10 backdrop-blur-xl px-8 py-2 border border-brand-ochre/20">
+          <div className="mb-10 flex flex-col items-center gap-4">
+             <div className="bg-brand-ochre/10 backdrop-blur-xl px-8 py-2 border border-brand-ochre/20 rounded-lg">
                 <span className="mono text-brand-ochre text-[10px] font-black uppercase tracking-[0.2em]">
                   Warning: These buns ruin relationships with grocery store cinnamon rolls.
                 </span>
+             </div>
+             
+             {/* Saturday Drop Scarcity Badge */}
+             <div className="inline-flex items-center space-x-2 bg-brand-terracotta/15 border border-brand-terracotta/25 px-5 py-2 text-brand-terracotta text-[9px] sm:text-[10px] uppercase font-black tracking-[0.25em] rounded-full">
+                <span className="inline-block w-2 h-2 rounded-full bg-brand-terracotta animate-ping mr-1" />
+                <span>Welcome to the Bun Club • Fresh Every Saturday • Small Batches Only</span>
              </div>
           </div>
           <h2 className="serif text-5xl md:text-[8rem] font-black text-brand-cream mb-10 leading-[0.8] tracking-tighter">
@@ -126,6 +132,57 @@ const Home: React.FC<HomeProps> = ({
             </button>
           </div>
         </motion.div>
+      </section>
+
+      {/* High-Impact Social Proof / Testimonials Row */}
+      <section className="bg-white border-y border-brand-sand/30 py-12 overflow-hidden select-none">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col items-center justify-center text-center mb-8">
+            <div className="flex items-center space-x-1 text-brand-terracotta mb-2">
+              <span className="text-xl">★</span>
+              <span className="text-xl">★</span>
+              <span className="text-xl">★</span>
+              <span className="text-xl">★</span>
+              <span className="text-xl">★</span>
+            </div>
+            <p className="mono text-brand-ochre text-[10px] font-extrabold uppercase tracking-widest">Trusted By Thousands of Bun Lovers • 4.9/5 stars</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
+              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                "The fluffiest cinnamon roll I've ever had in my entire life. Literally worth every single calorie."
+              </p>
+              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Marcus D.</span>
+                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Verified Fan</span>
+              </div>
+            </div>
+            
+            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all relative">
+              <div className="absolute -top-3 right-4 bg-brand-ochre text-brand-ink text-[7px] font-black uppercase tracking-widest px-2.5 py-1 shadow-md">
+                🏆 Top Rated
+              </div>
+              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                "The Peach Outlaw is Georgia gold. You can taste that everything is slow-simmered in-house with absolutely no shortcuts!"
+              </p>
+              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Sarah L.</span>
+                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Peach Addict</span>
+              </div>
+            </div>
+            
+            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
+              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                "Once they are sold out, they're sold out until next Saturday. I have to set an alarm because they go in minutes!"
+              </p>
+              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Jason K.</span>
+                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Sat Club</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Flavors of the Month Carousel */}
@@ -175,6 +232,8 @@ const Home: React.FC<HomeProps> = ({
             </div>
           </div>
         </section>
+
+
 
         {/* Premium Fullscreen Lightbox Modal */}
         <AnimatePresence>
@@ -330,6 +389,33 @@ const Home: React.FC<HomeProps> = ({
               <span>Explore Full Apothecary Flavor Specialties</span>
               <ArrowRight className="w-4 h-4" />
             </a>
+          </div>
+        </section>
+
+        {/* The Bobby's Promise Section */}
+        <section className="mt-32 bg-brand-ink text-brand-cream py-16 px-8 md:px-16 border border-brand-ochre/15 rounded-[3.5rem] shadow-2xl overflow-hidden relative">
+          <div className="absolute -top-10 -right-10 opacity-5 rotate-12 pointer-events-none">
+            <GearLogo className="w-64 h-64" />
+          </div>
+          
+          <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+            <div className="inline-flex items-center space-x-2 bg-brand-ochre/10 border border-brand-ochre/20 px-4 py-1.5 rounded-full">
+              <span className="text-brand-ochre text-sm">🤝</span>
+              <span className="mono text-brand-ochre text-[9px] uppercase font-black tracking-widest">Trust & Family Heritage</span>
+            </div>
+            
+            <h3 className="serif text-4xl md:text-5xl font-black tracking-tight text-brand-cream">The Bobby’s Promise</h3>
+            
+            <p className="text-lg md:text-xl text-brand-cream/80 max-w-2xl mx-auto font-medium leading-relaxed">
+              Every Bun is baked fresh. Every topping is made in-house. No frozen shortcuts. <br className="hidden md:inline" />
+              <span className="text-brand-ochre italic font-semibold">"If it isn't good enough for our family, it doesn't leave the kitchen."</span>
+            </p>
+            
+            <div className="flex items-center justify-center space-x-4 pt-4">
+              <div className="w-16 h-[1px] bg-brand-ochre/35" />
+              <span className="mono text-[8px] text-[#FFFBF5]/60 uppercase tracking-[0.3em] font-bold">Baked Fresh & Simmered Lovingly</span>
+              <div className="w-16 h-[1px] bg-brand-ochre/35" />
+            </div>
           </div>
         </section>
 

@@ -24,6 +24,150 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
   const paymentsRef = useRef<any>(null);
   const cardRef = useRef<any>(null);
 
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('BluMarketingGrp@gmail.com'); // Default to the active user's email
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number; type: 'percent' | 'fixed'; description: string } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
+  const discountAmount = React.useMemo(() => {
+    if (!appliedPromo) return 0;
+    
+    const code = appliedPromo.code;
+    if (code === 'BUNS10' || code === 'BUN10') {
+      return total * 0.10;
+    }
+    if (code === 'STICKY20' || code === 'SWEETSIN20') {
+      return total * 0.20;
+    }
+    if (code === 'SECRET5') {
+      return 5;
+    }
+    
+    if (code === 'FIRST6') {
+      const has6Pack = items.some(item => 
+        item.product.id.toLowerCase().includes('6pack') || 
+        item.product.name.toLowerCase().includes('6-pack') || 
+        item.product.name.toLowerCase().includes('6 pack')
+      );
+      return has6Pack ? 5 : 0;
+    }
+    
+    if (code === 'FREEDUO' || code === 'DUOFREE') {
+      const hasDuo = items.some(item => 
+        item.product.id.toLowerCase().includes('petit-duo') || 
+        item.product.name.toLowerCase().includes('petit duo') ||
+        item.product.name.toLowerCase().includes('petit duos')
+      );
+      return hasDuo ? 5 : 0;
+    }
+    
+    if (code === 'FRUFRU10' || code === 'CAVIARGRANDE1') {
+      const fruFruItems = items.filter(item => 
+        item.product.type === 'jar' ||
+        item.product.name.toLowerCase().includes('caviar') ||
+        item.product.name.toLowerCase().includes('duo') ||
+        item.product.name.toLowerCase().includes('frost') ||
+        item.modifier !== null
+      );
+      if (fruFruItems.length > 0) {
+        const fruFruSubtotal = fruFruItems.reduce((acc, item) => 
+          acc + (item.product.price + (item.modifier?.price || 0)) * item.quantity, 0
+        );
+        return fruFruSubtotal * 0.10;
+      }
+      return 0;
+    }
+    
+    return 0;
+  }, [appliedPromo, items, total]);
+  
+  const activeTotal = Math.max(0, total - discountAmount);
+
+  const handleApplyPromo = () => {
+    setPromoError(null);
+    const code = promoCode.trim().toUpperCase();
+    if (!code) {
+      setPromoError("Enter a code first");
+      return;
+    }
+
+    if (code === 'BUNS10' || code === 'BUN10') {
+      setAppliedPromo({
+        code,
+        discount: 10,
+        type: 'percent',
+        description: '10% Off Your Entire Indulgence'
+      });
+    } else if (code === 'STICKY20' || code === 'SWEETSIN20') {
+      setAppliedPromo({
+        code,
+        discount: 20,
+        type: 'percent',
+        description: '20% Off Sweet Temptation'
+      });
+    } else if (code === 'SECRET5') {
+      setAppliedPromo({
+        code,
+        discount: 5,
+        type: 'fixed',
+        description: '$5.00 Off Hand-crafted Buns'
+      });
+    } else if (code === 'FIRST6') {
+      const has6Pack = items.some(item => 
+        item.product.id.toLowerCase().includes('6pack') || 
+        item.product.name.toLowerCase().includes('6-pack') || 
+        item.product.name.toLowerCase().includes('6 pack')
+      );
+      if (!has6Pack) {
+        setPromoError("Add a 6-Pack Box to your order to get $5.00 off with code FIRST6!");
+        return;
+      }
+      setAppliedPromo({
+        code,
+        discount: 5,
+        type: 'fixed',
+        description: '$5.00 Off Your 6-Pack Box'
+      });
+    } else if (code === 'FREEDUO' || code === 'DUOFREE') {
+      const hasDuo = items.some(item => 
+        item.product.id.toLowerCase().includes('petit-duo') || 
+        item.product.name.toLowerCase().includes('petit duo') ||
+        item.product.name.toLowerCase().includes('petit duos')
+      );
+      if (!hasDuo) {
+        setPromoError("Add 'Le Petit Duo' to your cart to get it FREE with code " + code + "!");
+        return;
+      }
+      setAppliedPromo({
+        code,
+        discount: 5,
+        type: 'fixed',
+        description: 'Free Le Petit Duo Cup Combo'
+      });
+    } else if (code === 'FRUFRU10' || code === 'CAVIARGRANDE1') {
+      const fruFruItems = items.filter(item => 
+        item.product.type === 'jar' ||
+        item.product.name.toLowerCase().includes('caviar') ||
+        item.product.name.toLowerCase().includes('duo') ||
+        item.product.name.toLowerCase().includes('frost') ||
+        item.modifier !== null
+      );
+      if (fruFruItems.length === 0) {
+        setPromoError("Add any Jar or Caviar/Duo Upgrade to activate 10% off Fru Fru category discount!");
+        return;
+      }
+      setAppliedPromo({
+        code,
+        discount: 10,
+        type: 'percent',
+        description: '10% Off Fru Fru Caviar / Jars'
+      });
+    } else {
+      setPromoError("Invalid whisper code");
+    }
+  };
+
   useEffect(() => {
     // Fetch real-time config from backend to ensure we see secret updates
     fetch('/api/config')
@@ -113,7 +257,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             sourceId: result.token,
-            amount: total,
+            amount: activeTotal,
             locationId: locationId,
           }),
         });
@@ -140,10 +284,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
             type: 'pickup' as const,
             status: 'Ready & Collected • Clean Cook',
             items: orderItemsFormatted,
-            subtotal: total * 0.9,
-            discount: 0,
-            tax: total * 0.1,
-            total: total,
+            subtotal: activeTotal * 0.9,
+            discount: discountAmount,
+            tax: activeTotal * 0.1,
+            total: activeTotal,
             pickupTime: pickupDate || 'Within 45 Minutes',
             address: 'Atlanta Factory #04'
           };
@@ -260,7 +404,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                   <div className="pt-12 border-t border-brand-ochre/10 flex justify-between items-end">
                     <div>
                       <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.4em]">Your Total Desires</span>
-                      <p className="serif text-6xl font-black text-brand-cream mt-2">${total.toFixed(2)}</p>
+                      {appliedPromo ? (
+                        <div className="mt-2 flex items-baseline space-x-4">
+                          <p className="serif text-6xl font-black text-brand-cream">${activeTotal.toFixed(2)}</p>
+                          <p className="serif text-2xl font-bold text-brand-cream/30 line-through">${total.toFixed(2)}</p>
+                        </div>
+                      ) : (
+                        <p className="serif text-6xl font-black text-brand-cream mt-2">${total.toFixed(2)}</p>
+                      )}
                     </div>
                     <div className="h-12 w-1 bg-brand-terracotta" />
                   </div>
@@ -339,7 +490,77 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                       </div>
                     )}
 
-                    <div className="space-y-4">
+                     {/* Contact & Verification Section */}
+                     <div className="space-y-4">
+                       <label className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Contact & Verification</label>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <div>
+                           <input
+                             type="text"
+                             required
+                             value={fullName}
+                             onChange={(e) => setFullName(e.target.value)}
+                             placeholder="Full Name"
+                             className="w-full bg-brand-ink text-brand-cream placeholder:text-brand-cream/35 border border-brand-ochre/15 px-4 py-3.5 font-mono text-xs focus:outline-none focus:border-brand-terracotta transition-colors rounded-none"
+                           />
+                         </div>
+                         <div>
+                           <input
+                             type="email"
+                             required
+                             value={email}
+                             onChange={(e) => setEmail(e.target.value)}
+                             placeholder="Email Address"
+                             className="w-full bg-brand-ink text-brand-cream placeholder:text-brand-cream/35 border border-brand-ochre/15 px-4 py-3.5 font-mono text-xs focus:outline-none focus:border-brand-terracotta transition-colors rounded-none"
+                           />
+                         </div>
+                       </div>
+                     </div>
+
+                     {/* Promotion Code Section */}
+                     <div className="space-y-3 pt-2">
+                       <label className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Whisper Promo Code</label>
+                       <div className="flex space-x-2">
+                         <input
+                           type="text"
+                           value={promoCode}
+                           onChange={(e) => setPromoCode(e.target.value)}
+                           placeholder="e.g. BUNS10, STICKY20"
+                           className="flex-1 bg-brand-ink text-brand-cream placeholder:text-brand-cream/35 border border-brand-ochre/15 px-4 py-3 font-mono text-xs focus:outline-none focus:border-brand-terracotta transition-colors rounded-none uppercase"
+                         />
+                         <button
+                           type="button"
+                           onClick={handleApplyPromo}
+                           className="bg-brand-terracotta text-brand-cream hover:bg-brand-ochre hover:text-brand-ink px-6 py-3 font-mono text-[10px] font-black uppercase tracking-wider transition-colors duration-200"
+                         >
+                           Apply
+                         </button>
+                       </div>
+                       
+                       {promoError && (
+                         <p className="text-[10px] mono text-brand-terracotta font-bold ml-1">{promoError}</p>
+                       )}
+                       {appliedPromo && (
+                         <div className="bg-brand-ochre/10 border border-brand-ochre/30 p-3 flex justify-between items-center animate-in fade-in slide-in-from-top-1">
+                           <div>
+                             <p className="mono text-[9px] text-brand-terracotta font-black uppercase">Promo Applied</p>
+                             <p className="serif text-xs text-brand-ink font-bold">{appliedPromo.description} ({appliedPromo.code})</p>
+                           </div>
+                           <button
+                             type="button"
+                             onClick={() => {
+                               setAppliedPromo(null);
+                               setPromoCode('');
+                             }}
+                             className="text-[10px] mono font-bold text-brand-terracotta hover:underline uppercase"
+                           >
+                             Remove
+                           </button>
+                         </div>
+                       )}
+                     </div>
+
+                     <div className="space-y-4">
                        <span className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Card Authentication Module</span>
                        <div 
                         id="card-container" 
