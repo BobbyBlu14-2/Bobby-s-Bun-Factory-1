@@ -1,0 +1,9 @@
+[
+  {
+    "type": "contact",
+    "timestamp": "2026-07-08T15:53:44.523Z",
+    "name": "Local Contact Verification",
+    "email": "contact_verified@server.com",
+    "message": "Hello from the backend!"
+  }
+]
