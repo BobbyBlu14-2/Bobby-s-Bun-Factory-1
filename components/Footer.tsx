@@ -54,6 +54,7 @@ const Footer: React.FC = () => {
             <div className="flex flex-col space-y-4">
               <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">The Boudoir</span>
               <Link to="/shop" className="text-sm font-bold text-brand-ochre hover:text-brand-cream transition-colors flex items-center gap-1.5">Shop Jars <span className="bg-brand-terracotta text-white text-[8px] font-mono px-1 py-0.2 rounded font-black uppercase scale-90">NEW</span></Link>
+              <Link to="/catering" className="text-sm font-bold hover:text-brand-ochre transition-colors">Events & Catering</Link>
               <Link to="/about" className="text-sm font-bold hover:text-brand-ochre transition-colors">Our Lineage</Link>
               <Link to="/locations" className="text-sm font-bold hover:text-brand-ochre transition-colors">Sweet Spots</Link>
               <Link to="/franchise" className="text-sm font-bold hover:text-brand-ochre transition-colors">Sweet Ventures</Link>

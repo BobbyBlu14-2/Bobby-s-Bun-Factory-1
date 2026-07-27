@@ -12,6 +12,7 @@ import About from './pages/About';
 import Locations from './pages/Locations';
 import Franchise from './pages/Franchise';
 import Contact from './pages/Contact';
+import Catering from './pages/Catering';
 import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Privacy from './pages/Privacy';
@@ -214,6 +215,7 @@ const App: React.FC = () => {
             } 
           />
           <Route path="/about" element={<About />} />
+          <Route path="/catering" element={<Catering />} />
           <Route path="/locations" element={<Locations />} />
           <Route path="/franchise" element={<Franchise />} />
           <Route path="/contact" element={<Contact />} />

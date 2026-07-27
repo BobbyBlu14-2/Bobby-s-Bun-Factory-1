@@ -338,7 +338,113 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
     res.json({ success: true, savedLocally: true, forwardedToSheets: !!webhookUrl });
   });
 
-  // Vite middleware for development
+  // Google Sheets Submission & Local Storage Endpoint for Catering Quote Request Form
+  app.post("/api/submit-catering", async (req, res) => {
+    const { name, email, phone, eventType, eventDate, guestCount, productsInterested, message } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ error: "Name and email are required." });
+    }
+
+    const payload = {
+      type: "catering",
+      timestamp: new Date().toISOString(),
+      name,
+      email,
+      phone: phone || "Not provided",
+      eventType: eventType || "General Event",
+      eventDate: eventDate || "TBD",
+      guestCount: guestCount || "Not specified",
+      productsInterested: Array.isArray(productsInterested) ? productsInterested.join(", ") : (productsInterested || "None"),
+      message: message || "No extra message"
+    };
+
+    try {
+      const filePath = path.join(process.cwd(), "submissions_catering.json");
+      let existing: any[] = [];
+      try {
+        const fileData = await fs.readFile(filePath, "utf-8");
+        existing = JSON.parse(fileData);
+      } catch (err) {
+        // File doesn't exist yet
+      }
+      existing.push(payload);
+      await fs.writeFile(filePath, JSON.stringify(existing, null, 2), "utf-8");
+      console.log("Catering submission saved locally.");
+    } catch (err) {
+      console.error("Failed to save catering submission locally:", err);
+    }
+
+    const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || process.env.VITE_GOOGLE_SHEET_WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const responseText = await response.text();
+        console.log("Google Sheets Webhook Response for Catering:", responseText);
+      } catch (err) {
+        console.error("Failed to forward catering submission to Google Sheets Webhook:", err);
+      }
+    }
+
+    res.json({ success: true, savedLocally: true, forwardedToSheets: !!webhookUrl });
+  });
+
+  // Google Sheets Submission & Local Storage Endpoint for Wholesale Inquiry Form
+  app.post("/api/submit-wholesale", async (req, res) => {
+    const { businessName, contactName, email, phone, businessType, weeklyQuantity, message } = req.body;
+    if (!businessName || !contactName || !email) {
+      return res.status(400).json({ error: "Business name, contact name, and email are required." });
+    }
+
+    const payload = {
+      type: "wholesale",
+      timestamp: new Date().toISOString(),
+      businessName,
+      contactName,
+      name: contactName,
+      email,
+      phone: phone || "Not provided",
+      businessType: businessType || "Coffee Shop",
+      weeklyQuantity: weeklyQuantity || "Unspecified",
+      message: message || "No message"
+    };
+
+    try {
+      const filePath = path.join(process.cwd(), "submissions_wholesale.json");
+      let existing: any[] = [];
+      try {
+        const fileData = await fs.readFile(filePath, "utf-8");
+        existing = JSON.parse(fileData);
+      } catch (err) {
+        // File doesn't exist yet
+      }
+      existing.push(payload);
+      await fs.writeFile(filePath, JSON.stringify(existing, null, 2), "utf-8");
+      console.log("Wholesale submission saved locally.");
+    } catch (err) {
+      console.error("Failed to save wholesale submission locally:", err);
+    }
+
+    const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || process.env.VITE_GOOGLE_SHEET_WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        const response = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const responseText = await response.text();
+        console.log("Google Sheets Webhook Response for Wholesale:", responseText);
+      } catch (err) {
+        console.error("Failed to forward wholesale submission to Google Sheets Webhook:", err);
+      }
+    }
+
+    res.json({ success: true, savedLocally: true, forwardedToSheets: !!webhookUrl });
+  });
   // We strictly avoid Vite middleware if running under cPanel Passenger or if PASSENGER_APP_ENV is defined
   const isPassenger = !!process.env.PASSENGER_APP_ENV || !!process.env.PASSENGER_ENV;
   const forceProduction = isPassenger || process.env.NODE_ENV === "production";

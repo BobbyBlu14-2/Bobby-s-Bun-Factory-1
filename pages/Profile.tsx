@@ -645,7 +645,7 @@ const Profile: React.FC<{ currentUser: string | null; onOpenAuth: () => void }> 
                         <span>Free Petit Frost (3.5 oz)</span>
                         <span className="text-[9px] font-semibold text-brand-terracotta px-1.5 py-0.2 bg-brand-terracotta/5 rounded-full border border-brand-terracotta/10">350 Pts</span>
                       </div>
-                      <p className="text-zinc-500 text-[10px]">A free cup of Bobby's Secret Frost whip served in our airtight black plastic cup.</p>
+                      <p className="text-zinc-500 text-[10px]">A free cup of Secret Frost whip served in our airtight black plastic cup.</p>
                     </div>
                   </div>
                   <span className={`mono text-[9px] uppercase tracking-wider font-extrabold ${

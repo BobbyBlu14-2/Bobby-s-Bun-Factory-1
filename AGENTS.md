@@ -24,7 +24,7 @@ Toppings are divided strictly into **Standard** and **Premium** tiers:
     *   **Cookies & Cream (Oreo)**: Crushed cookies & cream sand layered in sweet vanilla glaze.
 
 ### B. Frosting Packaging Guidelines
-Bobby's Secret Frost (our signature cream whip) is served in strictly designated packaging sizes:
+Secret Frost (our signature cream whip) is served in strictly designated packaging sizes:
 
 1.  **Petit Frost (3.5 oz)**: Served in a **black plastic cup** with an airtight lid (not a glass jar).
 2.  **Coupe de Frost (8 oz)**: Served in an elegant custom **glass jar**.

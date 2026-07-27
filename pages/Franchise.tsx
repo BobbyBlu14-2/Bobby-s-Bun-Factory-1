@@ -630,7 +630,7 @@ const Franchise: React.FC = () => {
             <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group border-4 border-brand-cream animate-in fade-in slide-in-from-right duration-700">
               <img 
                 src={velvetAppleBunHalf} 
-                alt="Bobby's Premium Secret Frosting with Fruit Caviar Sweet Buns" 
+                alt="Premium Secret Frosting with Fruit Caviar Sweet Buns" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />

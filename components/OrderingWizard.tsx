@@ -729,7 +729,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       <p className="text-[11px] text-brand-cream/60 leading-normal mt-4">
                         {selectedSize === 'single'
                           ? 'Secret Frost. Clean. Easy. Always right.'
-                          : 'Four or six classic buns drenched in Bobby’s velvety vanilla Secret Frost cream whip.'}
+                          : 'Four or six classic buns drenched in velvety vanilla Secret Frost cream whip.'}
                       </p>
                     </button>
 
@@ -1259,7 +1259,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                     <div className="space-y-4 pt-6">
                       <div className="flex items-center gap-4">
                         <span className="serif text-lg font-black text-brand-cream shrink-0">
-                          Bobby's Secret Frost Jars & Cups
+                          Secret Frost Jars & Cups
                         </span>
                         <div className="h-[1px] bg-brand-ochre/25 flex-grow" />
                         <span className="mono text-[8px] tracking-widest text-[#FDF6F0] uppercase bg-brand-cream/10 px-2 py-0.5 rounded font-bold">

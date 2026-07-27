@@ -69,6 +69,7 @@ const Header: React.FC<HeaderProps> = ({
           <Link to="/shop" className="text-brand-terracotta hover:text-brand-terracotta flex items-center gap-1 font-bold hover:tracking-[0.3em] transition-all">
             The Jars <span className="bg-brand-terracotta text-white text-[8px] font-mono px-1 py-0.2 rounded font-black uppercase scale-90">NEW</span>
           </Link>
+          <Link to="/catering" className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">Events & Catering</Link>
           <Link to="/franchise" className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">Meet Bobby</Link>
           <Link to="/locations" className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">The Pull Up</Link>
           <Link to="/contact" className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">Talk Sweet to Us</Link>
@@ -157,6 +158,13 @@ const Header: React.FC<HeaderProps> = ({
             >
               <span>The Jars</span>
               <span className="bg-brand-terracotta text-white text-[8px] font-mono px-2 py-0.5 rounded font-black uppercase">NEW</span>
+            </Link>
+            <Link 
+              to="/catering" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              Events & Catering
             </Link>
             <Link 
               to="/franchise" 

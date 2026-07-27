@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ZoomIn, X, Check, Plus, Sparkles, ArrowRight, Filter, Droplet } from 'lucide-react';
 import OrderTypeSelector from '../components/OrderTypeSelector';
@@ -116,10 +117,10 @@ const Home: React.FC<HomeProps> = ({
           <p className="text-brand-cream/70 text-lg md:text-2xl max-w-3xl mx-auto font-medium mb-16 leading-relaxed">
             Extra fluffy cinnamon rolls layered with brown sugar chaos, secret frost, and just enough attitude to keep you thinking about us at 2AM.
           </p>
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8">
             <button 
               onClick={() => document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group relative bg-brand-cream text-brand-ink px-16 py-6 rounded-none font-black uppercase tracking-widest text-xs shadow-2xl transition-all overflow-hidden"
+              className="group relative bg-brand-cream text-brand-ink px-12 py-6 rounded-none font-black uppercase tracking-widest text-xs shadow-2xl transition-all overflow-hidden"
             >
               <div className="absolute inset-0 steam-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <span className="relative z-10">Build Your Box</span>
@@ -130,6 +131,12 @@ const Home: React.FC<HomeProps> = ({
             >
               Get Sticky
             </button>
+            <Link 
+              to="/catering"
+              className="mono text-brand-cream text-xs font-black uppercase tracking-widest hover:text-brand-ochre transition-colors border-b-2 border-brand-cream/30 pb-2 cursor-pointer"
+            >
+              Catering
+            </Link>
           </div>
         </motion.div>
       </section>

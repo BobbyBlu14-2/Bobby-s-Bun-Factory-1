@@ -64,7 +64,7 @@ export const Shop: React.FC<ShopProps> = ({ handleAddToCart }) => {
           <div className="w-24 h-[2px] bg-brand-terracotta" />
           <p className="text-brand-ink/75 text-sm md:text-base leading-relaxed">
             By popular demand, our formulaic master stocks are now available as bonus add-ons. 
-            Acquire Bobby's signature <span className="font-bold text-brand-terracotta">Secret Frost jars</span> or 
+            Acquire our signature <span className="font-bold text-brand-terracotta">Secret Frost jars</span> or 
             meticulously slow-simmered <span className="font-bold text-brand-ochre">Fruit Caviars</span> in simple, curated sizing. 
             Dip, spoon, or drench at home.
           </p>

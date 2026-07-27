@@ -99,7 +99,7 @@ const Contact: React.FC = () => {
       image: flavorPeach,
       likes: 982,
       commentsCount: 47,
-      caption: "Dacula peach chunks caramelized to gooey brown-sugar perfection, layered under Bobby's Secret Frost. Pure cobbler energy. 🍑🔥",
+      caption: "Dacula peach chunks caramelized to gooey brown-sugar perfection, layered under Secret Frost. Pure cobbler energy. 🍑🔥",
       tags: ["#thepeachoutlaw", "#seasonalflavor", "#georgiapeaches"],
       date: "1 DAY AGO",
       comments: [

@@ -21,6 +21,9 @@ export { default as singleFruitCaviarBun } from './src/assets/images/single_frui
 export { default as chocolateCherryCaviar } from './src/assets/images/cherry_bomb_roll_1781638531994.jpg';
 export { default as cookiesCreamTopping } from './src/assets/images/cookies_cream_roll_1781638548197.jpg';
 export { default as fourPackCaviarUpgrade } from './src/assets/images/four_pack_caviar_upgrade_1781735237944.jpg';
+export { default as cateringHeroSpread } from './src/assets/images/catering_hero_spread_1784912007707.jpg';
+export { default as jumboComparisonTray } from './src/assets/images/jumbo_comparison_tray_1784982911022.jpg';
+export { default as miniBunTraySide } from './src/assets/images/mini_bun_tray_side_1785015555305.jpg';
 
 import classicFrosting from './src/assets/images/classic_frosting_1779749364471.png';
 import lemonFrosting from './src/assets/images/lemon_frosting_1779749381826.png';
@@ -84,7 +87,7 @@ export const FLAVORS_OF_THE_MONTH: Product[] = [
   {
     id: 'peach-outlaw',
     name: 'Georgia Peach',
-    description: 'Fresh succulent local Dacula peach chunks caramelized in brown sugar, piled high over warm rolls and drenched in Bobby’s Secret Frost.',
+    description: 'Fresh succulent local Dacula peach chunks caramelized in brown sugar, piled high over warm rolls and drenched in Secret Frost.',
     price: 6.50,
     image: flavorPeach,
     type: 'bun',
@@ -160,7 +163,7 @@ export const CHOOSE_YOUR_BUN: Product[] = [
 export const SECRET_FROST: Product[] = [
   {
     id: 'frost-mini',
-    name: 'Bobby’s Secret Frost — Mini',
+    name: 'Secret Frost — Mini',
     description: 'A lil’ dip never hurt nobody.',
     price: 1.50,
     image: 'https://images.unsplash.com/photo-1579372781848-69160419266e?q=80&w=800&auto=format&fit=crop',
