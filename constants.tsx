@@ -24,6 +24,7 @@ export { default as fourPackCaviarUpgrade } from './src/assets/images/four_pack_
 export { default as cateringHeroSpread } from './src/assets/images/catering_hero_spread_1784912007707.jpg';
 export { default as jumboComparisonTray } from './src/assets/images/jumbo_comparison_tray_1784982911022.jpg';
 export { default as miniBunTraySide } from './src/assets/images/mini_bun_tray_side_1785015555305.jpg';
+export { default as duoFeaturedDuoSet } from './src/assets/images/rendezvous_open_gift_set_1786200355527.jpg';
 
 import classicFrosting from './src/assets/images/classic_frosting_1779749364471.png';
 import lemonFrosting from './src/assets/images/lemon_frosting_1779749381826.png';

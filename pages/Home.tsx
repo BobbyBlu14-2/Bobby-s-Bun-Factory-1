@@ -2,14 +2,79 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ZoomIn, X, Check, Plus, Sparkles, ArrowRight, Filter, Droplet } from 'lucide-react';
+import { ZoomIn, X, Check, Plus, Sparkles, ArrowRight, Filter, Droplet, Star } from 'lucide-react';
 import OrderTypeSelector from '../components/OrderTypeSelector';
 import FlavorAssistant from '../components/FlavorAssistant';
 import GearLogo from '../components/GearLogo';
 import OrderingWizard from '../components/OrderingWizard';
 import FlavorsCarousel from '../components/FlavorsCarousel';
 import { Product, OrderType, CartItem } from '../types';
-import { JAR_PRODUCTS } from '../constants';
+import { JAR_PRODUCTS, duoFeaturedDuoSet } from '../constants';
+
+const RENDEZVOUS_VARIANTS = [
+  {
+    id: 'little',
+    name: 'Little Rendezvous',
+    description: 'Two classic frosted rolls + 1 petite companion jar',
+    price: 15.00,
+    rollsCountNum: 2,
+    jarsCountNum: 1,
+    rollsCount: '2 Rolls + 1 Jar',
+    badge: 'Classic Starter'
+  },
+  {
+    id: 'rendezvous',
+    name: 'The Rendezvous',
+    description: 'Two oversized cinnamon rolls, choice of 2 Fru-Fru Caviar flavors + 2 petite jars to take home',
+    price: 18.00,
+    rollsCountNum: 2,
+    jarsCountNum: 2,
+    rollsCount: '2 Rolls + 2 Jars',
+    badge: 'Signature Duo'
+  },
+  {
+    id: 'datenight',
+    name: 'Date Night Rendezvous',
+    description: 'Upgraded gift packaging, 2 caviar rolls + 4 petite jars (or extra Petite Duo)',
+    price: 22.00,
+    rollsCountNum: 2,
+    jarsCountNum: 4,
+    rollsCount: '2 Rolls + 4 Jars',
+    badge: 'Luxury Gift Set'
+  },
+  {
+    id: 'party4',
+    name: 'Party of Four',
+    description: '4 classic rolls + 4 petite companion jars',
+    price: 40.00,
+    rollsCountNum: 4,
+    jarsCountNum: 4,
+    rollsCount: '4 Rolls + 4 Jars',
+    badge: 'Party Share'
+  }
+];
+
+const BUN_FLAVOR_OPTIONS = [
+  'Wild Blueberry Glaze',
+  'Georgia Peach Cobbler',
+  'Chocolate Cherry Bomb',
+  'Velvet Apple Cinnamon',
+  'Cookies & Cream (Oreo)',
+  'Wildberry Forest',
+  'Signature Classic Roll',
+  'Meyer Lemon Whip',
+  'Orange Creamsicle'
+];
+
+const JAR_OPTIONS = [
+  'Secret Frost™ (1/2 oz Signature Cream Whip)',
+  'Strawberry Caviar Reduction (1/2 oz)',
+  'Wildberry Caviar Reduction (1/2 oz)',
+  'Georgia Peach Caviar (1/2 oz)',
+  'Meyer Lemon Cream Whip (1/2 oz)',
+  'Salted Caramel Drizzle (1/2 oz)',
+  'Velvet Apple Spiced Coulis (1/2 oz)'
+];
 
 import trioBunsBuiltDifferent from '../src/assets/images/fancy_buns_caviar_1779751177514.png';
 import classicFrosting from '../src/assets/images/classic_frosting_1779749364471.png';
@@ -34,6 +99,64 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
+  const [rendezvousVariant, setRendezvousVariant] = useState<'little' | 'rendezvous' | 'datenight' | 'party4'>('rendezvous');
+  const [rendezvousAdded, setRendezvousAdded] = useState(false);
+  const [selectedBuns, setSelectedBuns] = useState<string[]>([
+    'Wild Blueberry Glaze',
+    'Georgia Peach Cobbler',
+    'Chocolate Cherry Bomb',
+    'Velvet Apple Cinnamon',
+    'Cookies & Cream (Oreo)',
+    'Wildberry Forest'
+  ]);
+  const [selectedJars, setSelectedJars] = useState<string[]>([
+    'Secret Frost™ (1/2 oz Signature Cream Whip)',
+    'Strawberry Caviar Reduction (1/2 oz)',
+    'Wildberry Caviar Reduction (1/2 oz)',
+    'Georgia Peach Caviar (1/2 oz)',
+    'Meyer Lemon Cream Whip (1/2 oz)',
+    'Salted Caramel Drizzle (1/2 oz)'
+  ]);
+
+  const selectedRendezvousVariant = RENDEZVOUS_VARIANTS.find(v => v.id === rendezvousVariant) || RENDEZVOUS_VARIANTS[1];
+  const rollCount = selectedRendezvousVariant.rollsCountNum;
+  const jarCount = selectedRendezvousVariant.jarsCountNum;
+
+  const handleBunChange = (index: number, value: string) => {
+    setSelectedBuns(prev => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const handleJarChange = (index: number, value: string) => {
+    setSelectedJars(prev => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
+    });
+  };
+
+  const handleAddRendezvous = () => {
+    const activeBuns = selectedBuns.slice(0, rollCount);
+    const activeJars = selectedJars.slice(0, jarCount);
+
+    const product: Product = {
+      id: `rendezvous-${selectedRendezvousVariant.id}-${Date.now()}`,
+      name: `${selectedRendezvousVariant.name}`,
+      description: `${selectedRendezvousVariant.description} — Rolls: ${activeBuns.join(', ')} | Jars: ${activeJars.join(', ')}`,
+      price: selectedRendezvousVariant.price,
+      image: duoFeaturedDuoSet,
+      type: 'bun',
+      tags: ['Featured Special', 'The Rendezvous', selectedRendezvousVariant.rollsCount],
+      color: 'border-brand-ochre/25 text-brand-terracotta bg-orange-50/50'
+    };
+
+    handleAddToCart(product, 1);
+    setRendezvousAdded(true);
+    setTimeout(() => setRendezvousAdded(false), 2000);
+  };
 
   useEffect(() => {
     if (window.location.hash === '#menu-section') {
@@ -141,61 +264,211 @@ const Home: React.FC<HomeProps> = ({
         </motion.div>
       </section>
 
-      {/* High-Impact Social Proof / Testimonials Row */}
-      <section className="bg-white border-y border-brand-sand/30 py-12 overflow-hidden select-none">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col items-center justify-center text-center mb-8">
-            <div className="flex items-center space-x-1 text-brand-terracotta mb-2">
-              <span className="text-xl">★</span>
-              <span className="text-xl">★</span>
-              <span className="text-xl">★</span>
-              <span className="text-xl">★</span>
-              <span className="text-xl">★</span>
+      {/* FEATURED DROP SPOTLIGHT: THE RENDEZVOUS */}
+      <div className="max-w-7xl mx-auto w-full px-6 my-12">
+        <section className="bg-gradient-to-br from-brand-ink via-zinc-900 to-brand-ink text-brand-cream rounded-[3rem] overflow-hidden border-2 border-brand-ochre/40 shadow-2xl p-8 md:p-12 relative">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+            <div className="space-y-1">
+              <div className="inline-flex items-center space-x-2 bg-brand-terracotta text-white px-3.5 py-1 rounded-full text-[9px] font-mono font-black uppercase tracking-[0.2em]">
+                <Sparkles className="w-3 h-3" />
+                <span>Featured Top Drop</span>
+              </div>
+              <h3 className="serif text-3xl md:text-5xl font-black text-white">
+                The <span className="italic text-brand-ochre font-serif">Rendezvous</span>
+              </h3>
             </div>
-            <p className="mono text-brand-ochre text-[10px] font-extrabold uppercase tracking-widest">Trusted By Thousands of Bun Lovers • 4.9/5 stars</p>
+            <p className="text-zinc-300 text-xs md:text-sm max-w-md font-medium leading-relaxed">
+              A decadent tasting set pairing gourmet cinnamon rolls with our hand-crafted 1/2 oz companion topping jars.
+            </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
-              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
-                "The fluffiest cinnamon roll I've ever had in my entire life. Literally worth every single calorie."
-              </p>
-              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
-                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Marcus D.</span>
-                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Verified Fan</span>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Square Photo Container */}
+            <div className="lg:col-span-6">
+              <div className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-brand-cream/20 group">
+                <img 
+                  src={duoFeaturedDuoSet} 
+                  alt="The Rendezvous - Opened Luxury Gift Box with Frosted Rolls & Glass Companion Jars" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute top-4 left-4 bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
+                  <Star className="w-3 h-3 fill-brand-ochre" />
+                  <span>Square Edition Flight</span>
+                </div>
               </div>
             </div>
-            
-            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all relative">
-              <div className="absolute -top-3 right-4 bg-brand-ochre text-brand-ink text-[7px] font-black uppercase tracking-widest px-2.5 py-1 shadow-md">
-                🏆 Top Rated
+
+            {/* Details & Variant Selection */}
+            <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-baseline border-b border-white/10 pb-4">
+                  <div>
+                    <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block mb-1">
+                      Selected Flight Variant
+                    </span>
+                    <h4 className="serif text-2xl font-black text-white">{selectedRendezvousVariant.name}</h4>
+                  </div>
+                  <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
+                    ${selectedRendezvousVariant.price.toFixed(2)}
+                  </span>
+                </div>
+
+                <p className="text-zinc-300 text-xs md:text-sm leading-relaxed">
+                  {selectedRendezvousVariant.description}
+                </p>
+
+                {/* Custom Bun & Jar Dropdown Selection Lists */}
+                <div className="space-y-4 pt-2 border-t border-white/10">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-3.5 h-3.5 text-brand-ochre" />
+                    <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
+                      Customize Your Selection ({rollCount} Rolls & {jarCount} Companion Jars):
+                    </span>
+                  </div>
+
+                  {/* Bun Flavor Choices */}
+                  <div className="space-y-2">
+                    <span className="mono text-[9px] uppercase font-black text-zinc-400 tracking-wider block">
+                      Select {rollCount} Bun Flavors:
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {Array.from({ length: rollCount }).map((_, i) => (
+                        <div key={`bun-select-${i}`} className="space-y-1">
+                          <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
+                            <span>Bun Flavor #{i + 1}</span>
+                            <span className="text-brand-ochre">★ Roll</span>
+                          </label>
+                          <select
+                            value={selectedBuns[i] || BUN_FLAVOR_OPTIONS[0]}
+                            onChange={(e) => handleBunChange(i, e.target.value)}
+                            className="w-full bg-zinc-900 border border-white/20 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer shadow-inner"
+                          >
+                            {BUN_FLAVOR_OPTIONS.map((flavor) => (
+                              <option key={flavor} value={flavor} className="bg-zinc-900 text-white">
+                                {flavor}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Companion Jar Choices */}
+                  <div className="space-y-2 pt-1">
+                    <span className="mono text-[9px] uppercase font-black text-zinc-400 tracking-wider block">
+                      Select {jarCount} Companion Jars (1/2 oz):
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {Array.from({ length: jarCount }).map((_, i) => (
+                        <div key={`jar-select-${i}`} className="space-y-1">
+                          <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
+                            <span>Companion Jar #{i + 1}</span>
+                            <span className="text-brand-terracotta">1/2 oz Jar</span>
+                          </label>
+                          <select
+                            value={selectedJars[i] || JAR_OPTIONS[0]}
+                            onChange={(e) => handleJarChange(i, e.target.value)}
+                            className="w-full bg-zinc-900 border border-white/20 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer shadow-inner"
+                          >
+                            {JAR_OPTIONS.map((jar) => (
+                              <option key={jar} value={jar} className="bg-zinc-900 text-white">
+                                {jar}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Included Items Checklist Dynamic Summary */}
+                <div className="space-y-2 pt-2 border-t border-white/10">
+                  <span className="mono text-[9px] text-zinc-400 uppercase font-black tracking-widest block">
+                    Your Selection Summary ({rollCount} Rolls + {jarCount} Jars):
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-zinc-200">
+                    {selectedBuns.slice(0, rollCount).map((bun, idx) => (
+                      <div key={`summary-bun-${idx}`} className="flex items-center space-x-2 bg-white/5 p-2.5 rounded-xl border border-white/10">
+                        <Check className="w-4 h-4 text-brand-ochre shrink-0" />
+                        <span className="truncate">Roll {idx + 1}: {bun}</span>
+                      </div>
+                    ))}
+                    {selectedJars.slice(0, jarCount).map((jar, idx) => (
+                      <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-white/5 p-2.5 rounded-xl border border-white/10">
+                        <Check className="w-4 h-4 text-brand-ochre shrink-0 text-brand-terracotta" />
+                        <span className="truncate">Jar {idx + 1}: {jar}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Variant Buttons to Match Pricing */}
+                <div className="space-y-2 pt-2">
+                  <span className="mono text-[9px] text-zinc-400 uppercase font-black tracking-widest block">
+                    Choose Size & Pricing Variant:
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    {RENDEZVOUS_VARIANTS.map((variant) => {
+                      const isSelected = rendezvousVariant === variant.id;
+                      return (
+                        <button
+                          key={variant.id}
+                          onClick={() => setRendezvousVariant(variant.id as any)}
+                          className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                            isSelected
+                              ? 'border-brand-terracotta bg-brand-terracotta/20 text-white shadow-lg ring-2 ring-brand-terracotta'
+                              : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="mono text-[8px] font-black uppercase tracking-wider text-brand-ochre">
+                              {variant.badge}
+                            </span>
+                            {isSelected && <Check className="w-3.5 h-3.5 text-brand-terracotta" />}
+                          </div>
+                          <span className="serif text-xs font-black block text-white leading-tight">{variant.name}</span>
+                          <span className="mono text-[10px] text-zinc-400 mt-1">{variant.rollsCount}</span>
+                          <span className="mono text-xs font-black text-brand-ochre mt-2">${variant.price.toFixed(2)}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
-                "The Peach Outlaw is Georgia gold. You can taste that everything is slow-simmered in-house with absolutely no shortcuts!"
-              </p>
-              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
-                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Sarah L.</span>
-                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Peach Addict</span>
-              </div>
-            </div>
-            
-            <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
-              <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
-                "Once they are sold out, they're sold out until next Saturday. I have to set an alarm because they go in minutes!"
-              </p>
-              <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
-                <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Jason K.</span>
-                <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Sat Club</span>
-              </div>
+
+              {/* Add to Box Button */}
+              <button
+                onClick={handleAddRendezvous}
+                className={`w-full py-5 rounded-2xl font-mono font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-xl ${
+                  rendezvousAdded
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-brand-terracotta hover:bg-white hover:text-brand-ink text-white'
+                }`}
+              >
+                {rendezvousAdded ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>✓ Added The Rendezvous to Box!</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    <span>Add The Rendezvous to Box — ${selectedRendezvousVariant.price.toFixed(2)}</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Flavors of the Month Carousel */}
       <FlavorsCarousel onAddFlavor={(product) => handleAddToCart(product, 1)} />
 
       <div className="max-w-7xl mx-auto w-full px-6">
+
         <div className="mb-24">
           <OrderTypeSelector currentType={orderType} onChange={setOrderType} />
         </div>
@@ -422,6 +695,57 @@ const Home: React.FC<HomeProps> = ({
               <div className="w-16 h-[1px] bg-brand-ochre/35" />
               <span className="mono text-[8px] text-[#FFFBF5]/60 uppercase tracking-[0.3em] font-bold">Baked Fresh & Simmered Lovingly</span>
               <div className="w-16 h-[1px] bg-brand-ochre/35" />
+            </div>
+          </div>
+        </section>
+
+        {/* High-Impact Social Proof / Testimonials Row (Moved to Bottom) */}
+        <section className="mt-20 bg-white border border-brand-sand/30 py-12 px-6 rounded-[2.5rem] shadow-xl overflow-hidden select-none">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col items-center justify-center text-center mb-8">
+              <div className="flex items-center space-x-1 text-brand-terracotta mb-2">
+                <span className="text-xl">★</span>
+                <span className="text-xl">★</span>
+                <span className="text-xl">★</span>
+                <span className="text-xl">★</span>
+                <span className="text-xl">★</span>
+              </div>
+              <p className="mono text-brand-ochre text-[10px] font-extrabold uppercase tracking-widest">Trusted By Thousands of Bun Lovers • 4.9/5 stars</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
+                <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                  "The fluffiest cinnamon roll I've ever had in my entire life. Literally worth every single calorie."
+                </p>
+                <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                  <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Marcus D.</span>
+                  <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Verified Fan</span>
+                </div>
+              </div>
+              
+              <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all relative">
+                <div className="absolute -top-3 right-4 bg-brand-ochre text-brand-ink text-[7px] font-black uppercase tracking-widest px-2.5 py-1 shadow-md">
+                  🏆 Top Rated
+                </div>
+                <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                  "The Peach Outlaw is Georgia gold. You can taste that everything is slow-simmered in-house with absolutely no shortcuts!"
+                </p>
+                <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                  <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Sarah L.</span>
+                  <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Peach Addict</span>
+                </div>
+              </div>
+              
+              <div className="bg-brand-cream/35 p-6 border border-brand-sand/20 rounded-2xl flex flex-col justify-between hover:shadow-lg transition-all">
+                <p className="text-brand-ink/80 text-sm font-semibold italic leading-relaxed">
+                  "Once they are sold out, they're sold out until next Saturday. I have to set an alarm because they go in minutes!"
+                </p>
+                <div className="mt-4 flex items-center justify-between border-t border-brand-sand/10 pt-3">
+                  <span className="text-brand-ink text-xs font-black uppercase tracking-wider">— Jason K.</span>
+                  <span className="text-[8px] uppercase font-bold text-brand-terracotta bg-brand-terracotta/10 px-2 py-0.5 rounded">Sat Club</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>

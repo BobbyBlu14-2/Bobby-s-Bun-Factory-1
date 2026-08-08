@@ -24,7 +24,8 @@ import {
   CheckCircle2,
   Flame,
   Wheat,
-  Smile
+  Smile,
+  Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -34,6 +35,7 @@ import {
   cateringHeroSpread,
   jumboComparisonTray,
   miniBunTraySide,
+  duoFeaturedDuoSet,
   sixPackHorizontal,
   peachSingleBun,
   singleFruitCaviarBun,
