@@ -216,20 +216,26 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
           cardRef.current = null;
         }
 
-        // 2. Ensure SDK script is loaded
+        // 2. Ensure SDK script for the matching environment (Prod vs Sandbox) is loaded
+        const expectedScriptUrl = isProd 
+          ? 'https://web.squarecdn.com/v1/square.js' 
+          : 'https://sandbox.web.squarecdn.com/v1/square.js';
+
+        const existingScript = document.getElementById('square-payments-sdk') as HTMLScriptElement | null;
+
+        // If wrong environment script is present, remove it so window.Square is reloaded correctly
+        if (existingScript && existingScript.src !== expectedScriptUrl) {
+          existingScript.remove();
+          if ((window as any).Square) {
+            delete (window as any).Square;
+          }
+        }
+
         if (!window.Square) {
           await new Promise<void>((resolve, reject) => {
-            const existingScript = document.getElementById('square-payments-sdk');
-            if (existingScript) {
-              existingScript.addEventListener('load', () => resolve());
-              existingScript.addEventListener('error', () => reject(new Error('Square SDK load error')));
-              return;
-            }
             const script = document.createElement('script');
             script.id = 'square-payments-sdk';
-            script.src = isProd 
-              ? 'https://web.squarecdn.com/v1/square.js' 
-              : 'https://sandbox.web.squarecdn.com/v1/square.js';
+            script.src = expectedScriptUrl;
             script.async = true;
             script.onload = () => resolve();
             script.onerror = () => reject(new Error('Security Protocol Failure: SDK Load Blocked.'));
