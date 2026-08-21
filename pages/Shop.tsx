@@ -74,7 +74,7 @@ export const Shop: React.FC<ShopProps> = ({ handleAddToCart }) => {
             <Percent className="w-5 h-5 text-brand-terracotta shrink-0" />
             <p className="text-xs text-brand-ink font-heading text-left leading-normal">
               <span className="font-black text-brand-terracotta uppercase tracking-wider block">Automatic Bundle Pricing Unlock</span>
-              <span className="font-extrabold text-brand-terracotta">Le Petit Duo — $5 (Any 2 Petit Jars)</span> (Save up to $1!) • Buy <span className="font-extrabold text-brand-terracotta">Any 2 Coupe Jars for $12</span>! Added automatically at checkout.
+              <span className="font-extrabold text-brand-terracotta">Le Petit Duo — $5 (Any 2 Petit 3.5 oz Cups)</span> (Save $1!) • Mix and match Petit de Frost and Petit de Caviar cups.
             </p>
           </div>
         </div>
@@ -84,8 +84,8 @@ export const Shop: React.FC<ShopProps> = ({ handleAddToCart }) => {
           {(['all', 'frost', 'caviar'] as const).map((cat) => {
             const labels = {
               all: 'All Stocks',
-              frost: 'Secret Frost Jars',
-              caviar: 'Fruit Caviar Jars'
+              frost: 'Secret Frost',
+              caviar: 'Fruit Caviar'
             };
             const active = activeCategory === cat;
             return (
@@ -132,7 +132,7 @@ export const Shop: React.FC<ShopProps> = ({ handleAddToCart }) => {
                         ? 'bg-brand-ink text-brand-cream' 
                         : 'bg-brand-ochre text-brand-ink'
                     }`}>
-                      {item.id.includes('frost') ? 'SECRET FROST JAR' : 'FRUIT CAVIAR JAR'}
+                      {item.tags[0] || (item.id.includes('frost') ? 'SECRET FROST' : 'FRUIT CAVIAR')}
                     </span>
                   </div>
 

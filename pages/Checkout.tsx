@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, CheckCircle2, AlertCircle, CreditCard as CardIcon, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CheckCircle2, AlertCircle, CreditCard as CardIcon, ShieldCheck, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import GearLogo from '../components/GearLogo';
 import { CartItem } from '../types';
@@ -20,6 +20,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [config, setConfig] = useState<{ applicationId: string; locationId: string } | null>(null);
+  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
   const paymentsRef = useRef<any>(null);
   const cardRef = useRef<any>(null);
@@ -176,14 +177,19 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
         if (data.applicationId && data.locationId) {
           setConfig(data);
         }
+        setIsConfigLoaded(true);
       })
-      .catch(err => console.error('Config fetch failed:', err));
+      .catch(err => {
+        console.error('Config fetch failed:', err);
+        setIsConfigLoaded(true);
+      });
   }, []);
 
   // Use config from API first, then fall back to Vite env vars
   const appId = (config?.applicationId || import.meta.env.VITE_SQUARE_APPLICATION_ID || import.meta.env.VITE_SQUARE_APPLIC || '').trim();
   const locationId = (config?.locationId || import.meta.env.VITE_SQUARE_LOCATION_ID || import.meta.env.VITE_SQUARE_LOCAT || '').trim();
   const isProd = appId.startsWith('sq0idp');
+  const isSandbox = appId.startsWith('sandbox-') || (!isProd && appId.length > 0 && appId.toLowerCase().includes('sandbox'));
 
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
@@ -194,53 +200,85 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
   };
 
   useEffect(() => {
-    let script: HTMLScriptElement | null = null;
+    let isCancelled = false;
 
-    const loadSquareSdk = async () => {
+    const setupSquare = async () => {
       if (!appId || !locationId) return;
 
-      if (window.Square) {
-        initializePaymentForm();
-        return;
-      }
-
-      script = document.createElement('script');
-      script.src = isProd 
-        ? 'https://web.squarecdn.com/v1/square.js' 
-        : 'https://sandbox.web.squarecdn.com/v1/square.js';
-      script.async = true;
-      script.onload = () => initializePaymentForm();
-      script.onerror = () => {
-        setError('Security Protocol Failure: SDK Load Blocked.');
-      };
-      document.body.appendChild(script);
-    };
-
-    const initializePaymentForm = async () => {
-      if (!window.Square) return;
-
       try {
+        // 1. Destroy any existing card instance before re-creating
+        if (cardRef.current) {
+          try {
+            await cardRef.current.destroy();
+          } catch (err) {
+            console.warn('Previous card instance cleanup:', err);
+          }
+          cardRef.current = null;
+        }
+
+        // 2. Ensure SDK script is loaded
+        if (!window.Square) {
+          await new Promise<void>((resolve, reject) => {
+            const existingScript = document.getElementById('square-payments-sdk');
+            if (existingScript) {
+              existingScript.addEventListener('load', () => resolve());
+              existingScript.addEventListener('error', () => reject(new Error('Square SDK load error')));
+              return;
+            }
+            const script = document.createElement('script');
+            script.id = 'square-payments-sdk';
+            script.src = isProd 
+              ? 'https://web.squarecdn.com/v1/square.js' 
+              : 'https://sandbox.web.squarecdn.com/v1/square.js';
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Security Protocol Failure: SDK Load Blocked.'));
+            document.body.appendChild(script);
+          });
+        }
+
+        if (isCancelled || !window.Square) return;
+
+        // 3. Initialize Payments client
         paymentsRef.current = window.Square.payments(appId, locationId);
-        cardRef.current = await paymentsRef.current.card();
-        
-        if (cardContainerRef.current) {
-          await cardRef.current.attach('#card-container');
-          setIsSdkLoaded(true);
+
+        // 4. Create Card instance
+        const card = await paymentsRef.current.card();
+
+        if (isCancelled) {
+          await card.destroy();
+          return;
+        }
+
+        // 5. Clean out container element completely to avoid duplicate iframes
+        const container = document.getElementById('card-container');
+        if (container) {
+          container.innerHTML = '';
+          await card.attach('#card-container');
+          cardRef.current = card;
+          if (!isCancelled) {
+            setIsSdkLoaded(true);
+          }
         }
       } catch (e: any) {
         console.error('Square Init Error:', e);
-        if (!e.message?.includes('fetch')) {
-          setError('Credential Verification Failed. Secure the link.');
+        if (!isCancelled) {
+          setError(e.message || 'Credential Verification Failed. Please verify Square credentials.');
         }
       }
     };
 
-    loadSquareSdk();
+    setIsSdkLoaded(false);
+    setupSquare();
 
     return () => {
-      if (cardRef.current) cardRef.current.destroy();
+      isCancelled = true;
+      if (cardRef.current) {
+        cardRef.current.destroy().catch((err: any) => console.warn('Card cleanup error:', err));
+        cardRef.current = null;
+      }
     };
-  }, [appId, locationId]);
+  }, [appId, locationId, isProd]);
 
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,7 +301,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
         });
 
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Identity Verification Failed');
+        if (!response.ok) throw new Error(data.error || 'Payment processing failed. Please check Square configuration.');
 
         // Record purchase to local order history
         try {
@@ -303,10 +341,13 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
         onSuccess();
         setTimeout(() => navigate('/'), 5000);
       } else {
-        throw new Error(result.errors[0].message);
+        const errorDetail = result.errors && result.errors.length > 0 
+          ? result.errors.map((err: any) => err.message || err.detail).join('; ')
+          : 'Card validation failed. Please check your card number, expiration date, and CVV.';
+        throw new Error(errorDetail);
       }
     } catch (err: any) {
-      setError(err.message || 'Transmission Interrupted.');
+      setError(err.message || 'Payment processing could not be completed.');
     } finally {
       setIsProcessing(false);
     }
@@ -443,7 +484,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                   </div>
                 ) : (
                   <form onSubmit={handlePayment} className="space-y-8">
-                    {!isProd && (
+                    {isConfigLoaded && isSandbox && !isProd && (
                       <div className="border border-dashed border-brand-terracotta/40 bg-brand-terracotta/[0.03] p-5 space-y-4 rounded-none">
                         <div className="flex items-center justify-between">
                           <span className="mono text-[9px] text-brand-terracotta font-black uppercase tracking-wider flex items-center gap-1.5">
@@ -561,34 +602,43 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                      </div>
 
                      <div className="space-y-4">
-                       <span className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Card Authentication Module</span>
-                       <div 
-                        id="card-container" 
-                        ref={cardContainerRef}
-                        className="bg-brand-ink p-6 min-h-[120px] flex items-center justify-center transition-all border border-brand-ochre/10"
-                      >
-                        {!isSdkLoaded && (
-                          <div className="flex flex-col items-center space-y-4">
-                            <div className="w-10 h-10 border-2 border-brand-terracotta border-t-transparent animate-spin" />
-                            <p className="mono text-[9px] text-brand-cream font-black uppercase tracking-[0.3em] opacity-40">Initializing Gearbox...</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                       <div className="flex items-center justify-between">
+                         <span className="mono text-[9px] text-brand-ink/40 font-black uppercase tracking-widest block ml-1">Card Authentication Module</span>
+                         {isSdkLoaded && (
+                           <span className="mono text-[8px] text-emerald-600 font-bold uppercase tracking-wider flex items-center gap-1">
+                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                             Encrypted Gateway Ready
+                           </span>
+                         )}
+                       </div>
+                       <div className="bg-brand-ink p-5 rounded-none border border-brand-ochre/15 shadow-inner min-h-[95px] relative">
+                         {!isSdkLoaded && (
+                           <div className="flex flex-col items-center justify-center py-4 space-y-3">
+                             <div className="w-8 h-8 border-2 border-brand-terracotta border-t-transparent animate-spin" />
+                             <p className="mono text-[9px] text-brand-cream font-black uppercase tracking-[0.3em] opacity-40">Initializing Gateway...</p>
+                           </div>
+                         )}
+                         <div 
+                           id="card-container" 
+                           ref={cardContainerRef}
+                           className={`w-full ${isSdkLoaded ? 'block' : 'hidden'}`}
+                         />
+                       </div>
+                     </div>
 
                     <button
                       type="submit"
                       disabled={isProcessing || !isSdkLoaded}
-                      className="group relative w-full bg-brand-ink text-brand-cream py-6 rounded-none font-black uppercase tracking-[0.4em] text-xs shadow-2xl transition-all overflow-hidden disabled:opacity-30"
+                      className="group relative w-full bg-brand-ink text-brand-cream py-6 rounded-none font-black uppercase tracking-[0.3em] text-xs shadow-2xl transition-all overflow-hidden disabled:opacity-30 cursor-pointer"
                     >
                       <div className="absolute inset-0 steam-gradient opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                      <div className="relative z-10 flex items-center justify-center space-x-4 group-hover:text-brand-ink transition-colors">
+                      <div className="relative z-10 flex items-center justify-center space-x-3.5 group-hover:text-brand-ink transition-colors">
                         {isProcessing ? (
                           <div className="w-5 h-5 border-2 border-brand-ochre border-t-transparent animate-spin" />
                         ) : (
                           <>
-                            <ShieldCheck className="w-5 h-5" />
-                            <span>Forge Transaction</span>
+                            <Heart className="w-4 h-4 text-brand-terracotta fill-brand-terracotta group-hover:text-brand-ink group-hover:fill-brand-ink transition-colors" />
+                            <span>Prove Your Love • Secure Your Order</span>
                           </>
                         )}
                       </div>

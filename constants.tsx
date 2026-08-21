@@ -13,6 +13,7 @@ import caviarPeach from './src/assets/images/peach_caviar_1779749873518.png';
 import caviarBlueberry from './src/assets/images/blueberry_caviar_1779749888303.png';
 import caviarWildberry from './src/assets/images/wildberry_caviar_1779749903216.png';
 import jumboComparison from './src/assets/images/jumbo_comparison_1779752851857.png';
+import jumboComparisonTray from './src/assets/images/jumbo_comparison_tray_1784982911022.jpg';
 import cinnabitesChopped from './src/assets/images/cinnabites_chopped_1779753276487.png';
 export { default as classicFrosting } from './src/assets/images/classic_frosting_1779749364471.png';
 export { default as fourPackBuns } from './src/assets/images/four_pack_buns_1781559681011.jpg';
@@ -24,7 +25,7 @@ export { default as fourPackCaviarUpgrade } from './src/assets/images/four_pack_
 export { default as cateringHeroSpread } from './src/assets/images/catering_hero_spread_1784912007707.jpg';
 export { default as jumboComparisonTray } from './src/assets/images/jumbo_comparison_tray_1784982911022.jpg';
 export { default as miniBunTraySide } from './src/assets/images/mini_bun_tray_side_1785015555305.jpg';
-export { default as duoFeaturedDuoSet } from './src/assets/images/rendezvous_open_gift_set_1786200355527.jpg';
+export { default as duoFeaturedDuoSet } from './src/assets/images/rendezvous_colossal_gift_box_1786202990064.jpg';
 
 import classicFrosting from './src/assets/images/classic_frosting_1779749364471.png';
 import lemonFrosting from './src/assets/images/lemon_frosting_1779749381826.png';
@@ -131,32 +132,42 @@ export const FLAVORS_OF_THE_MONTH: Product[] = [
 export const CHOOSE_YOUR_BUN: Product[] = [
   {
     id: 'classic-bun',
-    name: 'Classic Bun',
-    description: 'Secret Frost. Clean. Easy. Always right.',
-    price: 5.00,
+    name: 'Classic Roll',
+    description: 'Oversized roll finished with velvety Secret Frost. Clean. Easy. Always right.',
+    price: 7.00,
     image: classicSingleBun,
     type: 'bun',
-    tags: ['Classic', 'Start Here'],
+    tags: ['Classic', 'Oversized', 'Start Here'],
     color: '#F4E3DD'
   },
   {
-    id: 'caviar-bun',
-    name: 'Caviar Bun',
-    description: 'Your bun + one sweet fruit caviar (coulis) topping.',
-    price: 6.00,
+    id: 'premium-bun',
+    name: 'Premium Roll',
+    description: 'Oversized warm roll smothered in your choice of signature slow-simmered fruit caviar or premium artisanal toppings.',
+    price: 9.00,
     image: singleFruitCaviarBun,
     type: 'bun',
-    tags: ['Upgrade'],
+    tags: ['Premium', 'Artisanal Topping'],
     color: '#FFFBF5'
+  },
+  {
+    id: 'jumbo-bun',
+    name: 'Jumbo Bun (Double)',
+    description: 'Double size colossal roll with double the swirl and double the Secret Frost.',
+    price: 9.00,
+    image: jumboComparisonTray,
+    type: 'bun',
+    tags: ['Colossal', 'Double Size'],
+    color: '#FDF2F2'
   },
   {
     id: 'loaded-bun',
     name: 'Velvet Apple Bun',
-    description: 'Our signature warm bun topped with slow-simmered regional spiced brown-sugar apples.',
-    price: 7.00,
+    description: 'Our signature warm oversized bun topped with slow-simmered regional spiced brown-sugar apples.',
+    price: 9.00,
     image: velvetAppleBun,
     type: 'bun',
-    tags: ['Signature', 'Velvet Apple'],
+    tags: ['Signature', 'Velvet Apple', 'Premium'],
     color: '#F5F5F7'
   }
 ];
@@ -203,32 +214,42 @@ export const FRUIT_CAVIAR_JARS: Product[] = [
 export const SINGLES_MENU: Product[] = [
   {
     id: 'classic-bun',
-    name: 'Classic Bun',
-    description: 'Secret Frost. Clean. Easy. Always right.',
-    price: 5.00,
+    name: 'Classic Roll',
+    description: 'Oversized roll + signature Secret Frost. Clean. Easy. Always right.',
+    price: 7.00,
     image: classicSingleBun,
     type: 'bun',
-    tags: ['Daily', 'Entry Product', 'Start Here'],
+    tags: ['Classic', 'Oversized', 'Start Here'],
     color: '#F4E3DD'
   },
   {
-    id: 'caviar-bun',
-    name: 'Caviar Bun',
-    description: 'Your bun + one sweet fruit caviar (coulis) topping of your choice.',
-    price: 6.00,
+    id: 'premium-bun',
+    name: 'Premium Roll',
+    description: 'Oversized roll + your choice of signature slow-simmered fruit caviar or premium toppings.',
+    price: 9.00,
     image: singleFruitCaviarBun,
     type: 'bun',
-    tags: ['Upgrade', 'Drip Swirl'],
+    tags: ['Premium', 'Artisanal Topping'],
     color: '#FFFBF5'
+  },
+  {
+    id: 'jumbo-bun',
+    name: 'Jumbo Bun (Double)',
+    description: 'Double size colossal roll with double the swirl and double the Secret Frost.',
+    price: 9.00,
+    image: jumboComparisonTray,
+    type: 'bun',
+    tags: ['Colossal', 'Double Size'],
+    color: '#FDF2F2'
   },
   {
     id: 'loaded-bun',
     name: 'Velvet Apple Bun',
-    description: 'Our signature warm bun topped with slow-simmered regional spiced brown-sugar apples.',
-    price: 7.00,
+    description: 'Our signature warm oversized bun topped with slow-simmered regional spiced brown-sugar apples.',
+    price: 9.00,
     image: velvetAppleBun,
     type: 'bun',
-    tags: ['Signature', 'Velvet Apple'],
+    tags: ['Signature', 'Velvet Apple', 'Premium'],
     color: '#F5F5F7'
   }
 ];
@@ -236,32 +257,32 @@ export const SINGLES_MENU: Product[] = [
 export const BOXED_4_PACKS: Product[] = [
   {
     id: 'classic-4pack',
-    name: 'Classic 4-Pack',
+    name: 'Classic Factory-4',
     description: 'Four classic buns with Secret Frost.',
     price: 18.00,
     image: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?q=80&w=800&auto=format&fit=crop',
     type: 'bun',
-    tags: ['Classic Box'],
+    tags: ['Classic Box', 'Factory-4'],
     color: '#FDF2F2'
   },
   {
     id: 'mixed-4pack',
-    name: 'Mixed 4-Pack',
+    name: 'Mixed Factory-4',
     description: 'A mix of classic and caviar buns.',
     price: 22.00,
     image: fourPackBuns,
     type: 'bun',
-    tags: ['Popular'],
+    tags: ['Popular', 'Factory-4'],
     color: '#FFFBF5'
   },
   {
     id: 'signature-4pack',
-    name: 'Premium 4-Pack',
+    name: 'Premium Factory-4',
     description: 'For the elevated box moment.',
     price: 25.00,
     image: fourPackBuns,
     type: 'bun',
-    tags: ['Curated Mix', 'Elevated'],
+    tags: ['Curated Mix', 'Elevated', 'Factory-4'],
     color: '#FFF5F5'
   }
 ];
@@ -269,32 +290,32 @@ export const BOXED_4_PACKS: Product[] = [
 export const BOXED_6_PACKS: Product[] = [
   {
     id: 'classic-6pack',
-    name: 'Classic 6-Pack',
+    name: 'Classic Factory-6',
     description: 'Six classic buns with Secret Frost.',
-    price: 26.00,
+    price: 28.00,
     image: sixPackHorizontal,
     type: 'bun',
-    tags: ['Classic Pack'],
+    tags: ['Classic Pack', 'Factory-6'],
     color: '#FDF2F2'
   },
   {
     id: 'mixed-6pack',
-    name: 'Mixed 6-Pack',
+    name: 'Mixed Factory-6',
     description: 'The sweet spot. Best value, shareable, and delicious.',
     price: 32.00,
     image: sixPackHorizontal,
     type: 'bun',
-    tags: ['Best Seller', 'Fan Favorite'],
+    tags: ['Best Seller', 'Fan Favorite', 'Factory-6'],
     color: '#F5F7FF'
   },
   {
     id: 'signature-6pack',
-    name: 'Premium 6-Pack',
+    name: 'Premium Factory-6',
     description: 'Your dressed-up party box.',
     price: 36.00,
     image: sixPackHorizontal,
     type: 'bun',
-    tags: ['Signature Box', 'Highly Indulgent'],
+    tags: ['Signature Box', 'Highly Indulgent', 'Factory-6'],
     color: '#F7EEFF'
   }
 ];
@@ -303,118 +324,98 @@ export const JAR_PRODUCTS: Product[] = [
   {
     id: 'petit-caviar-jar',
     name: 'Petit de Caviar',
-    description: '3.5 oz of slow-simmered regional fruit caviar in a black plastic cup.',
+    description: '3.5 oz of slow-simmered regional fruit caviar in an airtight plastic cup.',
     price: 3.00,
     image: petitCaviarCup,
     type: 'jar',
-    tags: ['Petit Cup', 'Fruit Caviar'],
+    tags: ['Petit de Caviar (3.5 oz)', 'Fruit Caviar'],
     color: '#FFFBF5'
   },
   {
+    id: 'petit-frost-jar',
+    name: 'Petit de Frost',
+    description: '3.5 oz of temperature-calibrated velvety frosting whip served in an airtight plastic cup.',
+    price: 3.00,
+    image: petitFrostCup,
+    type: 'jar',
+    tags: ['Petit de Frost (3.5 oz)', 'Secret Frost'],
+    color: '#FDF6F0'
+  },
+  {
     id: 'petit-duo-caviar',
-    name: 'Le Petit Duos',
-    description: 'Any 2 Petits. Mix and match our standard or premium fruit caviar and frosting cups for a custom combo.',
+    name: 'Le Petit Duo',
+    description: 'Any 2 Petit cups (3.5 oz each). Mix and match our Petit de Frost and Petit de Caviar cups.',
     price: 5.00,
     image: petitDuoCaviarCups,
     type: 'jar',
-    tags: ['Duo Pack', 'Fruit Caviar'],
+    tags: ['Le Petit Duo', 'Duo Pack'],
     color: '#FFF8F5'
   },
   {
     id: 'coupe-caviar-jar',
     name: 'Coupe de Caviar',
-    description: '8 oz of slow-simmered regional fruit caviar in an elegant custom glass jar.',
-    price: 7.00,
+    description: '8 oz of slow-simmered regional fruit caviar in an elegant glass mason jar.',
+    price: 9.00,
     image: coupeCaviarJar,
     type: 'jar',
-    tags: ['Coupe', 'Fruit Caviar'],
+    tags: ['Coupe de Caviar (8 oz)', 'Fruit Caviar'],
     color: '#FDF5FF'
+  },
+  {
+    id: 'coupe-frost-jar',
+    name: 'Coupe de Frost',
+    description: '8 oz of temperature-calibrated velvety frosting whip in an elegant glass mason jar.',
+    price: 9.00,
+    image: coupeFrostJar,
+    type: 'jar',
+    tags: ['Coupe de Frost (8 oz)', 'Secret Frost Jar'],
+    color: '#FDF2F2'
   },
   {
     id: 'pint-caviar-jar',
     name: 'Pint de Caviar',
     description: '16 oz of slow-simmered regional fruit caviar in a classic glass mason jar.',
-    price: 12.00,
+    price: 14.00,
     image: pintCaviarJar,
     type: 'jar',
-    tags: ['Pint', 'Fruit Caviar'],
+    tags: ['Pint de Caviar (16 oz)', 'Fruit Caviar'],
     color: '#F0F8FF'
+  },
+  {
+    id: 'pint-frost-jar',
+    name: 'Pint de Frost',
+    description: '16 oz of temperature-calibrated velvety frosting whip in a classic glass mason jar.',
+    price: 14.00,
+    image: pintFrostJar,
+    type: 'jar',
+    tags: ['Pint de Frost (16 oz)', 'Secret Frost Jar'],
+    color: '#FFF8F5'
   },
   {
     id: 'grande-caviar-jar',
     name: 'Vrai Grande Caviar',
     description: '32 oz (Quart Size) of slow-simmered regional fruit caviar in a heavy-duty wide-mouth glass mason jar.',
-    price: 18.00,
+    price: 20.00,
     image: grandeCaviarJar,
     type: 'jar',
-    tags: ['Vrai Grande', 'Fruit Caviar'],
+    tags: ['Vrai Grande Caviar (32 oz)', 'Fruit Caviar'],
     color: '#FFF0F5'
-  },
-  {
-    id: 'double-grande-caviar-jars',
-    name: '2x Vrai Grande Caviar Jars',
-    description: 'A special bundle of two 32 oz wide-mouth classic glass jars packed with our slow-simmered regional fruit caviar.',
-    price: 32.00,
-    image: doubleGrandeCaviarJars,
-    type: 'jar',
-    tags: ['Double Pack', 'Best Value Combo', 'Fruit Caviar'],
-    color: '#E8F5E9'
-  },
-  {
-    id: 'petit-frost-jar',
-    name: 'Petit Frost',
-    description: '3.5 oz of temperature-calibrated velvety frosting whip served in a black plastic cup. Small but dangerous.',
-    price: 3.00,
-    image: petitFrostCup,
-    type: 'jar',
-    tags: ['Petit Cup', 'Secret Frost'],
-    color: '#FDF6F0'
-  },
-  {
-    id: 'petit-duo-frost',
-    name: 'Le Petit Duo',
-    description: 'Any 2 Petits. Mix and match our standard or premium whip flavors for a custom combo.',
-    price: 5.00,
-    image: petitDuoCups,
-    type: 'jar',
-    tags: ['Duo Pack', 'Secret Frost'],
-    color: '#FFF8F5'
-  },
-  {
-    id: 'coupe-frost-jar',
-    name: 'Coupe de Frost',
-    description: '8 oz of temperature-calibrated velvety frosting whip in an elegant custom glass jar. Your everyday extra.',
-    price: 7.00,
-    image: coupeFrostJar,
-    type: 'jar',
-    tags: ['Coupe', 'Secret Frost Jar'],
-    color: '#FDF2F2'
-  },
-  {
-    id: 'pint-frost-jar',
-    name: 'Pint de Frost',
-    description: '16 oz of temperature-calibrated velvety frosting whip in a classic glass mason jar. A very reasonable amount.',
-    price: 12.00,
-    image: pintFrostJar,
-    type: 'jar',
-    tags: ['Pint', 'Secret Frost Jar'],
-    color: '#FFF8F5'
   },
   {
     id: 'grande-frost-jar',
     name: 'Vrai Grande Frost',
-    description: '32 oz of temperature-calibrated velvety frosting whip in a heavy duty wide-mouth classic glass jar. The ultimate frosting reserve.',
-    price: 18.00,
+    description: '32 oz of temperature-calibrated velvety frosting whip in a heavy duty wide-mouth classic glass mason jar.',
+    price: 20.00,
     image: grandeFrostJar,
     type: 'jar',
-    tags: ['Vrai Grande', 'Secret Frost Jar'],
+    tags: ['Vrai Grande Frost (32 oz)', 'Secret Frost Jar'],
     color: '#F5FFF5'
   },
   {
     id: 'double-grande-frost-jars',
     name: '2x Vrai Grande Jars',
-    description: 'A special bundle of two 32 oz wide-mouth classic glass jars packed with our signature velvety cream whip frosting.',
-    price: 32.00,
+    description: 'A special bundle of two 32 oz wide-mouth classic glass mason jars packed with our signature velvety cream whip frosting.',
+    price: 36.00,
     image: doubleGrandeJars,
     type: 'jar',
     tags: ['Double Pack', 'Best Value Combo', 'Secret Frost Jar'],
@@ -429,6 +430,45 @@ export interface CaviarFlavor {
   description: string;
   image: string;
 }
+
+export interface DrizzleOption {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  badge?: string;
+}
+
+export const DRIZZLE_OPTIONS: DrizzleOption[] = [
+  {
+    id: 'none',
+    name: 'No Drizzle',
+    price: 0,
+    description: 'Keep bun standard without extra drizzle cascade',
+    badge: 'Included'
+  },
+  {
+    id: 'caramel',
+    name: 'Caramel Drizzle',
+    price: 1.50,
+    description: 'Hand-crafted rich buttery golden caramel drizzle',
+    badge: '+$1.50'
+  },
+  {
+    id: 'chocolate',
+    name: 'Chocolate Drizzle',
+    price: 1.50,
+    description: 'Smooth rich milk chocolate drizzle cascade',
+    badge: '+$1.50'
+  },
+  {
+    id: 'dark-chocolate',
+    name: 'Dark Chocolate Drizzle',
+    price: 1.50,
+    description: 'Decadent deep dark cocoa drizzle reduction',
+    badge: '+$1.50'
+  }
+];
 
 export const CAVIAR_FLAVORS: CaviarFlavor[] = [
   // Standard Toppings/Flavors

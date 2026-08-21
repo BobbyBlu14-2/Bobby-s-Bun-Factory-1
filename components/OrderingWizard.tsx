@@ -22,6 +22,8 @@ import {
   BOXED_4_PACKS, 
   BOXED_6_PACKS, 
   CAVIAR_FLAVORS, 
+  DRIZZLE_OPTIONS,
+  DrizzleOption,
   JAR_PRODUCTS,
   classicFrosting,
   classicSingleBun,
@@ -45,7 +47,7 @@ interface OrderingWizardProps {
   setPickupDate: (date: string) => void;
 }
 
-type OrderPhase = 'PACKAGE_SELECTION' | 'CAVIAR_SELECTION' | 'ADD_ONS' | 'LOGISTICS';
+type OrderPhase = 'PACKAGE_SELECTION' | 'CAVIAR_SELECTION' | 'DRIZZLE_SELECTION' | 'ADD_ONS' | 'LOGISTICS';
 
 const getNextSaturdays = (count: number = 12) => {
   const dates = [];
@@ -126,10 +128,14 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
   const [caviarSlots, setCaviarSlots] = useState<string[]>(new Array(6).fill('strawberry'));
   const [activeSlotIdx, setActiveSlotIdx] = useState(0);
 
-  // Auto reset or update caviar slots when package changes
+  // Drizzle customization slots (one per bun in box, initialized with 'none')
+  const [drizzleSlots, setDrizzleSlots] = useState<string[]>(new Array(6).fill('none'));
+
+  // Auto reset or update caviar & drizzle slots when package changes
   useEffect(() => {
     const defaultFlavor = (selectedSize === 'single' && selectedStyle === 'signature') ? 'cherry-bomb' : 'strawberry';
     setCaviarSlots(new Array(maxCaviarSlots).fill(defaultFlavor));
+    setDrizzleSlots(new Array(maxCaviarSlots).fill('none'));
     setActiveSlotIdx(0);
   }, [maxCaviarSlots, selectedStyle, selectedSize]);
 
@@ -244,9 +250,9 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
   // 1. Base Package Price
   const basePackagePrice = useMemo(() => {
     if (selectedSize === 'single') {
-      if (selectedStyle === 'classic') return 5; // Classic Bun ($5)
-      if (selectedStyle === 'mixed') return 6;   // Caviar Bun ($6)
-      return 7;                                 // Premium Bun ($7)
+      if (selectedStyle === 'classic') return 7; // Classic Roll ($7)
+      if (selectedStyle === 'mixed') return 8;   // Caviar Bun ($8)
+      return 9;                                 // Premium Roll ($9)
     }
     if (selectedSize === '4pack') {
       if (selectedStyle === 'classic') return 18; // Classic 4-Pack ($18)
@@ -294,7 +300,13 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
     extraHeavyToppingBox
   ]);
 
-  // 4. Jars Prices (including dynamic bundle calculation right here)
+  // 4. Artisanal Drizzles Price ($1.50 per chosen bun)
+  const drizzlesPrice = useMemo(() => {
+    const activeDrizzles = drizzleSlots.slice(0, maxCaviarSlots).filter(d => d !== 'none');
+    return activeDrizzles.length * 1.50;
+  }, [drizzleSlots, maxCaviarSlots]);
+
+  // 5. Jars Prices (including dynamic bundle calculation right here)
   const jarsStats = useMemo(() => {
     let unbundledPrice = 0;
     const smallPrices: number[] = [];
@@ -353,19 +365,27 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
   }, [jarQuantities]);
 
   const grandTotal = useMemo(() => {
-    return basePackagePrice + premiumUpgradePrice + addonsPrice + jarsStats.totalPrice;
-  }, [basePackagePrice, premiumUpgradePrice, addonsPrice, jarsStats]);
+    return basePackagePrice + premiumUpgradePrice + addonsPrice + drizzlesPrice + jarsStats.totalPrice;
+  }, [basePackagePrice, premiumUpgradePrice, addonsPrice, drizzlesPrice, jarsStats]);
 
   // Helper description text for configured items
   const summaryText = useMemo(() => {
-    const sizeName = selectedSize === 'single' ? 'Single Bun' : selectedSize === '4pack' ? '4-Pack Box' : '6-Pack Box';
+    const sizeName = selectedSize === 'single' ? 'Single Bun' : selectedSize === '4pack' ? 'Factory-4' : 'Factory-6';
     const styleName = selectedStyle === 'signature' ? 'PREMIUM' : selectedStyle.toUpperCase();
     const caviarDesc = selectedStyle === 'classic' 
       ? 'All Classic Secret Frost' 
-      : `Toppings: ${caviarSlots.slice(0, maxCaviarSlots).map(id => {
+      : `Toppings: ${caviarSlots.slice(0, maxCaviarSlots).map((id, i) => {
           const fl = CAVIAR_FLAVORS.find(f => f.id === id);
-          return fl?.name;
+          return `Bun ${i + 1}: ${fl?.name || 'Standard'}`;
         }).join(', ')}`;
+
+    // Drizzles summary
+    const drizzleSummaryList = drizzleSlots.slice(0, maxCaviarSlots).map((dId, i) => {
+      if (dId === 'none') return null;
+      const drz = DRIZZLE_OPTIONS.find(d => d.id === dId);
+      return `Bun ${i + 1}: ${drz?.name || dId}`;
+    }).filter(Boolean);
+    const drizzlesDesc = drizzleSummaryList.length > 0 ? ` [Drizzles (+$1.50 ea): ${drizzleSummaryList.join(', ')}]` : '';
 
     // Add selected premium ad-on / upgrade names
     const activeUpgrades: string[] = [];
@@ -374,17 +394,18 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
       if (extraCaviarDrizzle) activeUpgrades.push('Le Petit Duo (Frost & Caviar Cups)');
       if (extraSecretFrost) activeUpgrades.push('Petit Frost Cup (3.5 oz)');
     } else {
-      if (addCaviarToBox) activeUpgrades.push(selectedSize === '4pack' ? 'Add Caviar to 4-Pack' : 'Add Caviar to 6-Pack');
+      if (addCaviarToBox) activeUpgrades.push(selectedSize === '4pack' ? 'Add Caviar to Factory-4' : 'Add Caviar to Factory-6');
       if (extraHeavyToppingBox) activeUpgrades.push('Le Petit Duo (Frost & Caviar Cups)');
     }
     const upgradesDesc = activeUpgrades.length > 0 ? ` [Upgrades: ${activeUpgrades.join(', ')}]` : '';
 
-    return `${sizeName} (${styleName} style). ${caviarDesc}.${upgradesDesc}`;
+    return `${sizeName} (${styleName} style). ${caviarDesc}.${drizzlesDesc}${upgradesDesc}`;
   }, [
     selectedSize,
     selectedStyle,
     caviarSlots,
     maxCaviarSlots,
+    drizzleSlots,
     add1CaviarTopping,
     extraCaviarDrizzle,
     extraSecretFrost,
@@ -404,16 +425,16 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
           ? 'Single Caviar Bun'
           : 'Premium Single Bun'
         : selectedSize === '4pack'
-        ? 'Bobby’s 4-Pack'
-        : 'Bobby’s 6-Pack'
+        ? 'Bobby’s Factory-4'
+        : 'Bobby’s Factory-6'
     } [${displayStyleName}]`;
-    const finalPackageDesc = summaryText + (selectedSize !== 'single' && hasPremiumCaviar ? ' + Includes Premium Flavor Upgrade' : '') + (addonsPrice > 0 ? ' + Upgraded Drizzle Customizations' : '');
+    const finalPackageDesc = summaryText + (selectedSize !== 'single' && hasPremiumCaviar ? ' + Includes Premium Flavor Upgrade' : '') + (drizzlesPrice > 0 ? ` + ${drizzleSlots.slice(0, maxCaviarSlots).filter(d => d !== 'none').length} Artisanal Drizzle(s)` : '') + (addonsPrice > 0 ? ' + Upgrades' : '');
     
     const configuredMainProduct: Product = {
       id: `configured-${selectedSize}-${selectedStyle}-${Date.now()}`,
       name: finalPackageName,
       description: finalPackageDesc,
-      price: basePackagePrice + premiumUpgradePrice + addonsPrice,
+      price: basePackagePrice + premiumUpgradePrice + addonsPrice + drizzlesPrice,
       image: selectedSize === 'single' 
         ? SINGLES_MENU.find(x => x.id === (selectedStyle === 'classic' ? 'classic-bun' : selectedStyle === 'mixed' ? 'caviar-bun' : 'loaded-bun'))?.image || ''
         : (selectedSize === '4pack' ? BOXED_4_PACKS : BOXED_6_PACKS).find(y => y.id.includes(selectedStyle))?.image || '',
@@ -461,9 +482,10 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
           className="h-full bg-brand-terracotta transition-all duration-300"
           style={{ 
             width: 
-              phase === 'PACKAGE_SELECTION' ? '25%' :
-              phase === 'CAVIAR_SELECTION' ? '50%' :
-              phase === 'ADD_ONS' ? '75%' : '100%'
+              phase === 'PACKAGE_SELECTION' ? '20%' :
+              phase === 'CAVIAR_SELECTION' ? '40%' :
+              phase === 'DRIZZLE_SELECTION' ? '60%' :
+              phase === 'ADD_ONS' ? '80%' : '100%'
           }}
         />
       </div>
@@ -474,20 +496,22 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
           <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.3em] block mb-1">
             {phase === 'PACKAGE_SELECTION' && 'Prelude 01 / Pick Your Foundation'}
             {phase === 'CAVIAR_SELECTION' && 'Flirtation 02 / Sweet & Sticky Dress-up'}
-            {phase === 'ADD_ONS' && 'Indulgence 03 / Double the Pleasure'}
-            {phase === 'LOGISTICS' && 'Rendezvous 04 / Lock in Your Date'}
+            {phase === 'DRIZZLE_SELECTION' && 'Cascade 03 / Artisanal Drizzles'}
+            {phase === 'ADD_ONS' && 'Indulgence 04 / Double the Pleasure'}
+            {phase === 'LOGISTICS' && 'Rendezvous 05 / Lock in Your Date'}
           </span>
           <h3 className="serif text-3xl md:text-5xl font-black text-brand-cream uppercase tracking-tight leading-none">
             {phase === 'PACKAGE_SELECTION' && 'Choose Your Box Setup'}
             {phase === 'CAVIAR_SELECTION' && 'Drizzle Caviar Toppings'}
+            {phase === 'DRIZZLE_SELECTION' && 'Add Drizzles to Your Buns'}
             {phase === 'ADD_ONS' && 'Premium Upgrades'}
             {phase === 'LOGISTICS' && 'Pick Your Rendezvous Saturday'}
           </h3>
         </div>
 
         <div className="hidden md:flex space-x-1.5">
-          {(['PACKAGE_SELECTION', 'CAVIAR_SELECTION', 'ADD_ONS', 'LOGISTICS'] as OrderPhase[]).map((p, idx) => {
-            const labels = ['01', '02', '03', '04'];
+          {(['PACKAGE_SELECTION', 'CAVIAR_SELECTION', 'DRIZZLE_SELECTION', 'ADD_ONS', 'LOGISTICS'] as OrderPhase[]).map((p, idx) => {
+            const labels = ['01', '02', '03', '04', '05'];
             const active = phase === p;
             return (
               <div 
@@ -519,7 +543,8 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
             <button
               onClick={() => {
                 if (phase === 'LOGISTICS') setPhase('ADD_ONS');
-                else if (phase === 'ADD_ONS') {
+                else if (phase === 'ADD_ONS') setPhase('DRIZZLE_SELECTION');
+                else if (phase === 'DRIZZLE_SELECTION') {
                   if (selectedStyle === 'classic') setPhase('PACKAGE_SELECTION');
                   else setPhase('CAVIAR_SELECTION');
                 }
@@ -537,11 +562,13 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               onClick={() => {
                 if (phase === 'PACKAGE_SELECTION') {
                   if (selectedStyle === 'classic') {
-                    setPhase('ADD_ONS');
+                    setPhase('DRIZZLE_SELECTION');
                   } else {
                     setPhase('CAVIAR_SELECTION');
                   }
                 } else if (phase === 'CAVIAR_SELECTION') {
+                  setPhase('DRIZZLE_SELECTION');
+                } else if (phase === 'DRIZZLE_SELECTION') {
                   setPhase('ADD_ONS');
                 } else if (phase === 'ADD_ONS') {
                   setPhase('LOGISTICS');
@@ -613,7 +640,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                             <Star className="w-5 h-5 text-brand-terracotta" />
                             <div>
                               <h4 className="serif text-xl font-black text-brand-cream uppercase tracking-tight">Singles</h4>
-                              <p className="mono text-[10px] text-brand-ochre mt-0.5">Starting at $5.00</p>
+                              <p className="mono text-[10px] text-brand-ochre mt-0.5">Starting at $7.00</p>
                             </div>
                           </div>
                           <p className="text-[11px] text-brand-cream/60 leading-normal">
@@ -623,7 +650,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       </div>
                     </button>
 
-                    {/* 4-PACK */}
+                    {/* 4-PACK -> FACTORY-4 */}
                     <button
                       onClick={() => {
                         setSelectedSize('4pack');
@@ -637,7 +664,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       <div className="w-full aspect-[16/10] relative bg-brand-ink/40 overflow-hidden">
                         <img
                           src={BOXED_4_PACKS[1].image}
-                          alt="4-Pack"
+                          alt="Factory-4"
                           className="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-700"
                           referrerPolicy="no-referrer"
                         />
@@ -647,7 +674,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           <div className="flex items-center gap-2">
                             <Layers className="w-5 h-5 text-brand-ochre" />
                             <div>
-                              <h4 className="serif text-xl font-black text-brand-cream uppercase tracking-tight">4-Pack Box</h4>
+                              <h4 className="serif text-xl font-black text-brand-cream uppercase tracking-tight">Factory-4</h4>
                               <p className="mono text-[10px] text-brand-ochre mt-0.5">Starting at $18.00</p>
                             </div>
                           </div>
@@ -658,7 +685,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       </div>
                     </button>
 
-                    {/* 6-PACK HERO (VISUALLY EMPHASIZED) */}
+                    {/* 6-PACK HERO -> FACTORY-6 (VISUALLY EMPHASIZED) */}
                     <button
                       onClick={() => {
                         setSelectedSize('6pack');
@@ -672,7 +699,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                       <div className="w-full aspect-[16/10] relative bg-brand-ink/40 overflow-hidden">
                         <img
                           src={BOXED_6_PACKS[2].image}
-                          alt="6-Pack"
+                          alt="Factory-6"
                           className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
                           referrerPolicy="no-referrer"
                         />
@@ -686,7 +713,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           <div className="flex items-center gap-2">
                             <Trophy className="w-6 h-6 text-brand-ochre fill-brand-ochre animate-bounce" />
                             <div>
-                              <h4 className="serif text-xl font-black text-brand-cream uppercase tracking-tight">6-Pack Box</h4>
+                              <h4 className="serif text-xl font-black text-brand-cream uppercase tracking-tight">Factory-6</h4>
                               <p className="mono text-xs text-brand-ochre font-extrabold mt-0.5">
                                 Starting at $26.00 — BEST VALUE
                               </p>
@@ -720,15 +747,15 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                     >
                       <div>
                         <h4 className="serif text-xl font-black text-brand-cream">
-                          {selectedSize === 'single' ? 'CLASSIC BUN' : 'CLASSIC 4/6-PACK'}
+                          {selectedSize === 'single' ? 'CLASSIC ROLL' : selectedSize === '4pack' ? 'CLASSIC FACTORY-4' : 'CLASSIC FACTORY-6'}
                         </h4>
                         <p className="mono text-[10px] text-brand-ochre mt-1">
-                          {selectedSize === 'single' ? '$5.00' : selectedSize === '4pack' ? '$18.00' : '$26.00'}
+                          {selectedSize === 'single' ? '$7.00' : selectedSize === '4pack' ? '$18.00' : '$26.00'}
                         </p>
                       </div>
                       <p className="text-[11px] text-brand-cream/60 leading-normal mt-4">
                         {selectedSize === 'single'
-                          ? 'Secret Frost. Clean. Easy. Always right.'
+                          ? 'Oversized roll + Secret Frost. Clean. Easy. Always right.'
                           : 'Four or six classic buns drenched in velvety vanilla Secret Frost cream whip.'}
                       </p>
                     </button>
@@ -746,11 +773,11 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                     >
                       <div>
                         <h4 className="serif text-xl font-black text-brand-cream flex items-center gap-2">
-                          <span>{selectedSize === 'single' ? 'CAVIAR BUN' : 'MIXED 4/6-PACK'}</span>
+                          <span>{selectedSize === 'single' ? 'CAVIAR ROLL' : selectedSize === '4pack' ? 'MIXED FACTORY-4' : 'MIXED FACTORY-6'}</span>
                           <span className="bg-brand-ochre text-brand-ink text-[8px] font-black px-1.5 py-0.5 rounded">Custom</span>
                         </h4>
                         <p className="mono text-[10px] text-brand-ochre mt-1">
-                          {selectedSize === 'single' ? '$6.00' : selectedSize === '4pack' ? '$22.00' : '$32.00'}
+                          {selectedSize === 'single' ? '$8.00' : selectedSize === '4pack' ? '$22.00' : '$32.00'}
                         </p>
                       </div>
                       <p className="text-[11px] text-brand-cream/60 leading-normal mt-4">
@@ -773,15 +800,15 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                     >
                       <div>
                         <h4 className="serif text-xl font-black text-brand-cream">
-                          {selectedSize === 'single' ? 'PREMIUM BUN' : 'PREMIUM 4/6-PACK'}
+                          {selectedSize === 'single' ? 'PREMIUM ROLL' : selectedSize === '4pack' ? 'PREMIUM FACTORY-4' : 'PREMIUM FACTORY-6'}
                         </h4>
                         <p className="mono text-[10px] text-brand-ochre mt-1">
-                          {selectedSize === 'single' ? '$7.00' : selectedSize === '4pack' ? '$25.00' : '$36.00'}
+                          {selectedSize === 'single' ? '$9.00' : selectedSize === '4pack' ? '$25.00' : '$36.00'}
                         </p>
                       </div>
                       <p className="text-[11px] text-brand-cream/60 leading-normal mt-4">
                         {selectedSize === 'single'
-                          ? 'Our warm signature Velvet Apple Bun topped with slow-simmered regional spiced brown-sugar apples.'
+                          ? 'Oversized warm roll smothered in your choice of signature slow-simmered fruit caviar or premium toppings.'
                           : 'For the elevated box moment. Our ultimate dressed-up party box of highly curated best-selling premium toppings.'}
                       </p>
                     </button>
@@ -972,7 +999,150 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               </div>
             )}
 
-            {/* PHASE 03: UPGRADE OPTIONS & BONUS JARS */}
+            {/* PHASE: DRIZZLE SELECTION */}
+            {phase === 'DRIZZLE_SELECTION' && (
+              <div className="space-y-8 animate-in fade-in duration-300">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/[0.02] border border-brand-ochre/15 p-6 rounded-2xl">
+                  <div>
+                    <span className="mono text-[9px] text-brand-ochre font-black uppercase tracking-widest block mb-1">
+                      Step 3 of 5 • Artisanal Drizzles (+$1.50 per bun)
+                    </span>
+                    <h4 className="serif text-2xl font-black text-brand-cream">
+                      Add Drizzles to Your Buns
+                    </h4>
+                    <p className="text-xs text-brand-cream/60 mt-1 max-w-xl">
+                      Elevate any of your configured buns with a signature warm cascade: hand-crafted Caramel Drizzle, velvety Chocolate Drizzle, or deep Dark Chocolate Drizzle.
+                    </p>
+                  </div>
+
+                  {/* Quick Apply All toolbar */}
+                  <div className="w-full md:w-auto bg-brand-ink/60 border border-brand-ochre/20 p-3 rounded-xl flex flex-col gap-2 shrink-0">
+                    <span className="mono text-[8.5px] text-brand-ochre uppercase font-black tracking-wider block">
+                      Quick Apply to All {maxCaviarSlots} Bun{maxCaviarSlots > 1 ? 's' : ''}:
+                    </span>
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5">
+                      <button
+                        onClick={() => setDrizzleSlots(new Array(maxCaviarSlots).fill('none'))}
+                        className="px-2.5 py-1.5 text-[9px] font-mono font-bold bg-white/5 hover:bg-white/10 text-brand-cream/70 rounded border border-brand-ochre/10 transition-all cursor-pointer"
+                      >
+                        No Drizzle ($0)
+                      </button>
+                      <button
+                        onClick={() => setDrizzleSlots(new Array(maxCaviarSlots).fill('caramel'))}
+                        className="px-2.5 py-1.5 text-[9px] font-mono font-bold bg-amber-950/40 hover:bg-amber-950/70 text-amber-200 rounded border border-amber-500/30 transition-all cursor-pointer"
+                      >
+                        Caramel (+$1.50 ea)
+                      </button>
+                      <button
+                        onClick={() => setDrizzleSlots(new Array(maxCaviarSlots).fill('chocolate'))}
+                        className="px-2.5 py-1.5 text-[9px] font-mono font-bold bg-stone-900 hover:bg-stone-800 text-stone-200 rounded border border-stone-600/40 transition-all cursor-pointer"
+                      >
+                        Chocolate (+$1.50 ea)
+                      </button>
+                      <button
+                        onClick={() => setDrizzleSlots(new Array(maxCaviarSlots).fill('dark-chocolate'))}
+                        className="px-2.5 py-1.5 text-[9px] font-mono font-bold bg-zinc-950 hover:bg-zinc-900 text-zinc-300 rounded border border-zinc-700/50 transition-all cursor-pointer"
+                      >
+                        Dark Choc (+$1.50 ea)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bun cards displaying chosen bun/caviar & drizzle picker */}
+                <div className={`grid grid-cols-1 ${selectedSize === 'single' ? 'max-w-xl mx-auto' : 'md:grid-cols-2 lg:grid-cols-3'} gap-6`}>
+                  {Array.from({ length: maxCaviarSlots }).map((_, index) => {
+                    const slotCaviarId = caviarSlots[index] || 'strawberry';
+                    const fl = selectedStyle === 'classic'
+                      ? { name: 'Classic Secret Frost', description: 'Velvety vanilla bean cream cheese frosting whip', image: classicFrosting, category: 'standard' }
+                      : CAVIAR_FLAVORS.find(f => f.id === slotCaviarId) || { name: 'Standard Caviar', description: '', image: classicFrosting, category: 'standard' };
+                    const activeDrizzleId = drizzleSlots[index] || 'none';
+
+                    return (
+                      <div
+                        key={index}
+                        className="bg-white/[0.02] border border-brand-ochre/15 rounded-2xl p-5 flex flex-col justify-between space-y-4 hover:border-brand-ochre/30 transition-all shadow-md"
+                      >
+                        {/* Bun Details Header */}
+                        <div className="flex items-center space-x-3.5 border-b border-brand-ochre/10 pb-3.5">
+                          <img
+                            src={fl.image}
+                            alt={fl.name}
+                            className="w-14 h-14 rounded-xl object-cover shrink-0 bg-brand-ink/60 border border-brand-ochre/15 shadow"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <span className="mono text-[8.5px] font-black text-brand-ochre uppercase tracking-widest block">
+                              Bun #{index + 1}
+                            </span>
+                            <h5 className="font-serif font-black text-sm text-brand-cream truncate leading-tight mt-0.5">
+                              {fl.name}
+                            </h5>
+                            <span className="text-[9.5px] text-brand-cream/50 line-clamp-1 block mt-0.5 font-sans">
+                              {selectedStyle === 'classic' ? 'All Classic Secret Frost' : fl.category === 'premium' ? 'Premium Seasonal Caviar' : 'Standard Caviar Topping'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Drizzle Selector for this bun */}
+                        <div className="space-y-2">
+                          <label className="mono text-[8.5px] font-black text-brand-cream/60 uppercase tracking-wider block">
+                            Select Drizzle For Bun #{index + 1}:
+                          </label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {DRIZZLE_OPTIONS.map(drizzle => {
+                              const isSelected = activeDrizzleId === drizzle.id;
+                              return (
+                                <button
+                                  key={drizzle.id}
+                                  onClick={() => {
+                                    const newDrizzles = [...drizzleSlots];
+                                    newDrizzles[index] = drizzle.id;
+                                    setDrizzleSlots(newDrizzles);
+                                  }}
+                                  className={`p-2.5 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer min-h-[58px] ${
+                                    isSelected
+                                      ? 'border-brand-terracotta bg-brand-terracotta/15 shadow-sm ring-1 ring-brand-terracotta/40'
+                                      : 'border-brand-ochre/15 bg-white/[0.01] hover:border-brand-ochre/40 hover:bg-white/[0.03]'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between gap-1 w-full">
+                                    <span className={`font-serif text-xs font-bold leading-tight ${isSelected ? 'text-brand-cream' : 'text-brand-cream/80'}`}>
+                                      {drizzle.name}
+                                    </span>
+                                    {isSelected && <Check className="w-3.5 h-3.5 text-brand-terracotta shrink-0" />}
+                                  </div>
+                                  <span className={`mono text-[8px] font-extrabold mt-1 block uppercase tracking-wider ${
+                                    drizzle.price > 0 ? (isSelected ? 'text-brand-terracotta' : 'text-brand-ochre') : 'text-brand-cream/40'
+                                  }`}>
+                                    {drizzle.badge || (drizzle.price > 0 ? `+$${drizzle.price.toFixed(2)}` : 'Included')}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Live Drizzle Price Tally */}
+                <div className="bg-white/5 border border-brand-ochre/15 p-4 rounded-xl text-center space-y-1">
+                  {drizzlesPrice > 0 ? (
+                    <p className="text-xs font-serif font-black italic text-brand-ochre leading-relaxed animate-pulse">
+                      ✨ {drizzleSlots.slice(0, maxCaviarSlots).filter(d => d !== 'none').length} Artisanal Drizzle{drizzleSlots.slice(0, maxCaviarSlots).filter(d => d !== 'none').length > 1 ? 's' : ''} added to your buns: <span className="text-brand-terracotta text-sm">+${drizzlesPrice.toFixed(2)}</span>
+                    </p>
+                  ) : (
+                    <p className="mono text-[9.5px] uppercase tracking-widest text-brand-cream/50 leading-normal">
+                      No drizzles currently selected. Choose Caramel, Chocolate, or Dark Chocolate above to customize each bun!
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* PHASE 04: UPGRADE OPTIONS & BONUS JARS */}
             {phase === 'ADD_ONS' && (
               <div className="space-y-12 animate-in fade-in duration-300">
                 {/* Topping modifications */}
@@ -1008,8 +1178,8 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                         </div>
                         <div className="flex justify-between items-start w-full gap-2">
                           <div>
-                            <h4 className="font-serif font-black text-sm text-brand-cream uppercase tracking-wide">Petit Frost Cup (3.5 oz)</h4>
-                            <p className="text-[10px] text-brand-cream/60 mt-0.5 leading-snug">Staggeringly thick side-cup of vanilla cream whip</p>
+                            <h4 className="font-serif font-black text-sm text-brand-cream uppercase tracking-wide">Petit de Frost (3.5 oz)</h4>
+                            <p className="text-[10px] text-brand-cream/60 mt-0.5 leading-snug">3.5 oz plastic cup of temperature-calibrated Secret Frost whip</p>
                           </div>
                           <div className="mono text-xs font-black text-brand-terracotta shrink-0">+$3.00</div>
                         </div>
@@ -1029,15 +1199,15 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                         <div className="w-full aspect-[4/3] rounded-lg overflow-hidden border border-brand-ochre/10 mb-3 bg-brand-ink/40">
                           <img
                             src={petitCaviarCup}
-                            alt="Petit Caviar Cup"
+                            alt="Petit de Caviar"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 animate-in fade-in duration-300"
                             referrerPolicy="no-referrer"
                           />
                         </div>
                         <div className="flex justify-between items-start w-full gap-2">
                           <div>
-                            <h4 className="font-serif font-black text-sm text-brand-cream uppercase tracking-wide">Petit Caviar Cup (3.5 oz)</h4>
-                            <p className="text-[10px] text-brand-cream/60 mt-0.5 leading-snug">Premium handcrafted fruit reduction glaze side-cup</p>
+                            <h4 className="font-serif font-black text-sm text-brand-cream uppercase tracking-wide">Petit de Caviar (3.5 oz)</h4>
+                            <p className="text-[10px] text-brand-cream/60 mt-0.5 leading-snug">3.5 oz plastic cup of slow-simmered handcrafted fruit caviar</p>
                           </div>
                           <div className="mono text-xs font-black text-brand-terracotta shrink-0">+$3.00</div>
                         </div>
@@ -1416,8 +1586,8 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                             ? 'Single Caviar Bun'
                             : 'Premium Single Bun'
                           : selectedSize === '4pack'
-                          ? 'Bobby’s 4-Pack Collection'
-                          : 'Bobby’s 6-Pack Collection'}
+                          ? 'Bobby’s Factory-4 Collection'
+                          : 'Bobby’s Factory-6 Collection'}
                       </span>
                       <span className="mono text-brand-ochre text-sm font-black">${basePackagePrice.toFixed(2)}</span>
                     </div>
@@ -1477,6 +1647,13 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                         <span className="mono font-black">+${jarsStats.totalPrice.toFixed(2)}</span>
                       </div>
                     )}
+
+                    {drizzlesPrice > 0 && (
+                      <div className="flex justify-between items-baseline text-xs text-brand-ochre font-heading animate-in fade-in slide-in-from-left-2 duration-300">
+                        <span>+ Artisanal Drizzles ({drizzleSlots.slice(0, maxCaviarSlots).filter(d => d !== 'none').length} Buns)</span>
+                        <span className="mono font-black">+${drizzlesPrice.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
 
                   <p className="text-xs text-brand-cream/60 leading-normal border-t border-brand-ochre/10 pt-4 font-serif">
@@ -1505,7 +1682,8 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
             <button
               onClick={() => {
                 if (phase === 'LOGISTICS') setPhase('ADD_ONS');
-                else if (phase === 'ADD_ONS') {
+                else if (phase === 'ADD_ONS') setPhase('DRIZZLE_SELECTION');
+                else if (phase === 'DRIZZLE_SELECTION') {
                   if (selectedStyle === 'classic') setPhase('PACKAGE_SELECTION');
                   else setPhase('CAVIAR_SELECTION');
                 }
@@ -1523,11 +1701,13 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
               onClick={() => {
                 if (phase === 'PACKAGE_SELECTION') {
                   if (selectedStyle === 'classic') {
-                    setPhase('ADD_ONS'); // Classic style skips custom caviar logic completely!
+                    setPhase('DRIZZLE_SELECTION');
                   } else {
                     setPhase('CAVIAR_SELECTION');
                   }
                 } else if (phase === 'CAVIAR_SELECTION') {
+                  setPhase('DRIZZLE_SELECTION');
+                } else if (phase === 'DRIZZLE_SELECTION') {
                   setPhase('ADD_ONS');
                 } else if (phase === 'ADD_ONS') {
                   setPhase('LOGISTICS');

@@ -15,65 +15,75 @@ const RENDEZVOUS_VARIANTS = [
   {
     id: 'little',
     name: 'Little Rendezvous',
-    description: 'Two classic frosted rolls + 1 petite companion jar',
-    price: 15.00,
+    description: 'Two oversized Classic Rolls finished with Secret Frost, plus your choice of two Petit de Frost or Petit de Caviar cups (3.5 oz plastic cups).',
+    price: 18.00,
     rollsCountNum: 2,
-    jarsCountNum: 1,
-    rollsCount: '2 Rolls + 1 Jar',
-    badge: 'Classic Starter'
+    jarsCountNum: 2,
+    rollsCount: '2 Classic Rolls + 2 Petit Cups (3.5 oz)',
+    badge: 'Classic Duo'
   },
   {
     id: 'rendezvous',
     name: 'The Rendezvous',
-    description: 'Two oversized cinnamon rolls, choice of 2 Fru-Fru Caviar flavors + 2 petite jars to take home',
-    price: 18.00,
+    description: 'Two oversized Premium Rolls with your choice of signature toppings, plus two Petit de Frost or Petit de Caviar cups (3.5 oz plastic cups).',
+    price: 22.00,
     rollsCountNum: 2,
     jarsCountNum: 2,
-    rollsCount: '2 Rolls + 2 Jars',
+    rollsCount: '2 Premium Rolls + 2 Petit Cups (3.5 oz)',
     badge: 'Signature Duo'
   },
   {
     id: 'datenight',
     name: 'Date Night Rendezvous',
-    description: 'Upgraded gift packaging, 2 caviar rolls + 4 petite jars (or extra Petite Duo)',
-    price: 22.00,
+    description: 'Two oversized Premium Rolls, plus your choice of two Coupe de Frost or Coupe de Caviar jars (8 oz glass mason jars).',
+    price: 32.00,
     rollsCountNum: 2,
-    jarsCountNum: 4,
-    rollsCount: '2 Rolls + 4 Jars',
+    jarsCountNum: 2,
+    rollsCount: '2 Premium Rolls + 2 Coupe Jars (8 oz)',
     badge: 'Luxury Gift Set'
   },
   {
     id: 'party4',
     name: 'Party of Four',
-    description: '4 classic rolls + 4 petite companion jars',
-    price: 40.00,
+    description: 'Four oversized Premium Rolls with your choice of signature toppings, plus four Petit de Frost or Petit de Caviar cups (3.5 oz plastic cups).',
+    price: 44.00,
     rollsCountNum: 4,
     jarsCountNum: 4,
-    rollsCount: '4 Rolls + 4 Jars',
+    rollsCount: '4 Premium Rolls + 4 Petit Cups (3.5 oz)',
     badge: 'Party Share'
   }
 ];
 
 const BUN_FLAVOR_OPTIONS = [
-  'Wild Blueberry Glaze',
-  'Georgia Peach Cobbler',
-  'Chocolate Cherry Bomb',
-  'Velvet Apple Cinnamon',
-  'Cookies & Cream (Oreo)',
-  'Wildberry Forest',
-  'Signature Classic Roll',
+  'Wild Blueberry Glaze (Premium)',
+  'Georgia Peach Cobbler (Premium)',
+  'Chocolate Cherry Bomb (Premium)',
+  'Velvet Apple Cinnamon (Premium)',
+  'Cookies & Cream (Oreo) (Premium)',
+  'Wildberry Forest Glaze',
+  'Signature Classic Roll (Secret Frost)',
   'Meyer Lemon Whip',
   'Orange Creamsicle'
 ];
 
-const JAR_OPTIONS = [
-  'Secret Frost™ (1/2 oz Signature Cream Whip)',
-  'Strawberry Caviar Reduction (1/2 oz)',
-  'Wildberry Caviar Reduction (1/2 oz)',
-  'Georgia Peach Caviar (1/2 oz)',
-  'Meyer Lemon Cream Whip (1/2 oz)',
-  'Salted Caramel Drizzle (1/2 oz)',
-  'Velvet Apple Spiced Coulis (1/2 oz)'
+const COMPANION_OPTIONS_CUPS = [
+  'Petit de Frost™ (3.5 oz Plastic Cup)',
+  'Petit de Caviar — Strawberry (3.5 oz Cup)',
+  'Petit de Caviar — Wildberry (3.5 oz Cup)',
+  'Petit de Caviar — Georgia Peach (3.5 oz Cup)',
+  'Petit de Frost™ — Meyer Lemon Whip (3.5 oz Cup)',
+  'Petit de Caviar — Salted Caramel (3.5 oz Cup)',
+  'Petit de Caviar — Velvet Apple (3.5 oz Cup)',
+  'Petit de Caviar — Chocolate Cherry Bomb (3.5 oz Cup)'
+];
+
+const COMPANION_OPTIONS_JARS = [
+  'Coupe de Frost™ (8 oz Glass Mason Jar)',
+  'Coupe de Caviar — Strawberry (8 oz Glass Mason Jar)',
+  'Coupe de Caviar — Georgia Peach (8 oz Glass Mason Jar)',
+  'Coupe de Caviar — Wildberry (8 oz Glass Mason Jar)',
+  'Coupe de Caviar — Velvet Apple (8 oz Glass Mason Jar)',
+  'Coupe de Frost™ — Meyer Lemon Zest (8 oz Glass Mason Jar)'
 ];
 
 import trioBunsBuiltDifferent from '../src/assets/images/fancy_buns_caviar_1779751177514.png';
@@ -102,25 +112,24 @@ const Home: React.FC<HomeProps> = ({
   const [rendezvousVariant, setRendezvousVariant] = useState<'little' | 'rendezvous' | 'datenight' | 'party4'>('rendezvous');
   const [rendezvousAdded, setRendezvousAdded] = useState(false);
   const [selectedBuns, setSelectedBuns] = useState<string[]>([
-    'Wild Blueberry Glaze',
-    'Georgia Peach Cobbler',
-    'Chocolate Cherry Bomb',
-    'Velvet Apple Cinnamon',
-    'Cookies & Cream (Oreo)',
-    'Wildberry Forest'
+    'Wild Blueberry Glaze (Premium)',
+    'Georgia Peach Cobbler (Premium)',
+    'Chocolate Cherry Bomb (Premium)',
+    'Velvet Apple Cinnamon (Premium)'
   ]);
   const [selectedJars, setSelectedJars] = useState<string[]>([
-    'Secret Frost™ (1/2 oz Signature Cream Whip)',
-    'Strawberry Caviar Reduction (1/2 oz)',
-    'Wildberry Caviar Reduction (1/2 oz)',
-    'Georgia Peach Caviar (1/2 oz)',
-    'Meyer Lemon Cream Whip (1/2 oz)',
-    'Salted Caramel Drizzle (1/2 oz)'
+    'Petit de Frost™ (3.5 oz Plastic Cup)',
+    'Petit de Caviar — Strawberry (3.5 oz Cup)',
+    'Petit de Caviar — Wildberry (3.5 oz Cup)',
+    'Petit de Caviar — Georgia Peach (3.5 oz Cup)'
   ]);
 
   const selectedRendezvousVariant = RENDEZVOUS_VARIANTS.find(v => v.id === rendezvousVariant) || RENDEZVOUS_VARIANTS[1];
   const rollCount = selectedRendezvousVariant.rollsCountNum;
   const jarCount = selectedRendezvousVariant.jarsCountNum;
+  const isJarType = selectedRendezvousVariant.id === 'datenight';
+  const currentCompanionOptions = isJarType ? COMPANION_OPTIONS_JARS : COMPANION_OPTIONS_CUPS;
+  const companionLabel = isJarType ? 'Coupe Jar (8 oz Mason Jar)' : 'Petit Cup (3.5 oz Plastic Cup)';
 
   const handleBunChange = (index: number, value: string) => {
     setSelectedBuns(prev => {
@@ -278,7 +287,7 @@ const Home: React.FC<HomeProps> = ({
               </h3>
             </div>
             <p className="text-zinc-300 text-xs md:text-sm max-w-md font-medium leading-relaxed">
-              A decadent tasting set pairing gourmet cinnamon rolls with our hand-crafted 1/2 oz companion topping jars.
+              A decadent tasting set pairing gourmet oversized cinnamon rolls with our hand-crafted Petit de Frost, Petit de Caviar, or Coupe jars.
             </p>
           </div>
 
@@ -317,12 +326,12 @@ const Home: React.FC<HomeProps> = ({
                   {selectedRendezvousVariant.description}
                 </p>
 
-                {/* Custom Bun & Jar Dropdown Selection Lists */}
+                {/* Custom Bun & Companion Dropdown Selection Lists */}
                 <div className="space-y-4 pt-2 border-t border-white/10">
                   <div className="flex items-center space-x-2">
                     <Sparkles className="w-3.5 h-3.5 text-brand-ochre" />
                     <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
-                      Customize Your Selection ({rollCount} Rolls & {jarCount} Companion Jars):
+                      Customize Your Selection ({rollCount} Rolls & {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
                     </span>
                   </div>
 
@@ -335,7 +344,7 @@ const Home: React.FC<HomeProps> = ({
                       {Array.from({ length: rollCount }).map((_, i) => (
                         <div key={`bun-select-${i}`} className="space-y-1">
                           <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
-                            <span>Bun Flavor #{i + 1}</span>
+                            <span>Bun #{i + 1}</span>
                             <span className="text-brand-ochre">★ Roll</span>
                           </label>
                           <select
@@ -354,26 +363,26 @@ const Home: React.FC<HomeProps> = ({
                     </div>
                   </div>
 
-                  {/* Companion Jar Choices */}
+                  {/* Companion Choices (Cups or Jars) */}
                   <div className="space-y-2 pt-1">
                     <span className="mono text-[9px] uppercase font-black text-zinc-400 tracking-wider block">
-                      Select {jarCount} Companion Jars (1/2 oz):
+                      Select {jarCount} {isJarType ? 'Coupe de Frost / Caviar Jars (8 oz)' : 'Petit de Frost / Caviar Cups (3.5 oz)'}:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {Array.from({ length: jarCount }).map((_, i) => (
                         <div key={`jar-select-${i}`} className="space-y-1">
                           <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
-                            <span>Companion Jar #{i + 1}</span>
-                            <span className="text-brand-terracotta">1/2 oz Jar</span>
+                            <span>Companion #{i + 1}</span>
+                            <span className="text-brand-terracotta">{companionLabel}</span>
                           </label>
                           <select
-                            value={selectedJars[i] || JAR_OPTIONS[0]}
+                            value={selectedJars[i] || currentCompanionOptions[0]}
                             onChange={(e) => handleJarChange(i, e.target.value)}
                             className="w-full bg-zinc-900 border border-white/20 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer shadow-inner"
                           >
-                            {JAR_OPTIONS.map((jar) => (
-                              <option key={jar} value={jar} className="bg-zinc-900 text-white">
-                                {jar}
+                            {currentCompanionOptions.map((opt) => (
+                              <option key={opt} value={opt} className="bg-zinc-900 text-white">
+                                {opt}
                               </option>
                             ))}
                           </select>
@@ -386,7 +395,7 @@ const Home: React.FC<HomeProps> = ({
                 {/* Included Items Checklist Dynamic Summary */}
                 <div className="space-y-2 pt-2 border-t border-white/10">
                   <span className="mono text-[9px] text-zinc-400 uppercase font-black tracking-widest block">
-                    Your Selection Summary ({rollCount} Rolls + {jarCount} Jars):
+                    Your Selection Summary ({rollCount} Rolls + {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-zinc-200">
                     {selectedBuns.slice(0, rollCount).map((bun, idx) => (
@@ -398,7 +407,7 @@ const Home: React.FC<HomeProps> = ({
                     {selectedJars.slice(0, jarCount).map((jar, idx) => (
                       <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-white/5 p-2.5 rounded-xl border border-white/10">
                         <Check className="w-4 h-4 text-brand-ochre shrink-0 text-brand-terracotta" />
-                        <span className="truncate">Jar {idx + 1}: {jar}</span>
+                        <span className="truncate">{isJarType ? 'Coupe' : 'Petit'} {idx + 1}: {jar}</span>
                       </div>
                     ))}
                   </div>

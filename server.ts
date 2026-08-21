@@ -15,24 +15,44 @@ async function startServer() {
 
   app.use(express.json());
 
-  // Support all variations of truncated names from the UI
-  const accessToken = process.env.SQUARE_ACCESS_TOKEN || process.env.SQUARE_ACCESS_TO || process.env.SQUARE_ACCESS_TOI;
-  const appId = process.env.SQUARE_APPLICATION_ID || process.env.SQUARE_APPLICATION;
-  const locationId = process.env.SQUARE_LOCATION_ID || process.env.SQUARE_LOCATION_I;
+  // Support all variations of truncated or full names from the UI
+  const accessToken = (
+    process.env.SQUARE_ACCESS_TOKEN ||
+    process.env.SQUARE_ACCESS_TOH ||
+    process.env.SQUARE_ACCESS_TOK ||
+    process.env.SQUARE_ACCESS_TOI ||
+    process.env.SQUARE_ACCESS_TO ||
+    Object.entries(process.env).find(([k]) => k.startsWith('SQUARE_ACCESS'))?.[1] ||
+    ''
+  ).trim();
 
-  // Frontend public config
-  const publicAppId = process.env.VITE_SQUARE_APPLICATION_ID || process.env.VITE_SQUARE_APPLIC || appId;
-  const publicLocationId = process.env.VITE_SQUARE_LOCATION_ID || process.env.VITE_SQUARE_LOCAT || locationId;
+  // Resolve App ID & Location ID (supporting full and truncated variable names)
+  const effectiveAppId = (
+    process.env.SQUARE_APPLICATION_ID ||
+    process.env.SQUARE_APPLICATION ||
+    process.env.VITE_SQUARE_APPLICATION_ID ||
+    process.env.VITE_SQUARE_APPLIC ||
+    Object.entries(process.env).find(([k]) => k.startsWith('SQUARE_APP') || k.startsWith('VITE_SQUARE_APP'))?.[1] ||
+    ''
+  ).trim();
+
+  const effectiveLocationId = (
+    process.env.SQUARE_LOCATION_ID ||
+    process.env.SQUARE_LOCATION_I ||
+    process.env.VITE_SQUARE_LOCATION_ID ||
+    process.env.VITE_SQUARE_LOCAT ||
+    Object.entries(process.env).find(([k]) => k.startsWith('SQUARE_LOC') || k.startsWith('VITE_SQUARE_LOC'))?.[1] ||
+    ''
+  ).trim();
 
   console.log('Square Server Config Check:', {
     hasToken: !!accessToken,
-    hasAppId: !!appId,
-    hasLocationId: !!locationId,
-    tokenVariant: process.env.SQUARE_ACCESS_TOKEN ? 'TOKEN' : (process.env.SQUARE_ACCESS_TO ? 'TO' : (process.env.SQUARE_ACCESS_TOI ? 'TOI' : 'NONE')),
-    appIdVariant: process.env.SQUARE_APPLICATION_ID ? 'FULL' : (process.env.SQUARE_APPLICATION ? 'TRUNCATED' : 'NONE'),
+    hasAppId: !!effectiveAppId,
+    hasLocationId: !!effectiveLocationId,
+    appIdPreview: effectiveAppId ? effectiveAppId.substring(0, 10) + '...' : 'NONE',
+    locationIdPreview: effectiveLocationId ? effectiveLocationId.substring(0, 8) + '...' : 'NONE',
   });
 
-  const effectiveAppId = (publicAppId || appId || '').trim();
   const isProductionSquare = effectiveAppId.startsWith('sq0idp') && !effectiveAppId.startsWith('sandbox');
 
   console.log('Square Server Environment:', {
@@ -50,8 +70,8 @@ async function startServer() {
   // API Routes
   app.get("/api/config", (req, res) => {
     res.json({
-      applicationId: publicAppId,
-      locationId: publicLocationId
+      applicationId: effectiveAppId,
+      locationId: effectiveLocationId
     });
   });
 
@@ -168,13 +188,19 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
           amount: BigInt(Math.round(amount * 100)), // Amount in cents
           currency: "USD",
         },
-        locationId: reqLocationId || locationId || 'MISSING_LOCATION',
+        locationId: reqLocationId || effectiveLocationId || 'MISSING_LOCATION',
       });
 
       res.status(200).json(serializeBigInts(response));
     } catch (error: any) {
       console.error("Square Payment Error:", error);
-      res.status(500).json({ error: error.message || "Payment failed" });
+      let errorMsg = "Payment failed";
+      if (error?.errors && Array.isArray(error.errors) && error.errors.length > 0) {
+        errorMsg = error.errors.map((e: any) => e.detail || e.code).join("; ");
+      } else if (error?.message) {
+        errorMsg = error.message;
+      }
+      res.status(500).json({ error: errorMsg });
     }
   });
 
