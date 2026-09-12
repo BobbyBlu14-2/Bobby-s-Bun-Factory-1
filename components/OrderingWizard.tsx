@@ -133,7 +133,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
 
   // Auto reset or update caviar & drizzle slots when package changes
   useEffect(() => {
-    const defaultFlavor = (selectedSize === 'single' && selectedStyle === 'signature') ? 'cherry-bomb' : 'strawberry';
+    const defaultFlavor = (selectedSize === 'single' && selectedStyle === 'signature') ? 'blueberry' : 'strawberry';
     setCaviarSlots(new Array(maxCaviarSlots).fill(defaultFlavor));
     setDrizzleSlots(new Array(maxCaviarSlots).fill('none'));
     setActiveSlotIdx(0);

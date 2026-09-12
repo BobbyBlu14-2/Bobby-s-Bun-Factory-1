@@ -41,49 +41,37 @@ const RENDEZVOUS_VARIANTS = [
     jarsCountNum: 2,
     rollsCount: '2 Premium Rolls + 2 Coupe Jars (8 oz)',
     badge: 'Luxury Gift Set'
-  },
-  {
-    id: 'party4',
-    name: 'Party of Four',
-    description: 'Four oversized Premium Rolls with your choice of signature toppings, plus four Petit de Frost or Petit de Caviar cups (3.5 oz plastic cups).',
-    price: 44.00,
-    rollsCountNum: 4,
-    jarsCountNum: 4,
-    rollsCount: '4 Premium Rolls + 4 Petit Cups (3.5 oz)',
-    badge: 'Party Share'
   }
 ];
 
 const BUN_FLAVOR_OPTIONS = [
-  'Wild Blueberry Glaze (Premium)',
-  'Georgia Peach Cobbler (Premium)',
-  'Chocolate Cherry Bomb (Premium)',
-  'Velvet Apple Cinnamon (Premium)',
-  'Cookies & Cream (Oreo) (Premium)',
-  'Wildberry Forest Glaze',
+  'Blueberry Caviar',
+  'Strawberry Caviar',
+  'Salted Caramel Drizzle',
   'Signature Classic Roll (Secret Frost)',
-  'Meyer Lemon Whip',
-  'Orange Creamsicle'
+  'Georgia Peach Cobbler (Premium)',
+  'Velvet Apple (Premium)',
+  'Wildberry (Premium)'
 ];
 
 const COMPANION_OPTIONS_CUPS = [
   'Petit de Frost™ (3.5 oz Plastic Cup)',
+  'Petit de Caviar — Blueberry (3.5 oz Cup)',
   'Petit de Caviar — Strawberry (3.5 oz Cup)',
   'Petit de Caviar — Wildberry (3.5 oz Cup)',
   'Petit de Caviar — Georgia Peach (3.5 oz Cup)',
-  'Petit de Frost™ — Meyer Lemon Whip (3.5 oz Cup)',
   'Petit de Caviar — Salted Caramel (3.5 oz Cup)',
-  'Petit de Caviar — Velvet Apple (3.5 oz Cup)',
-  'Petit de Caviar — Chocolate Cherry Bomb (3.5 oz Cup)'
+  'Petit de Caviar — Velvet Apple (3.5 oz Cup)'
 ];
 
 const COMPANION_OPTIONS_JARS = [
   'Coupe de Frost™ (8 oz Glass Mason Jar)',
+  'Coupe de Caviar — Blueberry (8 oz Glass Mason Jar)',
   'Coupe de Caviar — Strawberry (8 oz Glass Mason Jar)',
   'Coupe de Caviar — Georgia Peach (8 oz Glass Mason Jar)',
   'Coupe de Caviar — Wildberry (8 oz Glass Mason Jar)',
   'Coupe de Caviar — Velvet Apple (8 oz Glass Mason Jar)',
-  'Coupe de Frost™ — Meyer Lemon Zest (8 oz Glass Mason Jar)'
+  'Coupe de Caviar — Salted Caramel (8 oz Glass Mason Jar)'
 ];
 
 import trioBunsBuiltDifferent from '../src/assets/images/fancy_buns_caviar_1779751177514.png';
@@ -109,13 +97,13 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
-  const [rendezvousVariant, setRendezvousVariant] = useState<'little' | 'rendezvous' | 'datenight' | 'party4'>('rendezvous');
+  const [rendezvousVariant, setRendezvousVariant] = useState<'little' | 'rendezvous' | 'datenight'>('rendezvous');
   const [rendezvousAdded, setRendezvousAdded] = useState(false);
   const [selectedBuns, setSelectedBuns] = useState<string[]>([
-    'Wild Blueberry Glaze (Premium)',
+    'Blueberry Caviar',
     'Georgia Peach Cobbler (Premium)',
-    'Chocolate Cherry Bomb (Premium)',
-    'Velvet Apple Cinnamon (Premium)'
+    'Velvet Apple (Premium)',
+    'Wildberry (Premium)'
   ]);
   const [selectedJars, setSelectedJars] = useState<string[]>([
     'Petit de Frost™ (3.5 oz Plastic Cup)',
@@ -275,18 +263,22 @@ const Home: React.FC<HomeProps> = ({
 
       {/* FEATURED DROP SPOTLIGHT: THE RENDEZVOUS */}
       <div className="max-w-7xl mx-auto w-full px-6 my-12">
-        <section className="bg-gradient-to-br from-brand-ink via-zinc-900 to-brand-ink text-brand-cream rounded-[3rem] overflow-hidden border-2 border-brand-ochre/40 shadow-2xl p-8 md:p-12 relative">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+        <section className="bg-brand-ink text-brand-cream rounded-3xl overflow-hidden border border-brand-ochre/15 shadow-2xl p-6 md:p-12 relative">
+          {/* Dynamic progression accent track matching wizard */}
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-ochre/10">
+            <div className="h-full bg-brand-terracotta w-full" />
+          </div>
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-8 border-b border-brand-ochre/10">
             <div className="space-y-1">
-              <div className="inline-flex items-center space-x-2 bg-brand-terracotta text-white px-3.5 py-1 rounded-full text-[9px] font-mono font-black uppercase tracking-[0.2em]">
-                <Sparkles className="w-3 h-3" />
-                <span>Featured Top Drop</span>
-              </div>
-              <h3 className="serif text-3xl md:text-5xl font-black text-white">
+              <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.3em] block mb-1">
+                Featured Tasting Flight / Prelude Drop
+              </span>
+              <h3 className="serif text-3xl md:text-5xl font-black text-brand-cream uppercase tracking-tight leading-none">
                 The <span className="italic text-brand-ochre font-serif">Rendezvous</span>
               </h3>
             </div>
-            <p className="text-zinc-300 text-xs md:text-sm max-w-md font-medium leading-relaxed">
+            <p className="text-brand-cream/70 text-xs md:text-sm max-w-md font-medium leading-relaxed">
               A decadent tasting set pairing gourmet oversized cinnamon rolls with our hand-crafted Petit de Frost, Petit de Caviar, or Coupe jars.
             </p>
           </div>
@@ -294,11 +286,11 @@ const Home: React.FC<HomeProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Square Photo Container */}
             <div className="lg:col-span-6">
-              <div className="relative w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-brand-cream/20 group">
+              <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-ochre/20 group bg-brand-ink/40">
                 <img 
                   src={duoFeaturedDuoSet} 
                   alt="The Rendezvous - Opened Luxury Gift Box with Frosted Rolls & Glass Companion Jars" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
                 />
                 <div className="absolute top-4 left-4 bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
                   <Star className="w-3 h-3 fill-brand-ochre" />
@@ -310,24 +302,24 @@ const Home: React.FC<HomeProps> = ({
             {/* Details & Variant Selection */}
             <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="flex justify-between items-baseline border-b border-white/10 pb-4">
+                <div className="flex justify-between items-baseline border-b border-brand-ochre/10 pb-4">
                   <div>
                     <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block mb-1">
                       Selected Flight Variant
                     </span>
-                    <h4 className="serif text-2xl font-black text-white">{selectedRendezvousVariant.name}</h4>
+                    <h4 className="serif text-2xl font-black text-brand-cream uppercase tracking-tight">{selectedRendezvousVariant.name}</h4>
                   </div>
                   <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
                     ${selectedRendezvousVariant.price.toFixed(2)}
                   </span>
                 </div>
 
-                <p className="text-zinc-300 text-xs md:text-sm leading-relaxed">
+                <p className="text-brand-cream/70 text-xs md:text-sm leading-relaxed">
                   {selectedRendezvousVariant.description}
                 </p>
 
                 {/* Custom Bun & Companion Dropdown Selection Lists */}
-                <div className="space-y-4 pt-2 border-t border-white/10">
+                <div className="space-y-4 pt-2 border-t border-brand-ochre/10">
                   <div className="flex items-center space-x-2">
                     <Sparkles className="w-3.5 h-3.5 text-brand-ochre" />
                     <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
@@ -337,23 +329,23 @@ const Home: React.FC<HomeProps> = ({
 
                   {/* Bun Flavor Choices */}
                   <div className="space-y-2">
-                    <span className="mono text-[9px] uppercase font-black text-zinc-400 tracking-wider block">
+                    <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
                       Select {rollCount} Bun Flavors:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {Array.from({ length: rollCount }).map((_, i) => (
                         <div key={`bun-select-${i}`} className="space-y-1">
-                          <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
+                          <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
                             <span>Bun #{i + 1}</span>
                             <span className="text-brand-ochre">★ Roll</span>
                           </label>
                           <select
                             value={selectedBuns[i] || BUN_FLAVOR_OPTIONS[0]}
                             onChange={(e) => handleBunChange(i, e.target.value)}
-                            className="w-full bg-zinc-900 border border-white/20 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer shadow-inner"
+                            className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
                           >
                             {BUN_FLAVOR_OPTIONS.map((flavor) => (
-                              <option key={flavor} value={flavor} className="bg-zinc-900 text-white">
+                              <option key={flavor} value={flavor} className="bg-brand-ink text-brand-cream">
                                 {flavor}
                               </option>
                             ))}
@@ -365,23 +357,23 @@ const Home: React.FC<HomeProps> = ({
 
                   {/* Companion Choices (Cups or Jars) */}
                   <div className="space-y-2 pt-1">
-                    <span className="mono text-[9px] uppercase font-black text-zinc-400 tracking-wider block">
+                    <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
                       Select {jarCount} {isJarType ? 'Coupe de Frost / Caviar Jars (8 oz)' : 'Petit de Frost / Caviar Cups (3.5 oz)'}:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {Array.from({ length: jarCount }).map((_, i) => (
                         <div key={`jar-select-${i}`} className="space-y-1">
-                          <label className="mono text-[9px] uppercase font-black text-zinc-300 flex items-center justify-between">
+                          <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
                             <span>Companion #{i + 1}</span>
                             <span className="text-brand-terracotta">{companionLabel}</span>
                           </label>
                           <select
                             value={selectedJars[i] || currentCompanionOptions[0]}
                             onChange={(e) => handleJarChange(i, e.target.value)}
-                            className="w-full bg-zinc-900 border border-white/20 text-white rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer shadow-inner"
+                            className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
                           >
                             {currentCompanionOptions.map((opt) => (
-                              <option key={opt} value={opt} className="bg-zinc-900 text-white">
+                              <option key={opt} value={opt} className="bg-brand-ink text-brand-cream">
                                 {opt}
                               </option>
                             ))}
@@ -393,52 +385,52 @@ const Home: React.FC<HomeProps> = ({
                 </div>
 
                 {/* Included Items Checklist Dynamic Summary */}
-                <div className="space-y-2 pt-2 border-t border-white/10">
-                  <span className="mono text-[9px] text-zinc-400 uppercase font-black tracking-widest block">
+                <div className="space-y-2 pt-2 border-t border-brand-ochre/10">
+                  <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
                     Your Selection Summary ({rollCount} Rolls + {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
                   </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-zinc-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-brand-cream">
                     {selectedBuns.slice(0, rollCount).map((bun, idx) => (
-                      <div key={`summary-bun-${idx}`} className="flex items-center space-x-2 bg-white/5 p-2.5 rounded-xl border border-white/10">
+                      <div key={`summary-bun-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
                         <Check className="w-4 h-4 text-brand-ochre shrink-0" />
                         <span className="truncate">Roll {idx + 1}: {bun}</span>
                       </div>
                     ))}
                     {selectedJars.slice(0, jarCount).map((jar, idx) => (
-                      <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-white/5 p-2.5 rounded-xl border border-white/10">
-                        <Check className="w-4 h-4 text-brand-ochre shrink-0 text-brand-terracotta" />
+                      <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
+                        <Check className="w-4 h-4 text-brand-terracotta shrink-0" />
                         <span className="truncate">{isJarType ? 'Coupe' : 'Petit'} {idx + 1}: {jar}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Variant Buttons to Match Pricing */}
+                {/* Variant Buttons to Match Box Selection Cards */}
                 <div className="space-y-2 pt-2">
-                  <span className="mono text-[9px] text-zinc-400 uppercase font-black tracking-widest block">
+                  <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
                     Choose Size & Pricing Variant:
                   </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     {RENDEZVOUS_VARIANTS.map((variant) => {
                       const isSelected = rendezvousVariant === variant.id;
                       return (
                         <button
                           key={variant.id}
                           onClick={() => setRendezvousVariant(variant.id as any)}
-                          className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                          className={`p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
                             isSelected
-                              ? 'border-brand-terracotta bg-brand-terracotta/20 text-white shadow-lg ring-2 ring-brand-terracotta'
-                              : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                              ? 'border-brand-terracotta bg-brand-terracotta/10 text-brand-cream shadow-lg ring-1 ring-brand-terracotta/40'
+                              : 'border-brand-ochre/20 bg-brand-ink/60 hover:border-brand-ochre/50 hover:bg-white/[0.02] text-brand-cream/70'
                           }`}
                         >
-                          <div className="flex justify-between items-center mb-1">
+                          <div className="flex justify-between items-center mb-1.5">
                             <span className="mono text-[8px] font-black uppercase tracking-wider text-brand-ochre">
                               {variant.badge}
                             </span>
                             {isSelected && <Check className="w-3.5 h-3.5 text-brand-terracotta" />}
                           </div>
-                          <span className="serif text-xs font-black block text-white leading-tight">{variant.name}</span>
-                          <span className="mono text-[10px] text-zinc-400 mt-1">{variant.rollsCount}</span>
+                          <span className="serif text-xs font-black block text-brand-cream leading-tight uppercase">{variant.name}</span>
+                          <span className="mono text-[10px] text-brand-cream/50 mt-1">{variant.rollsCount}</span>
                           <span className="mono text-xs font-black text-brand-ochre mt-2">${variant.price.toFixed(2)}</span>
                         </button>
                       );
@@ -452,13 +444,13 @@ const Home: React.FC<HomeProps> = ({
                 onClick={handleAddRendezvous}
                 className={`w-full py-5 rounded-2xl font-mono font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-xl ${
                   rendezvousAdded
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-brand-terracotta hover:bg-white hover:text-brand-ink text-white'
+                    ? 'bg-emerald-600 text-brand-cream'
+                    : 'bg-brand-terracotta hover:bg-brand-ochre text-brand-cream hover:text-brand-ink'
                 }`}
               >
                 {rendezvousAdded ? (
                   <>
-                    <Check className="w-4 h-4 text-white" />
+                    <Check className="w-4 h-4 text-brand-cream" />
                     <span>✓ Added The Rendezvous to Box!</span>
                   </>
                 ) : (

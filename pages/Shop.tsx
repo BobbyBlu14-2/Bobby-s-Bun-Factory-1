@@ -24,7 +24,7 @@ export const Shop: React.FC<ShopProps> = ({ handleAddToCart }) => {
     if (itemId.includes('caviar')) {
       return CAVIAR_FLAVORS.filter(f => f.id !== 'none').map(f => f.name);
     } else {
-      return ['Classic Vanilla Cream', 'Meyer Lemon Zest', 'Orange Creamsicle'];
+      return ['Classic Vanilla Cream'];
     }
   };
 

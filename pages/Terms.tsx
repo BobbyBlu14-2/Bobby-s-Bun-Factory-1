@@ -46,7 +46,7 @@ const Terms: React.FC = () => {
 
             <h2 className="serif text-lg font-bold text-brand-ink pt-4">3. Premium Ingredients Upcharges</h2>
             <p>
-              Standard toppings are included within custom package pricing structures. Premium ingredients (such as Chocolate Cherry Bomb and Georgia caramelized Peach Outlaw) carry specialized value upcharges clearly detailed in the customization steps.
+              Standard toppings are included within custom package pricing structures. Premium ingredients (such as Velvet Apple and Georgia caramelized Peach) carry specialized value upcharges clearly detailed in the customization steps.
             </p>
 
             <h2 className="serif text-lg font-bold text-brand-ink pt-4">4. Local Pickup Protocol</h2>

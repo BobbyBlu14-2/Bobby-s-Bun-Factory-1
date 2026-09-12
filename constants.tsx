@@ -19,6 +19,7 @@ export { default as classicFrosting } from './src/assets/images/classic_frosting
 export { default as fourPackBuns } from './src/assets/images/four_pack_buns_1781559681011.jpg';
 export { default as sixPackHorizontal } from './src/assets/images/six_pack_horizontal_1781560642971.jpg';
 export { default as singleFruitCaviarBun } from './src/assets/images/single_fruit_caviar_bun_1781632684136.jpg';
+export { default as blueberryCaviarBun } from './src/assets/images/blueberry_caviar_bun_1788119568765.jpg';
 export { default as chocolateCherryCaviar } from './src/assets/images/cherry_bomb_roll_1781638531994.jpg';
 export { default as cookiesCreamTopping } from './src/assets/images/cookies_cream_roll_1781638548197.jpg';
 export { default as fourPackCaviarUpgrade } from './src/assets/images/four_pack_caviar_upgrade_1781735237944.jpg';
@@ -34,6 +35,7 @@ import fourPackBuns from './src/assets/images/four_pack_buns_1781559681011.jpg';
 import sixPackHorizontal from './src/assets/images/six_pack_horizontal_1781560642971.jpg';
 import peachSingleBun from './src/assets/images/peach_single_bun_1781560974108.jpg';
 import singleFruitCaviarBun from './src/assets/images/single_fruit_caviar_bun_1781632684136.jpg';
+import blueberryCaviarBun from './src/assets/images/blueberry_caviar_bun_1788119568765.jpg';
 import velvetAppleBun from './src/assets/images/apple_velvet_chunky_coulis_1781636501773.jpg';
 import classicSingleBun from './src/assets/images/classic_single_bun_1782936257003.jpg';
 import chocolateCherryCaviar from './src/assets/images/cherry_bomb_roll_1781638531994.jpg';
@@ -97,14 +99,14 @@ export const FLAVORS_OF_THE_MONTH: Product[] = [
     color: 'border-brand-ochre/25 text-brand-terracotta bg-orange-50/50'
   },
   {
-    id: 'cherry-bomb',
-    name: 'Chocolate Cherry Bomb',
-    description: 'Warm, hand-crafted roll topped with explosive tart dark cherry reduction, and double-drizzled in rich, swirling dark chocolate sauce.',
+    id: 'blueberry-caviar',
+    name: 'Blueberry Caviar',
+    description: 'Warm, hand-crafted roll smothered in slow-simmered mountain wild blueberry caviar reduction and drizzled with Secret Frost.',
     price: 6.50,
-    image: chocolateCherryCaviar,
+    image: blueberryCaviarBun,
     type: 'bun',
-    tags: ['Premium Drop', 'Chocolate Cherry'],
-    color: 'border-rose-950/20 text-rose-950 bg-rose-50/40'
+    tags: ['Signature Drop', 'Blueberry Caviar'],
+    color: 'border-indigo-950/20 text-indigo-950 bg-indigo-50/40'
   },
   {
     id: 'loaded-bun',
@@ -117,14 +119,14 @@ export const FLAVORS_OF_THE_MONTH: Product[] = [
     color: 'border-amber-950/20 text-amber-950 bg-amber-50/40'
   },
   {
-    id: 'cookies-cream',
-    name: 'Cookies & Cream (Oreo)',
-    description: 'Sweet, warm bun layered beautifully with crushed Oreo cookie sand and loaded inside velvety vanilla bean cream cheese frosting.',
+    id: 'wildberry-drop',
+    name: 'Wildberry',
+    description: 'Forest raspberries, dark blackberries, and sweet mountain blueberries simmered into a vibrant, rich caviar reduction.',
     price: 6.50,
-    image: cookiesCreamTopping,
+    image: flavorMixedBerry,
     type: 'bun',
-    tags: ['Limited Drop', 'Oreo & Cream'],
-    color: 'border-slate-950/20 text-slate-950 bg-slate-50/40'
+    tags: ['Seasonal Drop', 'Wildberry'],
+    color: 'border-rose-950/20 text-rose-950 bg-rose-50/40'
   }
 ];
 
@@ -471,18 +473,14 @@ export const DRIZZLE_OPTIONS: DrizzleOption[] = [
 ];
 
 export const CAVIAR_FLAVORS: CaviarFlavor[] = [
-  // Standard Toppings/Flavors
+  // Standard Caviar Flavors
   { id: 'none', name: 'No Caviar / Classic Roll', category: 'standard', description: 'Just our signature warm bun and velvety Secret Frost cream whip', image: classicFrosting },
-  { id: 'blueberry', name: 'Blueberry', category: 'standard', description: 'Deep mountain wild blueberry indigo glaze', image: caviarBlueberry },
-  { id: 'strawberry', name: 'Strawberry', category: 'standard', description: 'Fresh, sweet mountain-grown strawberry crush', image: flavorStrawberry },
-  { id: 'wild-berry', name: 'Wildberry', category: 'standard', description: 'Forest raspberries, dark blackberries, sweet blueberries', image: caviarWildberry },
-  { id: 'lemon', name: 'Lemon', category: 'standard', description: 'Zesty Meyer lemon infused sweet milk whip', image: lemonFrosting },
-  { id: 'orange', name: 'Orange', category: 'standard', description: 'Sweet orange creamsicle citrus infusion', image: orangeCreamsicleFrosting },
+  { id: 'blueberry', name: 'Blueberry Caviar', category: 'standard', description: 'Deep mountain wild blueberry indigo reduction', image: caviarBlueberry },
+  { id: 'strawberry', name: 'Strawberry Caviar', category: 'standard', description: 'Fresh, sweet mountain-grown strawberry crush', image: flavorStrawberry },
   { id: 'salted-caramel', name: 'Salted Caramel', category: 'standard', description: 'Hand-harvested salted caramel drizzle', image: flavorCaramel },
 
-  // Premium Toppings/Flavors
-  { id: 'cherry-bomb', name: 'Chocolate Cherry Bomb', category: 'premium', description: 'Explosive tart dark cherry reduction with a rich chocolate drizzle', image: chocolateCherryCaviar },
+  // Premium / Seasonal Flavors
   { id: 'peach', name: 'Georgia Peach', category: 'premium', description: 'Fresh succulent Georgia peach chunks caramelized in brown sugar and piled high over warm rolls', image: caviarPeach },
   { id: 'apple-velvet', name: 'Velvet Apple', category: 'premium', description: 'Signature slow-simmered regional apples in spiced brown sugar cinnamon glaze', image: caviarApple },
-  { id: 'oreo', name: 'Cookies & Cream (Oreo)', category: 'premium', description: 'Crushed cookies & cream sand layered in sweet vanilla glaze', image: cookiesCreamTopping }
+  { id: 'wild-berry', name: 'Wildberry', category: 'premium', description: 'Forest raspberries, dark blackberries, sweet blueberries', image: caviarWildberry }
 ];

@@ -7,21 +7,18 @@ This file documents the menu architecture, categorization constraints, and compo
 All products, toppings ("caviars"), and frost options are centered in `/constants.tsx`.
 
 ### A. Toppings (Caviar Flavors)
-Toppings are divided strictly into **Standard** and **Premium** tiers:
+Toppings are divided strictly into **Standard** and **Premium / Seasonal** tiers:
 
-*   **Standard Toppings** (Value: Included in standard upcharge, classic fruit profiles):
-    *   **Blueberry**: Deep mountain wild blueberry indigo glaze.
-    *   **Strawberry**: Fresh, sweet mountain-grown strawberry crush.
-    *   **Wildberry**: Forest raspberries, dark blackberries, sweet blueberries.
-    *   **Lemon**: Zesty Meyer lemon infused sweet milk whip.
-    *   **Orange**: Sweet orange creamsicle citrus infusion.
+*   **Standard Caviar Flavors** (Included in standard upcharge, classic fruit profiles):
+    *   **No Caviar / Classic Roll**: Signature warm bun with velvety Secret Frost cream whip.
+    *   **Blueberry Caviar**: Deep mountain wild blueberry indigo reduction.
+    *   **Strawberry Caviar**: Fresh, sweet mountain-grown strawberry crush.
     *   **Salted Caramel**: Hand-caramelized drizzle with sea salt.
 
-*   **Premium Toppings** (Value: Hand-crafted, chunky/artisanal profiles):
-    *   **Chocolate Cherry Bomb**: Explosive tart dark cherry reduction with a rich chocolate drizzle.
-    *   **The Peach Outlaw**: Fresh succulent Georgia peach chunks caramelized in brown sugar and piled high.
+*   **Premium / Seasonal Flavors** (Hand-crafted, chunky/artisanal reductions):
+    *   **Georgia Peach**: Fresh succulent Georgia peach chunks caramelized in brown sugar and piled high.
     *   **Velvet Apple**: Signature slow-simmered regional apples in spiced brown sugar cinnamon glaze (chunkier cut).
-    *   **Cookies & Cream (Oreo)**: Crushed cookies & cream sand layered in sweet vanilla glaze.
+    *   **Wildberry**: Forest raspberries, dark blackberries, sweet blueberries.
 
 ### B. Frosting Packaging Guidelines
 Secret Frost (our signature cream whip) is served in strictly designated packaging sizes:

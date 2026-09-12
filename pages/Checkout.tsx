@@ -1,7 +1,26 @@
 /// <reference types="vite/client" />
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowLeft, CheckCircle2, AlertCircle, CreditCard as CardIcon, ShieldCheck, Heart } from 'lucide-react';
+import { 
+  ShoppingBag, 
+  ArrowLeft, 
+  CheckCircle2, 
+  AlertCircle, 
+  CreditCard as CardIcon, 
+  ShieldCheck, 
+  Heart,
+  Printer,
+  Sparkles,
+  Clock,
+  MapPin,
+  Mail,
+  User as UserIcon,
+  FileText,
+  ArrowRight,
+  PackageCheck,
+  Check,
+  RotateCcw
+} from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import GearLogo from '../components/GearLogo';
 import { CartItem } from '../types';
@@ -13,12 +32,38 @@ interface CheckoutProps {
   onSuccess: () => void;
 }
 
+interface CompletedOrderData {
+  id: string;
+  date: string;
+  formattedDate: string;
+  type: 'pickup' | 'delivery' | 'shipping';
+  status: string;
+  customerName: string;
+  customerEmail: string;
+  items: {
+    name: string;
+    quantity: number;
+    price: number;
+    modifier?: string;
+    image?: string;
+  }[];
+  subtotal: number;
+  discount: number;
+  discountCode?: string;
+  tax: number;
+  total: number;
+  pickupTime: string;
+  address: string;
+  transactionId: string;
+}
+
 const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess }) => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<CompletedOrderData | null>(null);
   const [config, setConfig] = useState<{ applicationId: string; locationId: string } | null>(null);
   const [isConfigLoaded, setIsConfigLoaded] = useState(false);
   const cardContainerRef = useRef<HTMLDivElement>(null);
@@ -309,43 +354,57 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Payment processing failed. Please check Square configuration.');
 
+        // Capture complete order details for the Thank You & Order Summary screen
+        const orderId = `BBF-${Math.floor(10000 + Math.random() * 90000)}-GA`;
+        const rawDate = new Date();
+        const formattedDate = rawDate.toLocaleDateString('en-US', { 
+          month: 'long', 
+          day: 'numeric', 
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true 
+        });
+        
+        const orderItemsFormatted = items.map(item => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price,
+          modifier: item.modifier ? item.modifier.name : (item.product.description || ''),
+          image: item.product.image
+        }));
+
+        const finalOrderData: CompletedOrderData = {
+          id: orderId,
+          date: rawDate.toISOString().split('T')[0],
+          formattedDate,
+          type: 'pickup' as const,
+          status: 'Freshly Confirmed & In Oven',
+          customerName: fullName.trim() || 'Devoted Bun Lover',
+          customerEmail: email.trim() || 'customer@bobbysbunfactory.com',
+          items: orderItemsFormatted,
+          subtotal: total,
+          discount: discountAmount,
+          discountCode: appliedPromo?.code,
+          tax: activeTotal * 0.08,
+          total: activeTotal,
+          pickupTime: pickupDate || 'Within 45 Minutes',
+          address: 'Atlanta Factory #04 • 3125 Industrial Blvd, Dacula / Atlanta GA',
+          transactionId: data.payment?.id || `SQ-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+        };
+
         // Record purchase to local order history
         try {
-          const orderId = `BBF-${Math.floor(10000 + Math.random() * 90000)}-GA`;
-          const orderDate = new Date().toISOString().split('T')[0];
-          
-          const orderItemsFormatted = items.map(item => ({
-            name: item.product.name,
-            quantity: item.quantity,
-            price: item.product.price,
-            modifier: item.modifier ? item.modifier.name : (item.product.description || ''),
-            image: item.product.image
-          }));
-
-          const newOrder = {
-            id: orderId,
-            date: orderDate,
-            type: 'pickup' as const,
-            status: 'Ready & Collected • Clean Cook',
-            items: orderItemsFormatted,
-            subtotal: activeTotal * 0.9,
-            discount: discountAmount,
-            tax: activeTotal * 0.1,
-            total: activeTotal,
-            pickupTime: pickupDate || 'Within 45 Minutes',
-            address: 'Atlanta Factory #04'
-          };
-
           const storedOrdersRaw = localStorage.getItem('bobbys_orders');
           const storedOrders = storedOrdersRaw ? JSON.parse(storedOrdersRaw) : [];
-          localStorage.setItem('bobbys_orders', JSON.stringify([newOrder, ...storedOrders]));
+          localStorage.setItem('bobbys_orders', JSON.stringify([finalOrderData, ...storedOrders]));
         } catch (e) {
           console.warn('Error saving to order history:', e);
         }
 
+        setCompletedOrder(finalOrderData);
         setSuccess(true);
         onSuccess();
-        setTimeout(() => navigate('/'), 5000);
       } else {
         const errorDetail = result.errors && result.errors.length > 0 
           ? result.errors.map((err: any) => err.message || err.detail).join('; ')
@@ -359,7 +418,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
     }
   };
 
-  if (items.length === 0 && !success) {
+  if (items.length === 0 && !success && !completedOrder) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-8 bg-brand-cream">
         <div className="w-24 h-24 border border-brand-ochre/20 rounded-full flex items-center justify-center text-brand-terracotta">
@@ -374,15 +433,199 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
     );
   }
 
-  if (success) {
+  // Render Thank You & Order Summary View
+  if (success && completedOrder) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-12 bg-brand-ink min-h-[80vh]">
-        <motion.div initial={{ scale: 0, rotate: -45 }} animate={{ scale: 1, rotate: 0 }} className="w-32 h-32 border-4 border-brand-terracotta rounded-none flex items-center justify-center shadow-[0_0_50px_rgba(185,76,47,0.5)]">
-          <CheckCircle2 className="w-16 h-16 text-brand-terracotta" />
-        </motion.div>
-        <div className="space-y-4">
-          <h2 className="serif text-6xl md:text-8xl font-black text-brand-cream uppercase tracking-tight">Desires <br /> <span className="italic text-brand-terracotta">Unlocked.</span></h2>
-          <p className="mono text-brand-ochre text-[10px] uppercase tracking-[0.4em] font-black">Redirecting to Your Vault in 5 seconds...</p>
+      <div className="flex-1 bg-brand-cream min-h-screen py-12 md:py-20">
+        <div className="max-w-5xl mx-auto w-full px-6">
+          {/* Top Success Banner */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-6 mb-12"
+          >
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-terracotta text-brand-cream shadow-2xl relative">
+              <CheckCircle2 className="w-10 h-10" />
+              <div className="absolute -inset-1 border-2 border-brand-terracotta/40 animate-pulse pointer-events-none" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="mono text-xs font-black uppercase tracking-[0.3em] text-brand-terracotta">
+                Payment Authorized & Verified • Square
+              </span>
+              <h1 className="serif text-4xl md:text-6xl font-black text-brand-ink uppercase tracking-tight">
+                Thank You For Your <span className="italic text-brand-terracotta">Indulgence</span>
+              </h1>
+              <p className="text-brand-ink/70 text-base max-w-xl mx-auto font-medium">
+                Your order is confirmed and rolling in our factory ovens. We've sent a digital receipt and pickup notice to <span className="font-bold text-brand-ink">{completedOrder.customerEmail}</span>.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Main Order Manifest Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="bg-brand-ink text-brand-cream rounded-none border border-brand-ochre/15 shadow-2xl overflow-hidden mb-10"
+          >
+            {/* Manifest Header Bar */}
+            <div className="p-6 md:p-8 border-b border-brand-ochre/15 bg-black/40 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center space-x-3">
+                <PackageCheck className="w-6 h-6 text-brand-ochre" />
+                <div>
+                  <span className="mono text-[9px] uppercase tracking-widest text-brand-ochre/70 font-bold block">Official Order Receipt</span>
+                  <span className="mono text-lg font-black text-brand-cream tracking-wider">{completedOrder.id}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 px-3 py-1 text-[10px] mono font-bold uppercase tracking-wider">
+                  <Check className="w-3.5 h-3.5" /> Paid in Full
+                </span>
+                <button 
+                  onClick={() => window.print()}
+                  className="inline-flex items-center gap-1.5 bg-brand-cream/10 hover:bg-brand-cream/20 text-brand-cream border border-brand-cream/20 px-3.5 py-1.5 text-[10px] mono font-black uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5" /> Print Receipt
+                </button>
+              </div>
+            </div>
+
+            {/* Logistics & Customer Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-brand-ochre/10 border-b border-brand-ochre/15 bg-brand-ink/90">
+              {/* Pickup Rendezvous */}
+              <div className="p-6 space-y-2">
+                <span className="mono text-[9px] text-brand-terracotta uppercase tracking-[0.2em] font-black flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5" /> Rendezvous & Timing
+                </span>
+                <p className="serif text-xl font-bold text-brand-cream leading-tight">{completedOrder.pickupTime}</p>
+                <p className="mono text-[10px] text-brand-cream/50 uppercase tracking-wider">{completedOrder.status}</p>
+              </div>
+
+              {/* Pickup Location */}
+              <div className="p-6 space-y-2">
+                <span className="mono text-[9px] text-brand-ochre uppercase tracking-[0.2em] font-black flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5" /> Factory Station
+                </span>
+                <p className="serif text-xl font-bold text-brand-cream leading-tight">Atlanta Factory #04</p>
+                <p className="mono text-[10px] text-brand-cream/50 uppercase tracking-wider">Dacula / Atlanta, GA Hub</p>
+              </div>
+
+              {/* Patron & Payment */}
+              <div className="p-6 space-y-2">
+                <span className="mono text-[9px] text-brand-ochre uppercase tracking-[0.2em] font-black flex items-center gap-1.5">
+                  <UserIcon className="w-3.5 h-3.5" /> Patron Information
+                </span>
+                <p className="serif text-xl font-bold text-brand-cream leading-tight truncate">{completedOrder.customerName}</p>
+                <p className="mono text-[10px] text-brand-cream/50 truncate">{completedOrder.customerEmail}</p>
+              </div>
+            </div>
+
+            {/* Itemized Order List */}
+            <div className="p-6 md:p-10 space-y-6">
+              <div className="flex items-center justify-between border-b border-brand-ochre/15 pb-4">
+                <h3 className="mono text-xs uppercase tracking-[0.3em] font-black text-brand-ochre">
+                  Itemized Manifest ({completedOrder.items.reduce((acc, it) => acc + it.quantity, 0)} Items)
+                </h3>
+                <span className="mono text-[10px] text-brand-cream/40 uppercase tracking-wider">
+                  Transaction: {completedOrder.transactionId}
+                </span>
+              </div>
+
+              <div className="divide-y divide-brand-ochre/10">
+                {completedOrder.items.map((item, idx) => (
+                  <div key={idx} className="py-4 flex items-center justify-between gap-4">
+                    <div className="flex items-center space-x-4">
+                      {item.image && (
+                        <div className="w-16 h-16 bg-brand-cream/5 border border-brand-ochre/15 overflow-hidden flex-shrink-0">
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="serif text-lg md:text-xl font-bold text-brand-cream">{item.name}</h4>
+                        {item.modifier && (
+                          <p className="mono text-[9px] text-brand-terracotta font-bold uppercase tracking-wider mt-0.5">
+                            + {item.modifier}
+                          </p>
+                        )}
+                        <span className="mono text-[10px] text-brand-cream/50 uppercase tracking-wider block mt-0.5">
+                          Qty: {item.quantity} • ${item.price.toFixed(2)} each
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="serif text-xl md:text-2xl font-black text-brand-cream">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Financial Totals Breakdown */}
+              <div className="pt-6 border-t border-brand-ochre/20 bg-black/20 -mx-6 md:-mx-10 -mb-6 md:-mb-10 p-6 md:p-10 space-y-3">
+                <div className="flex justify-between text-sm mono text-brand-cream/70">
+                  <span>Subtotal</span>
+                  <span>${completedOrder.subtotal.toFixed(2)}</span>
+                </div>
+
+                {completedOrder.discount > 0 && (
+                  <div className="flex justify-between text-sm mono text-brand-terracotta font-bold">
+                    <span>Discount ({completedOrder.discountCode || 'PROMO'})</span>
+                    <span>-${completedOrder.discount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between text-sm mono text-brand-cream/70">
+                  <span>Estimated Taxes & Packaging</span>
+                  <span>${completedOrder.tax.toFixed(2)}</span>
+                </div>
+
+                <div className="pt-4 border-t border-brand-ochre/20 flex justify-between items-baseline">
+                  <div>
+                    <span className="mono text-[10px] text-brand-terracotta uppercase tracking-[0.3em] font-black block">Total Settled</span>
+                    <span className="mono text-[9px] text-brand-cream/40 uppercase">Authorized via Square</span>
+                  </div>
+                  <span className="serif text-4xl md:text-5xl font-black text-brand-ochre">
+                    ${completedOrder.total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Action Navigation Buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center"
+          >
+            <Link
+              to="/profile"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-brand-ink hover:bg-brand-ink/90 text-brand-cream px-8 py-4 font-black uppercase tracking-[0.2em] text-xs transition-all shadow-lg"
+            >
+              <FileText className="w-4 h-4 text-brand-ochre" />
+              <span>Track in Bun Vault / Profile</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <Link
+              to="/"
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-brand-terracotta hover:bg-brand-terracotta/90 text-white px-8 py-4 font-black uppercase tracking-[0.2em] text-xs transition-all shadow-lg"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Bake Another Indulgence</span>
+            </Link>
+          </motion.div>
         </div>
       </div>
     );
@@ -572,7 +815,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
                            type="text"
                            value={promoCode}
                            onChange={(e) => setPromoCode(e.target.value)}
-                           placeholder="e.g. BUNS10, STICKY20"
+                           placeholder="ENTER SECRET CODE"
                            className="flex-1 bg-brand-ink text-brand-cream placeholder:text-brand-cream/35 border border-brand-ochre/15 px-4 py-3 font-mono text-xs focus:outline-none focus:border-brand-terracotta transition-colors rounded-none uppercase"
                          />
                          <button

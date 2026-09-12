@@ -192,12 +192,12 @@ const Catering: React.FC = () => {
 
   // Coupe de Caviar Toppings
   const caviarFlavors = [
-    { name: 'Strawberry', note: 'Fresh mountain-grown strawberry crush', image: flavorStrawberry },
-    { name: 'The Peach Outlaw', note: 'Caramelized Georgia peach chunks in brown sugar', image: caviarPeach },
-    { name: 'Velvet Apple', note: 'Slow-simmered regional apples in spiced glaze', image: caviarApple },
-    { name: 'Blueberry', note: 'Deep mountain wild blueberry indigo glaze', image: caviarBlueberry },
-    { name: 'Wild Berry', note: 'Forest raspberries, dark blackberries & blueberries', image: caviarWildberry },
+    { name: 'Blueberry Caviar', note: 'Deep mountain wild blueberry indigo reduction', image: caviarBlueberry },
+    { name: 'Strawberry Caviar', note: 'Fresh mountain-grown strawberry crush', image: flavorStrawberry },
     { name: 'Salted Caramel', note: 'Hand-caramelized drizzle with sea salt flakes', image: flavorCaramel },
+    { name: 'Georgia Peach', note: 'Caramelized Georgia peach chunks in brown sugar', image: caviarPeach },
+    { name: 'Velvet Apple', note: 'Slow-simmered regional apples in spiced glaze', image: caviarApple },
+    { name: 'Wildberry', note: 'Forest raspberries, dark blackberries & blueberries', image: caviarWildberry },
   ];
 
   // Why Bobby's Bun Factory Features

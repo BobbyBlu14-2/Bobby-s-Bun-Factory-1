@@ -69,15 +69,15 @@ const Profile: React.FC<{ currentUser: string | null; onOpenAuth: () => void }> 
       id: 'fav-1',
       name: 'Autumn Crunch Special',
       size: 4,
-      toppings: ['Velvet Apple', 'Salted Caramel', 'Chocolate Cherry Bomb'],
+      toppings: ['Velvet Apple', 'Salted Caramel', 'Blueberry Caviar'],
       frosting: 'Secret Frost'
     },
     {
       id: 'fav-2',
-      name: 'Berry Bomb Box',
+      name: 'Berry Lux Box',
       size: 6,
-      toppings: ['Wildberry', 'Blueberry', 'Strawberry', 'Lemon'],
-      frosting: 'Meyer Lemon Whip'
+      toppings: ['Wildberry Caviar', 'Blueberry Caviar', 'Strawberry Caviar', 'Georgia Peach'],
+      frosting: 'Secret Frost'
     }
   ]);
   const [activeTab, setActiveTab] = useState<'history' | 'loyalty' | 'favorites'>('history');
@@ -100,7 +100,7 @@ const Profile: React.FC<{ currentUser: string | null; onOpenAuth: () => void }> 
           name: 'The Custom Bun Box (6-Pack)',
           quantity: 1,
           price: 24.50,
-          modifier: 'Premium: 2x Velvet Apple, 2x Peach Outlaw, 2x Cookies & Cream',
+          modifier: 'Premium: 2x Velvet Apple, 2x Georgia Peach, 2x Wildberry',
           image: sixPackHorizontal
         },
         {
