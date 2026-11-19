@@ -17,6 +17,7 @@ import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import AdminOrders from './pages/AdminOrders';
 import NewsletterModal from './components/NewsletterModal';
 import { CartItem, OrderType, Product } from './types';
 
@@ -228,10 +229,12 @@ const App: React.FC = () => {
                 items={cart} 
                 total={cartTotal} 
                 pickupDate={pickupDate}
+                orderType={orderType}
                 onSuccess={handleClearCart} 
               />
             } 
           />
+          <Route path="/admin" element={<AdminOrders />} />
           <Route 
             path="/profile" 
             element={

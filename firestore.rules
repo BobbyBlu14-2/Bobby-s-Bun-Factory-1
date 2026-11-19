@@ -1,8 +1,140 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Global safety net: deny all by default
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isVerified() && (
+        request.auth.token.email == 'BluMarketingGrp@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidOrder(data) {
+      return data.keys().hasAll([
+        'orderNumber',
+        'userId',
+        'customerName',
+        'customerEmail',
+        'orderType',
+        'status',
+        'pickupTime',
+        'address',
+        'items',
+        'itemsSummary',
+        'subtotal',
+        'discount',
+        'tax',
+        'total',
+        'transactionId',
+        'date',
+        'formattedDate',
+        'createdAt',
+        'updatedAt'
+      ])
+      && data.keys().hasOnly([
+        'orderNumber',
+        'userId',
+        'customerName',
+        'customerEmail',
+        'orderType',
+        'status',
+        'pickupTime',
+        'address',
+        'items',
+        'itemsSummary',
+        'subtotal',
+        'discount',
+        'discountCode',
+        'tax',
+        'total',
+        'transactionId',
+        'squareOrderId',
+        'date',
+        'formattedDate',
+        'createdAt',
+        'updatedAt'
+      ])
+      && data.orderNumber is string && data.orderNumber.size() >= 3 && data.orderNumber.size() <= 64
+      && data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128
+      && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 120
+      && data.customerEmail is string && data.customerEmail.size() >= 3 && data.customerEmail.size() <= 180
+      && data.orderType in ['pickup', 'delivery', 'shipping']
+      && data.status in ['Confirmed & In Oven', 'Ready for Pickup', 'Picked Up', 'Cancelled']
+      && data.pickupTime is string && data.pickupTime.size() >= 1 && data.pickupTime.size() <= 120
+      && data.address is string && data.address.size() >= 1 && data.address.size() <= 250
+      && data.items is list && data.items.size() > 0 && data.items.size() <= 50 && data.items[0] is map
+      && data.itemsSummary is string && data.itemsSummary.size() >= 1 && data.itemsSummary.size() <= 4000
+      && data.subtotal is number && data.subtotal >= 0
+      && data.discount is number && data.discount >= 0
+      && data.tax is number && data.tax >= 0
+      && data.total is number && data.total >= 0
+      && data.transactionId is string && data.transactionId.size() >= 4 && data.transactionId.size() <= 128
+      && data.date is string && data.date.size() >= 8 && data.date.size() <= 32
+      && data.formattedDate is string && data.formattedDate.size() >= 4 && data.formattedDate.size() <= 80
+      && (!('discountCode' in data) || (data.discountCode is string && data.discountCode.size() <= 64))
+      && (!('squareOrderId' in data) || (data.squareOrderId is string && data.squareOrderId.size() <= 128));
+    }
+
+    // Boot connectivity check doc (non-PII)
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // Admin registry (managed strictly via Firebase console)
+    match /admins/{adminId} {
+      allow read, write: if false;
+    }
+
+    // Customer orders collection (PII isolated to admin and authenticated owner)
+    match /orders/{orderId} {
+      allow get: if isAdmin() || (isVerified() && existing().userId == request.auth.uid);
+      allow list: if isAdmin() || (isVerified() && existing().userId == request.auth.uid);
+
+      allow create: if isValidId(orderId)
+        && isValidOrder(incoming())
+        && incoming().status == 'Confirmed & In Oven'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time
+        && (
+          (isSignedIn() && incoming().userId == request.auth.uid) ||
+          (!isSignedIn() && incoming().userId == 'guest')
+        );
+
+      allow update: if isAdmin()
+        && isValidId(orderId)
+        && isValidOrder(incoming())
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().orderNumber == existing().orderNumber
+        && incoming().userId == existing().userId
+        && incoming().transactionId == existing().transactionId
+        && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt', 'pickupTime']);
+
+      allow delete: if isAdmin() && isValidId(orderId);
     }
   }
 }

@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Completed online bakery order with itemized bun configurations and Square payment references.",
+      "type": "object",
+      "properties": {
+        "orderNumber": {
+          "type": "string",
+          "description": "Human-readable order reference number (e.g., BBF-12345-GA)",
+          "maxLength": 64
+        },
+        "userId": {
+          "type": "string",
+          "description": "Authenticated user UID or 'guest' for guest checkout",
+          "maxLength": 128
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Customer full name",
+          "maxLength": 120
+        },
+        "customerEmail": {
+          "type": "string",
+          "description": "Customer email address",
+          "format": "email",
+          "maxLength": 180
+        },
+        "orderType": {
+          "type": "string",
+          "enum": ["pickup", "delivery", "shipping"],
+          "description": "Fulfillment method",
+          "maxLength": 32
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Confirmed & In Oven", "Ready for Pickup", "Picked Up", "Cancelled"],
+          "description": "Kitchen fulfillment status",
+          "maxLength": 64
+        },
+        "pickupTime": {
+          "type": "string",
+          "description": "Selected Saturday drop date or pickup window",
+          "maxLength": 120
+        },
+        "address": {
+          "type": "string",
+          "description": "Pickup hub or delivery address",
+          "maxLength": 250
+        },
+        "itemsSummary": {
+          "type": "string",
+          "description": "Plain-text summary of every bun, caviar, drizzle, and jar in the order",
+          "maxLength": 4000
+        },
+        "subtotal": {
+          "type": "number",
+          "description": "Order subtotal before discounts"
+        },
+        "discount": {
+          "type": "number",
+          "description": "Promo or bundle discount amount"
+        },
+        "discountCode": {
+          "type": "string",
+          "description": "Applied promo code if any",
+          "maxLength": 64
+        },
+        "tax": {
+          "type": "number",
+          "description": "Estimated tax amount"
+        },
+        "total": {
+          "type": "number",
+          "description": "Final settled amount charged via Square"
+        },
+        "transactionId": {
+          "type": "string",
+          "description": "Square payment ID",
+          "maxLength": 128
+        },
+        "squareOrderId": {
+          "type": "string",
+          "description": "Square Orders API order ID",
+          "maxLength": 128
+        },
+        "date": {
+          "type": "string",
+          "description": "ISO calendar date YYYY-MM-DD",
+          "maxLength": 32
+        },
+        "formattedDate": {
+          "type": "string",
+          "description": "Human-readable order timestamp",
+          "maxLength": 80
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp"
+        }
+      },
+      "required": [
+        "orderNumber",
+        "userId",
+        "customerName",
+        "customerEmail",
+        "orderType",
+        "status",
+        "pickupTime",
+        "address",
+        "itemsSummary",
+        "subtotal",
+        "discount",
+        "tax",
+        "total",
+        "transactionId",
+        "date",
+        "formattedDate",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": {
+        "$ref": "#/entities/Order"
+      },
+      "description": "Online customer orders synced alongside Square payments and fulfillment status."
+    }
+  }
+}

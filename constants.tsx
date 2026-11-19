@@ -26,7 +26,9 @@ export { default as fourPackCaviarUpgrade } from './src/assets/images/four_pack_
 export { default as cateringHeroSpread } from './src/assets/images/catering_hero_spread_1784912007707.jpg';
 export { default as jumboComparisonTray } from './src/assets/images/jumbo_comparison_tray_1784982911022.jpg';
 export { default as miniBunTraySide } from './src/assets/images/mini_bun_tray_side_1785015555305.jpg';
+export { default as cinnabitesChopped } from './src/assets/images/cinnabites_chopped_1779753276487.png';
 export { default as duoFeaturedDuoSet } from './src/assets/images/rendezvous_colossal_gift_box_1786202990064.jpg';
+export { default as happierHolidaysFlyer } from './src/assets/images/happier_holidays_flyer_1792963741971.jpg';
 
 import classicFrosting from './src/assets/images/classic_frosting_1779749364471.png';
 import lemonFrosting from './src/assets/images/lemon_frosting_1779749381826.png';
@@ -484,3 +486,88 @@ export const CAVIAR_FLAVORS: CaviarFlavor[] = [
   { id: 'apple-velvet', name: 'Velvet Apple', category: 'premium', description: 'Signature slow-simmered regional apples in spiced brown sugar cinnamon glaze', image: caviarApple },
   { id: 'wild-berry', name: 'Wildberry', category: 'premium', description: 'Forest raspberries, dark blackberries, sweet blueberries', image: caviarWildberry }
 ];
+
+export interface MiniPack {
+  id: string;
+  name: string;
+  count: number;
+  price: number;
+  quip: string;
+  dippersIncluded: string;
+  dipperCount: number;
+  badge?: string;
+  description: string;
+  popular?: boolean;
+}
+
+export const MINI_PACKS: MiniPack[] = [
+  {
+    id: 'minis-3pack',
+    name: '3-Pack Minis',
+    count: 3,
+    price: 7.50,
+    quip: 'Share one with a friend. Choose wisely.',
+    dippersIncluded: '1x Petit Secret Frost Cup (3.5 oz)',
+    dipperCount: 1,
+    badge: 'Taster',
+    description: 'Fresh bite-sized cinnamon perfection served warm with our velvety Secret Frost dipping cup.'
+  },
+  {
+    id: 'minis-6pack',
+    name: '6-Pack Minis',
+    count: 6,
+    price: 14.00,
+    quip: "Tell your friends...or Don't. No Judgment Zone",
+    dippersIncluded: '1x Petit Secret Frost Cup (3.5 oz)',
+    dipperCount: 1,
+    badge: 'Solo Stash',
+    description: 'Warm, golden bite-sized rolls with Secret Frost cream whip. No judgment zone.'
+  },
+  {
+    id: 'minis-9pack',
+    name: '9-Pack Minis',
+    count: 9,
+    price: 20.00,
+    quip: 'Lets celebrate together!.. or not.',
+    dippersIncluded: '2x Petit Secret Frost Cups (3.5 oz)',
+    dipperCount: 2,
+    badge: 'Sweet Spot',
+    description: 'Nine fresh bite-sized buns packed warm with double the Secret Frost dipping power.'
+  },
+  {
+    id: 'minis-12pack',
+    name: '12-Pack Minis',
+    count: 12,
+    price: 26.00,
+    quip: 'Say you only got 6.',
+    dippersIncluded: '2x Petit Secret Frost Cups (3.5 oz)',
+    dipperCount: 2,
+    badge: 'Fan Favorite',
+    popular: true,
+    description: 'A full dozen warm minis in a sharing tray with 2 generous Secret Frost dippers.'
+  },
+  {
+    id: 'minis-24pack',
+    name: '24-Pack Minis',
+    count: 24,
+    price: 48.00,
+    quip: 'Now its a Party... Send the invites through MySpace.',
+    dippersIncluded: '4x Petit Secret Frost Cups (3.5 oz)',
+    dipperCount: 4,
+    badge: 'Party Tray',
+    popular: true,
+    description: 'Two dozen fluffy minis packaged for celebrations, game days, and office morning wins.'
+  },
+  {
+    id: 'minis-40pack',
+    name: '40-Pack Minis',
+    count: 40,
+    price: 75.00,
+    quip: 'Share the Love!',
+    dippersIncluded: '6x Petit Secret Frost Cups (3.5 oz)',
+    dipperCount: 6,
+    badge: 'Grand Spread',
+    description: 'Our ultimate bite-sized catering tray of 40 warm minis with a six-pack of Secret Frost dippers.'
+  }
+];
+

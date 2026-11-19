@@ -63,6 +63,7 @@ const Footer: React.FC = () => {
               <span className="mono text-[10px] text-brand-terracotta font-black uppercase tracking-[0.2em] mb-2">Boundaries</span>
               <Link to="/privacy" className="text-sm font-bold hover:text-brand-ochre transition-colors">Privacy Policy</Link>
               <Link to="/terms" className="text-sm font-bold hover:text-brand-ochre transition-colors">The Rules of Play</Link>
+              <Link to="/admin" className="text-sm font-bold hover:text-brand-ochre transition-colors">Kitchen Orders</Link>
             </div>
           </div>
 

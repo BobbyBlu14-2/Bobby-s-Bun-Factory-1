@@ -22,13 +22,16 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth, OperationType, handleFirestoreError } from '../src/firebase';
 import GearLogo from '../components/GearLogo';
-import { CartItem } from '../types';
+import { CartItem, OrderType } from '../types';
 
 interface CheckoutProps {
   items: CartItem[];
   total: number;
   pickupDate?: string;
+  orderType?: OrderType;
   onSuccess: () => void;
 }
 
@@ -57,7 +60,7 @@ interface CompletedOrderData {
   transactionId: string;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess }) => {
+const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, orderType = 'pickup', onSuccess }) => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSdkLoaded, setIsSdkLoaded] = useState(false);
@@ -71,7 +74,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
   const cardRef = useRef<any>(null);
 
   const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('BluMarketingGrp@gmail.com'); // Default to the active user's email
+  const [email, setEmail] = useState('');
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number; type: 'percent' | 'fixed'; description: string } | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
@@ -341,6 +344,20 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
     try {
       const result = await cardRef.current.tokenize();
       if (result.status === 'OK') {
+        const orderId = `BBF-${Math.floor(10000 + Math.random() * 90000)}-GA`;
+        const cleanCustomerName = (fullName.trim() || 'Devoted Bun Lover').slice(0, 120);
+        const cleanCustomerEmail = (email.trim() || 'customer@bobbysbunfactory.com').slice(0, 180);
+        const cleanPickupTime = (pickupDate || 'Within 45 Minutes').slice(0, 120);
+
+        const orderItemsFormatted = items.map(item => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: Number((item.product.price + (item.modifier?.price || 0)).toFixed(2)),
+          modifier: item.modifier ? item.modifier.name : (item.product.description || ''),
+          description: item.product.description || '',
+          image: item.product.image || ''
+        }));
+
         const response = await fetch('/api/payments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -348,6 +365,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
             sourceId: result.token,
             amount: activeTotal,
             locationId: locationId,
+            orderId,
+            customerName: cleanCustomerName,
+            customerEmail: cleanCustomerEmail,
+            pickupDate: cleanPickupTime,
+            orderType,
+            promoCode: appliedPromo?.code || '',
+            discountAmount,
+            items: orderItemsFormatted,
           }),
         });
 
@@ -355,7 +380,6 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
         if (!response.ok) throw new Error(data.error || 'Payment processing failed. Please check Square configuration.');
 
         // Capture complete order details for the Thank You & Order Summary screen
-        const orderId = `BBF-${Math.floor(10000 + Math.random() * 90000)}-GA`;
         const rawDate = new Date();
         const formattedDate = rawDate.toLocaleDateString('en-US', { 
           month: 'long', 
@@ -365,33 +389,86 @@ const Checkout: React.FC<CheckoutProps> = ({ items, total, pickupDate, onSuccess
           minute: '2-digit',
           hour12: true 
         });
-        
-        const orderItemsFormatted = items.map(item => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price,
-          modifier: item.modifier ? item.modifier.name : (item.product.description || ''),
-          image: item.product.image
-        }));
+
+        const transactionId = String(
+          data.payment?.id || `SQ-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+        ).slice(0, 128);
+        const squareOrderId = data.squareOrderId ? String(data.squareOrderId).slice(0, 128) : '';
+        const addressText = 'Atlanta Factory #04 • 3125 Industrial Blvd, Dacula / Atlanta GA';
+
+        const safeOrderType: 'pickup' | 'delivery' | 'shipping' =
+          orderType === 'delivery'
+            ? 'delivery'
+            : orderType === 'shipping'
+            ? 'shipping'
+            : 'pickup';
 
         const finalOrderData: CompletedOrderData = {
           id: orderId,
           date: rawDate.toISOString().split('T')[0],
           formattedDate,
-          type: 'pickup' as const,
-          status: 'Freshly Confirmed & In Oven',
-          customerName: fullName.trim() || 'Devoted Bun Lover',
-          customerEmail: email.trim() || 'customer@bobbysbunfactory.com',
+          type: safeOrderType,
+          status: 'Confirmed & In Oven',
+          customerName: cleanCustomerName,
+          customerEmail: cleanCustomerEmail,
           items: orderItemsFormatted,
           subtotal: total,
           discount: discountAmount,
           discountCode: appliedPromo?.code,
-          tax: activeTotal * 0.08,
-          total: activeTotal,
-          pickupTime: pickupDate || 'Within 45 Minutes',
-          address: 'Atlanta Factory #04 • 3125 Industrial Blvd, Dacula / Atlanta GA',
-          transactionId: data.payment?.id || `SQ-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+          tax: Number((activeTotal * 0.08).toFixed(2)),
+          total: Number(activeTotal.toFixed(2)),
+          pickupTime: cleanPickupTime,
+          address: addressText,
+          transactionId
         };
+
+        // Record purchase to Firestore for live Kitchen & Admin Order Hub
+        const itemsSummaryText = orderItemsFormatted
+          .map(it => `${it.quantity}x ${it.name}${it.modifier ? ` — ${it.modifier}` : ''}`)
+          .join(' | ')
+          .slice(0, 3990) || 'Bobby\'s Bun Factory Order';
+
+        const firestoreOrderDoc: Record<string, any> = {
+          orderNumber: orderId,
+          userId: auth.currentUser ? auth.currentUser.uid : 'guest',
+          customerName: cleanCustomerName,
+          customerEmail: cleanCustomerEmail,
+          orderType: safeOrderType,
+          status: 'Confirmed & In Oven',
+          pickupTime: cleanPickupTime,
+          address: addressText.slice(0, 250),
+          items: orderItemsFormatted.slice(0, 50).map(it => ({
+            name: String(it.name || 'Bakery Item').slice(0, 200),
+            quantity: Math.max(1, Number(it.quantity || 1)),
+            price: Number(it.price || 0),
+            modifier: String(it.modifier || '').slice(0, 1200),
+          })),
+          itemsSummary: itemsSummaryText,
+          subtotal: Number(total.toFixed(2)),
+          discount: Number(discountAmount.toFixed(2)),
+          tax: Number((activeTotal * 0.08).toFixed(2)),
+          total: Number(activeTotal.toFixed(2)),
+          transactionId,
+          date: rawDate.toISOString().split('T')[0],
+          formattedDate: formattedDate.slice(0, 80),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
+
+        if (appliedPromo?.code) {
+          firestoreOrderDoc.discountCode = appliedPromo.code.slice(0, 64);
+        }
+        if (squareOrderId) {
+          firestoreOrderDoc.squareOrderId = squareOrderId;
+        }
+
+        setDoc(doc(db, 'orders', orderId), firestoreOrderDoc).catch((fsErr) => {
+          try {
+            handleFirestoreError(fsErr, OperationType.CREATE, `orders/${orderId}`);
+          } catch {
+            // Do not block the customer receipt screen if Firestore backup fails after a live payment
+          }
+        });
 
         // Record purchase to local order history
         try {

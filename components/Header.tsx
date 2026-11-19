@@ -66,6 +66,11 @@ const Header: React.FC<HeaderProps> = ({
               document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
             }
           }} className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">The Box</Link>
+          <Link to="/#minis-menu-section" onClick={() => {
+            if (window.location.pathname === '/') {
+              document.getElementById('minis-menu-section')?.scrollIntoView({ behavior: 'smooth' });
+            }
+          }} className="hover:text-brand-terracotta transition-all hover:tracking-[0.3em]">The Minis</Link>
           <Link to="/shop" className="text-brand-terracotta hover:text-brand-terracotta flex items-center gap-1 font-bold hover:tracking-[0.3em] transition-all">
             The Jars <span className="bg-brand-terracotta text-white text-[8px] font-mono px-1 py-0.2 rounded font-black uppercase scale-90">NEW</span>
           </Link>
@@ -150,6 +155,18 @@ const Header: React.FC<HeaderProps> = ({
               className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
             >
               The Box
+            </Link>
+            <Link 
+              to="/" 
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                setTimeout(() => {
+                  document.getElementById('minis-menu-section')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }} 
+              className="hover:text-brand-terracotta border-b border-brand-sand/20 pb-3 transition-colors"
+            >
+              The Minis
             </Link>
             <Link 
               to="/shop" 

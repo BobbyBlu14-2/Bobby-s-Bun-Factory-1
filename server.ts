@@ -174,10 +174,137 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
   };
 
   app.post("/api/payments", async (req, res) => {
-    const { sourceId, amount, locationId: reqLocationId } = req.body;
+    const {
+      sourceId,
+      amount,
+      locationId: reqLocationId,
+      orderId: clientOrderRef,
+      customerName,
+      customerEmail,
+      pickupDate,
+      orderType,
+      promoCode,
+      discountAmount,
+      items
+    } = req.body;
 
     if (!accessToken) {
       return res.status(500).json({ error: "SQUARE_ACCESS_TOKEN is not configured on the server." });
+    }
+
+    const activeLocationId = reqLocationId || effectiveLocationId || 'MISSING_LOCATION';
+    const chargeCents = Math.max(1, Math.round(Number(amount || 0) * 100));
+    const safeOrderRef = (clientOrderRef || `BBF-${Math.floor(10000 + Math.random() * 90000)}-GA`).slice(0, 40);
+    const parsedItems: Array<{
+      name: string;
+      quantity: number;
+      price: number;
+      modifier?: string;
+      description?: string;
+      image?: string;
+    }> = Array.isArray(items) ? items : [];
+
+    // Build readable multi-line manifest for Square notes, local storage, and Google Sheets
+    const itemsSummary = parsedItems.length > 0
+      ? parsedItems
+          .map((item) => {
+            const detail = item.modifier || item.description || '';
+            return `${item.quantity}x ${item.name} ($${Number(item.price || 0).toFixed(2)})${detail ? ` — ${detail}` : ''}`;
+          })
+          .join(' | ')
+      : 'Bobby\'s Bun Factory Order';
+
+    const rawNote = `${safeOrderRef} | ${customerName || 'Guest'} (${customerEmail || 'No email'}) | Pickup: ${pickupDate || 'Next Saturday'} | ${itemsSummary}`;
+    // Square Payment.note max length is 500 characters
+    const paymentNote = rawNote.length > 495 ? rawNote.substring(0, 492) + '...' : rawNote;
+
+    // Step 1: Try creating a full Square Order so every bun & topping appears in Square Orders/Transactions
+    let squareOrderId: string | undefined;
+    try {
+      let lineItems: Array<{
+        name: string;
+        quantity: string;
+        note?: string;
+        basePriceMoney: { amount: bigint; currency: "USD" };
+      }> = [];
+
+      if (parsedItems.length > 0) {
+        lineItems = parsedItems.map((item) => {
+          const unitCents = Math.max(0, Math.round(Number(item.price || 0) * 100));
+          const qty = Math.max(1, Math.round(Number(item.quantity || 1)));
+          const detailText = (item.modifier || item.description || '').trim();
+          return {
+            name: String(item.name || 'Bakery Item').slice(0, 500),
+            quantity: String(qty),
+            ...(detailText ? { note: detailText.slice(0, 500) } : {}),
+            basePriceMoney: {
+              amount: BigInt(unitCents),
+              currency: "USD",
+            },
+          };
+        });
+
+        const lineItemsSumCents = parsedItems.reduce(
+          (acc, item) => acc + Math.max(0, Math.round(Number(item.price || 0) * 100)) * Math.max(1, Math.round(Number(item.quantity || 1))),
+          0
+        );
+
+        const discounts: Array<{
+          name: string;
+          amountMoney: { amount: bigint; currency: "USD" };
+          scope: "ORDER";
+        }> = [];
+
+        if (lineItemsSumCents > chargeCents) {
+          discounts.push({
+            name: promoCode ? `Promo (${promoCode})` : 'Bundle / Promo Discount',
+            amountMoney: {
+              amount: BigInt(lineItemsSumCents - chargeCents),
+              currency: "USD",
+            },
+            scope: "ORDER",
+          });
+        } else if (lineItemsSumCents < chargeCents) {
+          lineItems.push({
+            name: 'Packaging & Order Adjustment',
+            quantity: '1',
+            basePriceMoney: {
+              amount: BigInt(chargeCents - lineItemsSumCents),
+              currency: "USD",
+            },
+          });
+        }
+
+        const orderResponse = await squareClient.orders.create({
+          idempotencyKey: crypto.randomUUID(),
+          order: {
+            locationId: activeLocationId,
+            referenceId: safeOrderRef,
+            lineItems,
+            ...(discounts.length > 0 ? { discounts } : {}),
+            fulfillments: [
+              {
+                type: "PICKUP",
+                state: "PROPOSED",
+                pickupDetails: {
+                  recipient: {
+                    displayName: (customerName || 'Devoted Bun Lover').slice(0, 250),
+                    ...(customerEmail ? { emailAddress: String(customerEmail).slice(0, 250) } : {}),
+                  },
+                  scheduleType: "ASAP",
+                  note: `Pickup: ${pickupDate || 'This Saturday'} | ${itemsSummary}`.slice(0, 500),
+                },
+              },
+            ],
+          },
+        });
+
+        squareOrderId = orderResponse.order?.id;
+        console.log('Square Order created with line items:', squareOrderId);
+      }
+    } catch (orderErr: any) {
+      console.warn('Could not pre-create Square Order (will still attach note to Payment):', orderErr?.message || orderErr);
+      squareOrderId = undefined;
     }
 
     try {
@@ -185,13 +312,83 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
         sourceId,
         idempotencyKey: crypto.randomUUID(),
         amountMoney: {
-          amount: BigInt(Math.round(amount * 100)), // Amount in cents
+          amount: BigInt(chargeCents),
           currency: "USD",
         },
-        locationId: reqLocationId || effectiveLocationId || 'MISSING_LOCATION',
+        locationId: activeLocationId,
+        ...(squareOrderId ? { orderId: squareOrderId } : {}),
+        referenceId: safeOrderRef,
+        ...(customerEmail ? { buyerEmailAddress: String(customerEmail).slice(0, 255) } : {}),
+        note: paymentNote,
       });
 
-      res.status(200).json(serializeBigInts(response));
+      const paymentId = response.payment?.id || `SQ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+
+      // Step 2: Persist full itemized order on the server & forward to Google Sheets webhook
+      const orderRecord = {
+        type: "order",
+        id: safeOrderRef,
+        orderNumber: safeOrderRef,
+        timestamp: new Date().toISOString(),
+        date: new Date().toISOString().split('T')[0],
+        customerName: customerName || "Devoted Bun Lover",
+        customerEmail: customerEmail || "customer@bobbysbunfactory.com",
+        orderType: orderType || "pickup",
+        pickupTime: pickupDate || "Within 45 Minutes / Next Saturday",
+        status: "Confirmed & In Oven",
+        items: parsedItems,
+        itemsSummary,
+        subtotal: parsedItems.reduce((acc, it) => acc + Number(it.price || 0) * Number(it.quantity || 1), 0) || Number(amount || 0),
+        discount: Number(discountAmount || 0),
+        discountCode: promoCode || "",
+        total: Number(amount || 0),
+        transactionId: paymentId,
+        squareOrderId: squareOrderId || ""
+      };
+
+      try {
+        const ordersFilePath = path.join(process.cwd(), "submissions_orders.json");
+        let existingOrders: any[] = [];
+        try {
+          const existingRaw = await fs.readFile(ordersFilePath, "utf-8");
+          existingOrders = JSON.parse(existingRaw);
+        } catch {
+          // File doesn't exist yet
+        }
+        existingOrders.unshift(orderRecord);
+        await fs.writeFile(ordersFilePath, JSON.stringify(existingOrders, null, 2), "utf-8");
+        console.log("Itemized order saved locally to submissions_orders.json:", safeOrderRef);
+      } catch (saveErr) {
+        console.error("Failed to save order locally:", saveErr);
+      }
+
+      const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL || process.env.VITE_GOOGLE_SHEET_WEBHOOK_URL;
+      if (webhookUrl) {
+        try {
+          await fetch(webhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "order",
+              timestamp: orderRecord.timestamp,
+              orderNumber: orderRecord.orderNumber,
+              name: orderRecord.customerName,
+              email: orderRecord.customerEmail,
+              pickupTime: orderRecord.pickupTime,
+              total: orderRecord.total,
+              discountCode: orderRecord.discountCode,
+              transactionId: orderRecord.transactionId,
+              squareOrderId: orderRecord.squareOrderId,
+              message: itemsSummary
+            })
+          });
+          console.log("Order forwarded to Google Sheets Webhook:", safeOrderRef);
+        } catch (webhookErr) {
+          console.error("Failed to forward order to Google Sheets Webhook:", webhookErr);
+        }
+      }
+
+      res.status(200).json(serializeBigInts({ ...response, squareOrderId: squareOrderId || null }));
     } catch (error: any) {
       console.error("Square Payment Error:", error);
       let errorMsg = "Payment failed";
@@ -202,6 +399,86 @@ Choose exactly one and provide a whimsically written 2-sentence bakery recommend
       }
       res.status(500).json({ error: errorMsg });
     }
+  });
+
+  // Helper to verify Admin Firebase ID Token on protected admin endpoints
+  const verifyAdminToken = async (req: express.Request): Promise<{ ok: boolean; email?: string }> => {
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+    if (!token) return { ok: false };
+
+    try {
+      const configRaw = await fs.readFile(path.join(process.cwd(), "firebase-applet-config.json"), "utf-8");
+      const fbConfig = JSON.parse(configRaw);
+      const apiKey = fbConfig.apiKey;
+      if (!apiKey) return { ok: false };
+
+      const verifyRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token })
+      });
+
+      if (!verifyRes.ok) return { ok: false };
+      const verifyData = await verifyRes.json();
+      const user = verifyData?.users?.[0];
+      if (user && user.email === 'BluMarketingGrp@gmail.com' && user.emailVerified === true) {
+        return { ok: true, email: user.email };
+      }
+      return { ok: false };
+    } catch (err) {
+      console.error('Admin token verification error:', err);
+      return { ok: false };
+    }
+  };
+
+  // Protected Admin Endpoint: Retrieve server-backed orders
+  app.get("/api/admin/orders", async (req, res) => {
+    const verified = await verifyAdminToken(req);
+    if (!verified.ok) {
+      return res.status(403).json({ error: "Admin Google authentication (BluMarketingGrp@gmail.com) required." });
+    }
+
+    try {
+      const ordersFilePath = path.join(process.cwd(), "submissions_orders.json");
+      let existingOrders: any[] = [];
+      try {
+        const raw = await fs.readFile(ordersFilePath, "utf-8");
+        existingOrders = JSON.parse(raw);
+      } catch {
+        existingOrders = [];
+      }
+      res.json({ orders: existingOrders });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message || "Failed to read orders." });
+    }
+  });
+
+  // Protected Admin Endpoint: Retrieve Bun Club / Contact / Catering / Franchise signups
+  app.get("/api/admin/submissions", async (req, res) => {
+    const verified = await verifyAdminToken(req);
+    if (!verified.ok) {
+      return res.status(403).json({ error: "Admin Google authentication (BluMarketingGrp@gmail.com) required." });
+    }
+
+    const readJsonSafe = async (filename: string) => {
+      try {
+        const raw = await fs.readFile(path.join(process.cwd(), filename), "utf-8");
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    };
+
+    const [newsletter, contact, catering, franchise, wholesale] = await Promise.all([
+      readJsonSafe("submissions_newsletter.json"),
+      readJsonSafe("submissions_contact.json"),
+      readJsonSafe("submissions_catering.json"),
+      readJsonSafe("submissions_franchise.json"),
+      readJsonSafe("submissions_wholesale.json")
+    ]);
+
+    res.json({ newsletter, contact, catering, franchise, wholesale });
   });
 
   // Google Sheets Submission & Local Storage Endpoint for Contact Form
