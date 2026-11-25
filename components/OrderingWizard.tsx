@@ -1498,7 +1498,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <span className="mono text-brand-terracotta text-[10px] uppercase font-black tracking-widest">RENDEZVOUS ARRANGEMENTS</span>
-                    <h4 className="serif text-3xl font-black">Set Our Saturday Rendezvous</h4>
+                    <h4 className="serif text-3xl font-black">Set Your Pickup Drop</h4>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
@@ -1510,7 +1510,7 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           : 'border-brand-ochre/15 hover:border-brand-ochre/40'
                       }`}
                     >
-                      <span className="mono text-[7.5px] text-brand-terracotta uppercase font-black tracking-widest mb-1">IMMEDIATE SATISFACTION</span>
+                      <span className="mono text-[7.5px] text-brand-terracotta uppercase font-black tracking-widest mb-1">SATURDAY BUN DROP</span>
                       <span className="font-serif font-black text-lg text-brand-cream block leading-tight">This Saturday</span>
                     </button>
 
@@ -1522,31 +1522,40 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
                           : 'border-brand-ochre/15 hover:border-brand-ochre/40'
                       }`}
                     >
-                      <span className="mono text-[7.5px] text-brand-ochre uppercase font-black tracking-widest mb-1">FUTURE PLEASURE</span>
-                      <span className="font-serif font-black text-lg text-brand-cream block leading-tight">Other Saturday</span>
+                      <span className="mono text-[7.5px] text-brand-ochre uppercase font-black tracking-widest mb-1">HOLIDAY / FUTURE DROP</span>
+                      <span className="font-serif font-black text-lg text-brand-cream block leading-tight">Wed Nov 25 / Other</span>
                     </button>
                   </div>
 
                   <div className="bg-brand-ochre/[0.03] border border-brand-ochre/15 p-6 rounded-2xl space-y-4">
                     {pickupOption === 'this-sat' ? (
                       <div className="space-y-2">
-                        <span className="mono text-[8px] text-brand-ochre uppercase font-bold block">CONFIRMED RENDEZVOUS DATE:</span>
+                        <span className="mono text-[8px] text-brand-ochre uppercase font-bold block">CONFIRMED SATURDAY DROP DATE:</span>
                         <p className="serif text-2xl font-black text-brand-cream italic leading-none">{formatDateDisplayForUI(saturdays[0])}</p>
                         <p className="text-xs text-brand-cream/60 leading-normal pt-2 border-t border-brand-ochre/10">
-                          Warm, sticky rolls will be waiting for your touch this Saturday at our local baking cores from 10:00 AM – 2:00 PM.
+                          Warm, sticky rolls will be waiting for your touch this Saturday at Rabbit Hill Park from 10:00 AM – 2:00 PM.
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <label className="mono text-[8.5px] text-brand-ochre font-black uppercase tracking-wider block">
-                            Pick Saturday Release Date:
+                            Pick Holiday or Future Release Date:
                           </label>
                           <select
                             value={pickupDate}
-                            onChange={(e) => handleDateChange(e.target.value)}
+                            onChange={(e) => {
+                              if (e.target.value === '2026-11-25') {
+                                setPickupDate('2026-11-25');
+                              } else {
+                                handleDateChange(e.target.value);
+                              }
+                            }}
                             className="w-full bg-brand-ink border border-brand-ochre/25 p-3 text-brand-cream focus:outline-none focus:border-brand-terracotta mono text-[11px] uppercase cursor-pointer"
                           >
+                            <option value="2026-11-25" className="bg-brand-ink text-brand-cream">
+                              WEDNESDAY, NOVEMBER 25, 2026 (THANKSGIVING PICKUP)
+                            </option>
                             {saturdays.slice(1).map((sat, idx) => (
                               <option key={idx} value={formatDateISO(sat)} className="bg-brand-ink text-brand-cream">
                                 {formatDateDisplayForUI(sat).toUpperCase()}
@@ -1557,13 +1566,19 @@ export const OrderingWizard: React.FC<OrderingWizardProps> = ({
 
                         <div className="space-y-1">
                           <label className="mono text-[8.5px] text-brand-ochre font-black uppercase tracking-wider block">
-                            Or custom calendars selector:
+                            Or custom calendar selector:
                           </label>
                           <input 
                             type="date" 
                             value={pickupDate}
                             min={thisSaturdayISO}
-                            onChange={(e) => handleDateChange(e.target.value)}
+                            onChange={(e) => {
+                              if (e.target.value === '2026-11-25') {
+                                setPickupDate('2026-11-25');
+                              } else {
+                                handleDateChange(e.target.value);
+                              }
+                            }}
                             className="w-full bg-brand-ink border border-brand-ochre/25 p-3 text-brand-cream focus:outline-none focus:border-brand-terracotta text-xs font-mono uppercase"
                           />
                         </div>

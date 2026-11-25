@@ -28,8 +28,10 @@ import {
   Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { Product } from '../types';
 
-// Import image assets from constants
+// Import image assets and catering catalog from constants
 import {
   fourPackBuns,
   cateringHeroSpread,
@@ -46,10 +48,74 @@ import {
   caviarBlueberry,
   caviarWildberry,
   flavorStrawberry,
-  flavorCaramel
+  flavorCaramel,
+  HOLIDAY_CATERING_PACKAGES,
+  THANKSGIVING_CAVIAR_FLAVORS,
+  HolidayPackage
 } from '../constants';
 
-const Catering: React.FC = () => {
+interface CateringProps {
+  handleAddToCart?: (product: Product, quantity: number, modifier?: Product | null) => void;
+  setPickupDate?: (date: string) => void;
+}
+
+const HOLIDAY_PICKUP_WINDOWS = [
+  'Wednesday, Nov 25 (Thanksgiving Catering Pickup)',
+  'Saturday, Nov 21 (Regular Saturday Bun Drop)',
+  'Thursday, Dec 24 (Christmas Eve Pickup)',
+  'Friday, Dec 25 (Christmas Day Pickup)',
+  'Thursday, Dec 31 (New Year’s Eve Pickup)'
+];
+
+const Catering: React.FC<CateringProps> = ({ handleAddToCart, setPickupDate }) => {
+  const [selectedHolidayDate, setSelectedHolidayDate] = useState<string>(HOLIDAY_PICKUP_WINDOWS[0]);
+  const [caviarPicks, setCaviarPicks] = useState<Record<string, [string, string]>>({});
+  const [fruitUpgradeSelected, setFruitUpgradeSelected] = useState<Record<string, boolean>>({});
+  const [addedPackageIds, setAddedPackageIds] = useState<Record<string, boolean>>({});
+
+  const getCaviarChoice = (pkgId: string): [string, string] =>
+    caviarPicks[pkgId] || [THANKSGIVING_CAVIAR_FLAVORS[0], THANKSGIVING_CAVIAR_FLAVORS[1]];
+
+  const handleAddHolidayPackage = (pkg: HolidayPackage) => {
+    if (!handleAddToCart) {
+      scrollToSection('catering-quote-form');
+      return;
+    }
+
+    const [flav1, flav2] = getCaviarChoice(pkg.id);
+    const hasDozenUpgrade = !!fruitUpgradeSelected[pkg.id];
+    const dozenCount = pkg.id === 'holiday-24-classics' ? 2 : pkg.id === 'holiday-12-classics' ? 1 : 0;
+    const upgradePrice = hasDozenUpgrade ? dozenCount * 12 : 0;
+
+    const caviarNote =
+      pkg.caviarChoiceCount === 2
+        ? ` | Fru-Fru Caviars (Pick 2): ${flav1} & ${flav2}`
+        : pkg.caviarChoiceCount === 1
+        ? ` | Fru-Fru Caviar: ${flav1}`
+        : '';
+    const fruitNote = hasDozenUpgrade ? ` | + Premium Fruit Topping Upgrade (+$${upgradePrice})` : '';
+
+    const product: Product = {
+      id: `${pkg.id}-${Date.now()}`,
+      name: `${pkg.name}${hasDozenUpgrade ? ' + Fruit Topping Upgrade' : ''}`,
+      description: `${pkg.subtitle} • Frost: ${pkg.frostIncluded}${caviarNote}${fruitNote} • Pickup: ${selectedHolidayDate}`,
+      price: pkg.price + upgradePrice,
+      image: pkg.image,
+      type: 'bun',
+      tags: ['Holiday Catering', 'Prepaid Order'],
+      color: '#FFFBF5'
+    };
+
+    if (setPickupDate) {
+      setPickupDate(selectedHolidayDate);
+    }
+    handleAddToCart(product, 1);
+    setAddedPackageIds((prev) => ({ ...prev, [pkg.id]: true }));
+    setTimeout(() => {
+      setAddedPackageIds((prev) => ({ ...prev, [pkg.id]: false }));
+    }, 2000);
+  };
+
   // Catering Quote Form State
   const [cateringForm, setCateringForm] = useState({
     name: '',
@@ -230,16 +296,16 @@ const Catering: React.FC = () => {
               <div className="inline-flex items-center space-x-2 bg-brand-ochre/15 border border-brand-ochre/30 px-4 py-1.5 rounded-full">
                 <Sparkles className="w-4 h-4 text-brand-terracotta" />
                 <span className="mono text-[10px] font-black uppercase tracking-[0.25em] text-brand-terracotta">
-                  Events • Catering • Special Occasions
+                  The Factory Is Taking Holiday Orders • Events &amp; Trays
                 </span>
               </div>
 
               <h1 className="serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-brand-ink leading-[1.05] tracking-tight">
-                Every Occasion Deserves <span className="italic text-brand-terracotta font-serif">Something Special</span>
+                Big Celebrations. <span className="italic text-brand-terracotta font-serif">Bigger Buns.</span>
               </h1>
 
               <p className="text-lg md:text-xl text-brand-ink/80 leading-relaxed max-w-2xl font-medium">
-                Whether you're celebrating a birthday, treating your office, hosting a family gathering, or planning a special event, Bobby's Bun Factory creates handcrafted cinnamon rolls that turn ordinary moments into memorable experiences.
+                Questionable restraint. Order prepaid 48-pan Mini Trays, Fru-Fru Holiday Feasts, Classic Full-Size Dozens, or Holiday CinnaCakes—baked fresh to order with shared Secret Frost &amp; Fru-Fru Caviar glass jars.
               </p>
 
               {/* Bullet highlights */}
@@ -248,38 +314,38 @@ const Catering: React.FC = () => {
                   <div className="w-6 h-6 rounded-full bg-brand-terracotta/15 text-brand-terracotta flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
-                  <span>Freshly baked specifically for your event date.</span>
+                  <span>Zero wasted dough: Baked in 24 / 48 / 96 / 144 pan batches.</span>
                 </div>
                 <div className="flex items-center space-x-3 justify-center lg:justify-start">
                   <div className="w-6 h-6 rounded-full bg-brand-terracotta/15 text-brand-terracotta flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
-                  <span>Made with Japanese milk bread technique & premium ingredients.</span>
+                  <span>Shared 8 oz, 16 oz &amp; 24 oz (3× 8 oz) Secret Frost glass jars.</span>
                 </div>
                 <div className="flex items-center space-x-3 justify-center lg:justify-start">
                   <div className="w-6 h-6 rounded-full bg-brand-terracotta/15 text-brand-terracotta flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
-                  <span>Finished with signature Secret Frost™ & Coupe de Caviar™ fruit toppings.</span>
+                  <span>Thanksgiving Caviars: Velvet Apple, Georgia Peach Cobbler, Strawberry &amp; Blueberry.</span>
                 </div>
               </div>
 
               {/* Call-To-Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
                 <button
-                  onClick={() => scrollToSection('catering-quote-form')}
+                  onClick={() => scrollToSection('holiday-catering-menu')}
                   className="w-full sm:w-auto bg-brand-terracotta hover:bg-brand-ink text-white font-black uppercase text-xs tracking-[0.2em] px-8 py-4.5 rounded-full shadow-xl shadow-brand-terracotta/20 hover:shadow-none transition-all duration-300 flex items-center justify-center space-x-2 group cursor-pointer"
                 >
-                  <span>Request a Catering Quote</span>
+                  <span>Order Holiday Trays &amp; Feasts</span>
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
 
-                <Link
-                  to="/shop"
-                  className="w-full sm:w-auto bg-white/80 hover:bg-white text-brand-ink border border-brand-sand/60 font-black uppercase text-xs tracking-[0.2em] px-8 py-4.5 rounded-full shadow-sm hover:shadow transition-all duration-300 text-center"
+                <button
+                  onClick={() => scrollToSection('catering-quote-form')}
+                  className="w-full sm:w-auto bg-white/80 hover:bg-white text-brand-ink border border-brand-sand/60 font-black uppercase text-xs tracking-[0.2em] px-8 py-4.5 rounded-full shadow-sm hover:shadow transition-all duration-300 text-center cursor-pointer"
                 >
-                  View Retail Menu
-                </Link>
+                  Custom Corporate Quote
+                </button>
               </div>
             </motion.div>
 
@@ -377,81 +443,341 @@ const Catering: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. CATERING MENU SECTION (NO PRICES) */}
-      <section className="py-24 bg-brand-cream border-b border-brand-sand/40">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <span className="mono text-[10px] font-black uppercase tracking-[0.3em] text-brand-terracotta bg-brand-terracotta/10 px-3 py-1 rounded-full">
-              Custom Catering Menu
-            </span>
-            <h2 className="serif text-3xl md:text-5xl font-black text-brand-ink">
-              Signature <span className="italic text-brand-terracotta font-serif">Event Offerings</span>
-            </h2>
-            <p className="text-base md:text-lg text-brand-ink/75 font-medium">
-              Carefully packaged to maintain warm, pillow-soft texture from our oven to your event table.
-            </p>
+      {/* 3. HOLIDAY CATERING & PAN ORDERING MENU */}
+      <section id="holiday-catering-menu" className="py-24 bg-brand-cream border-b border-brand-sand/40">
+        <div className="max-w-7xl mx-auto px-6 space-y-16">
+          {/* Thanksgiving Schedule & Pickup Date Bar */}
+          <div className="bg-brand-ink text-brand-cream rounded-3xl p-6 md:p-8 border border-brand-ochre/20 shadow-xl space-y-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-brand-ochre/15 pb-6">
+              <div>
+                <span className="mono text-[10px] font-black uppercase tracking-[0.3em] text-brand-ochre block mb-1">
+                  Holiday Ordering Schedule • Limited Tray Allocation
+                </span>
+                <h2 className="serif text-2xl md:text-4xl font-black text-brand-cream">
+                  Thanksgiving &amp; Holiday <span className="italic text-brand-terracotta">Schedule</span>
+                </h2>
+              </div>
+
+              <div className="w-full lg:w-80 space-y-1.5">
+                <label className="mono text-[9px] uppercase font-black tracking-widest text-brand-ochre block">
+                  Select Your Holiday Pickup Date:
+                </label>
+                <select
+                  value={selectedHolidayDate}
+                  onChange={(e) => setSelectedHolidayDate(e.target.value)}
+                  className="w-full bg-black/40 border border-brand-ochre/30 text-brand-cream rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-brand-terracotta cursor-pointer"
+                >
+                  {HOLIDAY_PICKUP_WINDOWS.map((win) => (
+                    <option key={win} value={win} className="bg-brand-ink text-brand-cream">
+                      {win}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+              <div className="bg-white/[0.04] border border-brand-ochre/15 p-4 rounded-2xl">
+                <span className="mono text-[9px] font-black uppercase tracking-widest text-brand-ochre block">
+                  Saturday, Nov 21
+                </span>
+                <p className="serif text-lg font-black text-white mt-0.5">Regular Saturday Bun Drop</p>
+                <p className="text-xs text-brand-cream/65 mt-1">Individual Classics, Jumbos &amp; Factory-6 boxes at Rabbit Hill Park.</p>
+              </div>
+              <div className="bg-brand-terracotta/15 border border-brand-terracotta/40 p-4 rounded-2xl">
+                <span className="mono text-[9px] font-black uppercase tracking-widest text-brand-terracotta block">
+                  Monday, Nov 23 • 8:00 PM
+                </span>
+                <p className="serif text-lg font-black text-white mt-0.5">Thanksgiving Cutoff Deadline</p>
+                <p className="text-xs text-brand-cream/75 mt-1">Prepaid online reservation required. Limited pan capacity.</p>
+              </div>
+              <div className="bg-white/[0.04] border border-brand-ochre/15 p-4 rounded-2xl">
+                <span className="mono text-[9px] font-black uppercase tracking-widest text-emerald-400 block">
+                  Wednesday, Nov 25
+                </span>
+                <p className="serif text-lg font-black text-white mt-0.5">Thanksgiving Catering Pickups</p>
+                <p className="text-xs text-brand-cream/65 mt-1">Fresh-baked holiday trays &amp; CinnaCakes packed with shared glass jars.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {cateringProducts.map((product, idx) => (
-              <motion.div
-                key={product.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white rounded-3xl overflow-hidden border border-brand-sand/60 shadow-lg hover:shadow-2xl transition-all duration-500 flex flex-col group"
-              >
-                <div className="relative h-64 sm:h-72 overflow-hidden bg-brand-sand/20">
-                  <img 
-                    src={product.image} 
-                    alt={product.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-brand-ink text-brand-cream font-mono text-[9px] uppercase tracking-widest px-3 py-1.5 rounded-full font-bold shadow-md">
-                      {product.badge}
-                    </span>
-                  </div>
-                </div>
+          {/* 3A. FACTORY PARTY TRAYS (24 / 48 / 96 / 144) */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-sand/40 pb-4">
+              <div>
+                <span className="mono text-[10px] font-black uppercase tracking-[0.3em] text-brand-terracotta block mb-1">
+                  01 • Built To Our 48-Mini Baking Pans
+                </span>
+                <h3 className="serif text-3xl md:text-5xl font-black text-brand-ink">
+                  Factory <span className="italic text-brand-terracotta font-serif">Party Trays</span>
+                </h3>
+              </div>
+              <p className="text-sm text-brand-ink/70 max-w-md font-medium">
+                Fresh-baked catering minis served in sharing trays with shared Secret Frost glass jars. (24 oz served as three 8 oz jars.)
+              </p>
+            </div>
 
-                <div className="p-8 flex-1 flex flex-col justify-between space-y-6">
-                  <div>
-                    <h3 className="serif text-2xl font-black text-brand-ink mb-3 group-hover:text-brand-terracotta transition-colors">
-                      {product.title}
-                    </h3>
-                    <p className="text-brand-ink/80 text-sm md:text-base leading-relaxed font-medium">
-                      {product.description}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-brand-sand/30 pt-4">
-                    <span className="mono text-[10px] uppercase font-black text-brand-terracotta tracking-wider block mb-2">
-                      Available Configuration Examples:
-                    </span>
-                    <ul className="space-y-1.5">
-                      {product.options.map((opt, i) => (
-                        <li key={i} className="text-xs font-bold text-brand-ink/90 flex items-center space-x-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-brand-terracotta shrink-0" />
-                          <span>{opt}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      handleCateringProductToggle(product.title);
-                      scrollToSection('catering-quote-form');
-                    }}
-                    className="w-full bg-brand-cream hover:bg-brand-terracotta text-brand-ink hover:text-white border border-brand-sand/80 font-black uppercase text-xs tracking-[0.2em] py-3.5 rounded-full transition-all duration-300 text-center cursor-pointer flex items-center justify-center space-x-2"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {HOLIDAY_CATERING_PACKAGES.filter((p) => p.category === 'tray').map((pkg) => {
+                const isAdded = !!addedPackageIds[pkg.id];
+                return (
+                  <div
+                    key={pkg.id}
+                    className="bg-white rounded-3xl overflow-hidden border border-brand-sand/60 shadow-lg flex flex-col justify-between group hover:shadow-2xl transition-all"
                   >
-                    <span>Request Quote For This Item</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+                    <div>
+                      <div className="relative h-48 overflow-hidden bg-brand-sand/20">
+                        <img
+                          src={pkg.image}
+                          alt={pkg.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                        {pkg.badge && (
+                          <span className="absolute top-3 left-3 bg-brand-ink text-brand-ochre font-mono text-[8.5px] uppercase tracking-widest px-3 py-1 rounded-full font-black shadow">
+                            {pkg.badge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-6 space-y-3">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <h4 className="serif text-xl font-black text-brand-ink">{pkg.name}</h4>
+                          <span className="mono text-xl font-black text-brand-terracotta">${pkg.price.toFixed(0)}</span>
+                        </div>
+                        <p className="mono text-[10px] font-black text-brand-ink/70 uppercase tracking-wider">
+                          {pkg.subtitle}
+                        </p>
+                        <p className="text-xs text-brand-ink/75 leading-relaxed">{pkg.description}</p>
+                      </div>
+                    </div>
+                    <div className="p-6 pt-0">
+                      <button
+                        type="button"
+                        onClick={() => handleAddHolidayPackage(pkg)}
+                        className={`w-full py-3.5 rounded-full font-mono text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                          isAdded
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-brand-ink hover:bg-brand-terracotta text-brand-cream'
+                        }`}
+                      >
+                        {isAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4 text-brand-ochre" />}
+                        <span>{isAdded ? 'Added to Order!' : `Add ${pkg.name} — $${pkg.price.toFixed(0)}`}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3B. THE FRU-FRU HOLIDAY FEASTS */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-sand/40 pb-4">
+              <div>
+                <span className="mono text-[10px] font-black uppercase tracking-[0.3em] text-brand-terracotta block mb-1">
+                  02 • Minis + Secret Frost + Pick 2 Thanksgiving Caviars
+                </span>
+                <h3 className="serif text-3xl md:text-5xl font-black text-brand-ink">
+                  The Fru-Fru <span className="italic text-brand-terracotta font-serif">Holiday Feasts</span>
+                </h3>
+              </div>
+              <p className="text-sm text-brand-ink/70 max-w-md font-medium">
+                Pick any two Thanksgiving Caviars for dipping: Velvet Apple, Georgia Peach Cobbler, Strawberry, or Blueberry.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {HOLIDAY_CATERING_PACKAGES.filter((p) => p.category === 'feast').map((pkg) => {
+                const isAdded = !!addedPackageIds[pkg.id];
+                const [flav1, flav2] = getCaviarChoice(pkg.id);
+                return (
+                  <div
+                    key={pkg.id}
+                    className="bg-brand-ink text-brand-cream rounded-3xl overflow-hidden border border-brand-ochre/25 shadow-2xl flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="relative h-56 overflow-hidden">
+                        <img
+                          src={pkg.image}
+                          alt={pkg.name}
+                          className="w-full h-full object-cover opacity-90"
+                        />
+                        {pkg.badge && (
+                          <span className="absolute top-4 left-4 bg-brand-terracotta text-white font-mono text-[9px] uppercase tracking-widest px-3 py-1 rounded-full font-black">
+                            {pkg.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="p-7 space-y-4">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <h4 className="serif text-2xl font-black text-brand-cream">{pkg.name}</h4>
+                          <span className="mono text-2xl font-black text-brand-ochre">${pkg.price.toFixed(0)}</span>
+                        </div>
+                        <p className="mono text-[11px] font-bold text-brand-ochre uppercase tracking-wider">
+                          {pkg.subtitle}
+                        </p>
+                        <p className="text-xs text-brand-cream/75 leading-relaxed">{pkg.description}</p>
+
+                        <div className="space-y-2.5 pt-3 border-t border-brand-ochre/15">
+                          <span className="mono text-[9px] uppercase font-black tracking-widest text-brand-ochre block">
+                            Choose 2 Fru-Fru Caviar Flavors:
+                          </span>
+                          <select
+                            value={flav1}
+                            onChange={(e) =>
+                              setCaviarPicks((prev) => ({ ...prev, [pkg.id]: [e.target.value, flav2] }))
+                            }
+                            className="w-full bg-black/40 border border-brand-ochre/25 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold cursor-pointer"
+                          >
+                            {THANKSGIVING_CAVIAR_FLAVORS.map((fl) => (
+                              <option key={fl} value={fl} className="bg-brand-ink">
+                                Caviar #1: {fl}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            value={flav2}
+                            onChange={(e) =>
+                              setCaviarPicks((prev) => ({ ...prev, [pkg.id]: [flav1, e.target.value] }))
+                            }
+                            className="w-full bg-black/40 border border-brand-ochre/25 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold cursor-pointer"
+                          >
+                            {THANKSGIVING_CAVIAR_FLAVORS.map((fl) => (
+                              <option key={fl} value={fl} className="bg-brand-ink">
+                                Caviar #2: {fl}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-7 pt-0">
+                      <button
+                        type="button"
+                        onClick={() => handleAddHolidayPackage(pkg)}
+                        className={`w-full py-4 rounded-full font-mono text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                          isAdded
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-brand-terracotta hover:bg-brand-ochre hover:text-brand-ink text-white'
+                        }`}
+                      >
+                        {isAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                        <span>{isAdded ? 'Added Feast to Order!' : `Order Feast — $${pkg.price.toFixed(0)}`}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3C. CLASSIC FULL-SIZE DOZENS & HOLIDAY CINNACAKE */}
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-sand/40 pb-4">
+              <div>
+                <span className="mono text-[10px] font-black uppercase tracking-[0.3em] text-brand-terracotta block mb-1">
+                  03 • Full-Size Rolls &amp; Table Centerpieces
+                </span>
+                <h3 className="serif text-3xl md:text-5xl font-black text-brand-ink">
+                  Dozens &amp; <span className="italic text-brand-terracotta font-serif">CinnaCakes</span>
+                </h3>
+              </div>
+              <Link
+                to="/shop"
+                className="mono text-xs font-black uppercase tracking-widest text-brand-terracotta hover:text-brand-ink underline"
+              >
+                Need Extra Frost ($9/$16/$28) or Caviar Jars ($12/$20/$36)? →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {HOLIDAY_CATERING_PACKAGES.filter((p) => p.category === 'rolls' || p.category === 'cake').map((pkg) => {
+                const isAdded = !!addedPackageIds[pkg.id];
+                const isDozenPkg = pkg.category === 'rolls';
+                const dozenCount = pkg.id === 'holiday-24-classics' ? 2 : 1;
+                const upgradeOn = !!fruitUpgradeSelected[pkg.id];
+                const finalPrice = pkg.price + (isDozenPkg && upgradeOn ? dozenCount * 12 : 0);
+                const [flav1, flav2] = getCaviarChoice(pkg.id);
+
+                return (
+                  <div
+                    key={pkg.id}
+                    className="bg-white rounded-3xl overflow-hidden border border-brand-sand/60 shadow-lg flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="relative h-48 overflow-hidden bg-brand-sand/20">
+                        <img src={pkg.image} alt={pkg.name} className="w-full h-full object-cover" />
+                        {pkg.badge && (
+                          <span className="absolute top-3 left-3 bg-brand-ink text-brand-cream font-mono text-[8.5px] uppercase tracking-widest px-3 py-1 rounded-full font-black">
+                            {pkg.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="p-6 space-y-3">
+                        <div className="flex justify-between items-baseline gap-2">
+                          <h4 className="serif text-lg font-black text-brand-ink">{pkg.name}</h4>
+                          <span className="mono text-lg font-black text-brand-terracotta">${finalPrice.toFixed(0)}</span>
+                        </div>
+                        <p className="mono text-[10px] font-bold text-brand-ink/65 uppercase">{pkg.subtitle}</p>
+                        <p className="text-xs text-brand-ink/75 leading-relaxed">{pkg.description}</p>
+
+                        {isDozenPkg && (
+                          <label className="flex items-start gap-2.5 p-3 rounded-xl bg-brand-cream/80 border border-brand-sand/60 cursor-pointer text-xs font-bold text-brand-ink">
+                            <input
+                              type="checkbox"
+                              checked={upgradeOn}
+                              onChange={(e) =>
+                                setFruitUpgradeSelected((prev) => ({ ...prev, [pkg.id]: e.target.checked }))
+                              }
+                              className="mt-0.5 accent-brand-terracotta"
+                            />
+                            <span>Add Premium Fruit Topping Upgrade (+${dozenCount * 12} • $12/dozen)</span>
+                          </label>
+                        )}
+
+                        {pkg.caviarChoiceCount === 1 && (
+                          <div className="space-y-1.5 pt-1">
+                            <span className="mono text-[9px] uppercase font-black text-brand-terracotta block">
+                              Choose 8 oz Fru-Fru Caviar:
+                            </span>
+                            <select
+                              value={flav1}
+                              onChange={(e) =>
+                                setCaviarPicks((prev) => ({ ...prev, [pkg.id]: [e.target.value, flav2] }))
+                              }
+                              className="w-full bg-brand-cream border border-brand-sand/80 rounded-xl px-3 py-2 text-xs font-bold text-brand-ink cursor-pointer"
+                            >
+                              {THANKSGIVING_CAVIAR_FLAVORS.map((fl) => (
+                                <option key={fl} value={fl}>
+                                  {fl}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="p-6 pt-0">
+                      <button
+                        type="button"
+                        onClick={() => handleAddHolidayPackage(pkg)}
+                        className={`w-full py-3.5 rounded-full font-mono text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-colors cursor-pointer ${
+                          isAdded
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-brand-ink hover:bg-brand-terracotta text-brand-cream'
+                        }`}
+                      >
+                        {isAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4 text-brand-ochre" />}
+                        <span>{isAdded ? 'Added to Order!' : `Add to Order — $${finalPrice.toFixed(0)}`}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>

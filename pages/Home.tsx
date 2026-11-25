@@ -9,7 +9,17 @@ import GearLogo from '../components/GearLogo';
 import OrderingWizard from '../components/OrderingWizard';
 import FlavorsCarousel from '../components/FlavorsCarousel';
 import { Product, OrderType, CartItem } from '../types';
-import { JAR_PRODUCTS, duoFeaturedDuoSet, miniBunTraySide, cinnabitesChopped, happierHolidaysFlyer, MINI_PACKS, MiniPack } from '../constants';
+import {
+  JAR_PRODUCTS,
+  duoFeaturedDuoSet,
+  miniBunTraySide,
+  cinnabitesChopped,
+  happierHolidaysFlyer,
+  MINI_PACKS,
+  MiniPack,
+  HOLIDAY_CATERING_PACKAGES,
+  THANKSGIVING_CAVIAR_FLAVORS
+} from '../constants';
 
 const MINI_DIPPER_OPTIONS = [
   'Classic Secret Frost Cup (3.5 oz)',
@@ -107,14 +117,14 @@ const Home: React.FC<HomeProps> = ({
 }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
-  const [spotlightSlide, setSpotlightSlide] = useState(0); // 0 = Rendezvous, 1 = Minis, 2 = Happier Holidays Flyer
+  const [spotlightSlide, setSpotlightSlide] = useState(0); // 0 = Holiday Special, 1 = Minis, 2 = Rendezvous
   const [rendezvousVariant, setRendezvousVariant] = useState<'little' | 'rendezvous' | 'datenight'>('rendezvous');
   const [rendezvousAdded, setRendezvousAdded] = useState(false);
 
   const SPOTLIGHT_SLIDES = [
-    { id: 0, title: 'The Rendezvous', subtitle: 'Tasting Flight Drop', badge: '01 / Signature Flight' },
-    { id: 1, title: 'The Minis', subtitle: 'Bite-Sized Bun Trays', badge: '02 / Bite-Sized' },
-    { id: 2, title: 'Happier Holidays', subtitle: 'Winter Special Flyer', badge: '03 / Seasonal Special' },
+    { id: 0, title: 'Holiday Orders', subtitle: 'The Factory Is Taking Holiday Orders', badge: '01 / Holiday Catering' },
+    { id: 1, title: 'The Minis', subtitle: '48-Pan & Drop Trays', badge: '02 / Bite-Sized' },
+    { id: 2, title: 'The Rendezvous', subtitle: 'Tasting Flight Drop', badge: '03 / Signature Flight' },
   ];
 
   const nextSpotlightSlide = () => {
@@ -131,7 +141,7 @@ const Home: React.FC<HomeProps> = ({
     'Wildberry (Premium)'
   ]);
   const [selectedJars, setSelectedJars] = useState<string[]>([
-    'Petit de Frost™ (3.5 oz Plastic Cup)',
+    'Secret Frost — 3.5 oz Cup',
     'Petit de Caviar — Strawberry (3.5 oz Cup)',
     'Petit de Caviar — Wildberry (3.5 oz Cup)',
     'Petit de Caviar — Georgia Peach (3.5 oz Cup)'
@@ -182,7 +192,7 @@ const Home: React.FC<HomeProps> = ({
 
   // Minis State & Handlers
   const [selectedMiniPackId, setSelectedMiniPackId] = useState<string>('minis-12pack');
-  const [selectedMiniDipper, setSelectedMiniDipper] = useState<string>('Classic Secret Frost Cup (3.5 oz)');
+  const [selectedMiniDipper, setSelectedMiniDipper] = useState<string>('Classic Secret Frost');
   const [miniAdded, setMiniAdded] = useState(false);
   const [miniView, setMiniView] = useState<'tray' | 'bites'>('tray');
   const [addedMiniPacks, setAddedMiniPacks] = useState<Record<string, boolean>>({});
@@ -217,31 +227,48 @@ const Home: React.FC<HomeProps> = ({
     }
   };
 
-  // Holiday Flyer State & Preorder Handler
-  const [holidayDropDate, setHolidayDropDate] = useState<string>('Christmas Eve Morning Drop (Dec 24)');
+  // Holiday Catering Spotlight State & Preorder Handler
+  const SPOTLIGHT_HOLIDAY_PACKAGES = HOLIDAY_CATERING_PACKAGES.filter((p) =>
+    ['factory-48', 'petite-holiday-feast', 'factory-96', 'holiday-cinnacake-caviar'].includes(p.id)
+  );
+  const [selectedHolidayPkgId, setSelectedHolidayPkgId] = useState<string>('petite-holiday-feast');
+  const [holidayCaviar1, setHolidayCaviar1] = useState<string>(THANKSGIVING_CAVIAR_FLAVORS[0]);
+  const [holidayCaviar2, setHolidayCaviar2] = useState<string>(THANKSGIVING_CAVIAR_FLAVORS[1]);
+  const [holidayDropDate, setHolidayDropDate] = useState<string>('Thanksgiving Pre-Order Pickup (Wed, Nov 25)');
   const [holidayBundleAdded, setHolidayBundleAdded] = useState(false);
   const [isHolidayFlyerModalOpen, setIsHolidayFlyerModalOpen] = useState(false);
 
+  const selectedHolidayPkg =
+    SPOTLIGHT_HOLIDAY_PACKAGES.find((p) => p.id === selectedHolidayPkgId) || SPOTLIGHT_HOLIDAY_PACKAGES[0];
+
   const HOLIDAY_DROP_DATES = [
-    'Thanksgiving Morning Fresh Drop (Nov 26)',
+    'Thanksgiving Pre-Order Pickup (Wed, Nov 25)',
+    'Saturday Bun Drop — Rabbit Hill Park (Sat, Nov 21)',
     'Christmas Eve Morning Drop (Dec 24)',
     'Christmas Day Celebration Drop (Dec 25)',
-    'New Year\'s Eve Midnight Sweet Drop (Dec 31)',
-    'Any Upcoming Saturday Bun Club Drop'
+    'New Year\'s Eve Midnight Sweet Drop (Dec 31)'
   ];
 
   const handlePreorderHolidayBundle = () => {
+    const caviarSpec =
+      selectedHolidayPkg.caviarChoiceCount === 2
+        ? ` | Fru-Fru Caviars (Pick 2): ${holidayCaviar1} & ${holidayCaviar2}`
+        : selectedHolidayPkg.caviarChoiceCount === 1
+        ? ` | Fru-Fru Caviar: ${holidayCaviar1}`
+        : '';
+
     const holidayProduct: Product = {
-      id: `happier-holidays-bundle-${Date.now()}`,
-      name: 'Happier Holidays Family Bundle',
-      description: `Winter Holiday Spread: 6 Signature Cinnamon Rolls + 12 Minis Sharing Tray + 2 Coupe Jars (Secret Frost & Spiced Fruit Caviar). Reserved for: ${holidayDropDate}. "Don't forget to order some for the family! 🤣"`,
-      price: 54.00,
-      image: happierHolidaysFlyer,
+      id: `${selectedHolidayPkg.id}-${Date.now()}`,
+      name: `${selectedHolidayPkg.name} (Holiday Catering)`,
+      description: `${selectedHolidayPkg.subtitle} • Frost: ${selectedHolidayPkg.frostIncluded}${caviarSpec} • Pickup: ${holidayDropDate}`,
+      price: selectedHolidayPkg.price,
+      image: selectedHolidayPkg.image,
       type: 'bun',
-      tags: ['Holiday Special', 'Happier Holidays', 'Winter Drop', 'Family Bundle'],
+      tags: ['Holiday Catering', 'Prepaid Order', selectedHolidayPkg.badge || 'Holiday'],
       color: 'border-brand-ochre/25 text-brand-terracotta bg-orange-50/50'
     };
 
+    setPickupDate(holidayDropDate);
     handleAddToCart(holidayProduct, 1);
     setHolidayBundleAdded(true);
     setTimeout(() => setHolidayBundleAdded(false), 2000);
@@ -429,198 +456,245 @@ const Home: React.FC<HomeProps> = ({
 
           {/* Carousel Slide Content */}
           <AnimatePresence mode="wait">
-            {/* SLIDE 0: THE RENDEZVOUS */}
+            {/* SLIDE 0: HOLIDAY CATERING & HAPPIER HOLIDAYS FLYER */}
             {spotlightSlide === 0 && (
               <motion.div
-                key="slide-rendezvous"
+                key="slide-holidays"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.25 }}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Square Photo Container */}
-                  <div className="lg:col-span-6">
-                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-ochre/20 group bg-brand-ink/40">
+                  {/* Flyer Artwork Frame with Zoom & Holiday Tagline */}
+                  <div className="lg:col-span-6 space-y-4">
+                    <div 
+                      onClick={() => setIsHolidayFlyerModalOpen(true)}
+                      className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-ochre/30 group bg-brand-ink/40 cursor-zoom-in"
+                    >
                       <img 
-                        src={duoFeaturedDuoSet} 
-                        alt="The Rendezvous - Opened Luxury Gift Box with Frosted Rolls & Glass Companion Jars" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                        src={happierHolidaysFlyer} 
+                        alt="Holiday Catering Display: 48-Pan Minis, Secret Frost, & Fru-Fru Caviar Jars" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                       />
-                      <div className="absolute top-4 left-4 bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
-                        <Star className="w-3 h-3 fill-brand-ochre" />
-                        <span>Square Edition Flight</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/90 via-brand-ink/20 to-transparent pointer-events-none" />
+
+                      <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                        <div className="bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
+                          <Snowflake className="w-3.5 h-3.5 text-brand-ochre animate-spin-slow" />
+                          <span>The Factory Is Taking Holiday Orders</span>
+                        </div>
+                        <div className="bg-emerald-950/85 backdrop-blur-md text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest shadow-lg">
+                          Cutoff: Mon Nov 23 • 8 PM
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsHolidayFlyerModalOpen(true);
+                        }}
+                        className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-brand-ink/80 text-brand-cream/80 hover:text-brand-ochre hover:bg-brand-ink border border-brand-ochre/30 transition-all cursor-pointer shadow-lg"
+                        title="Enlarge Flyer Artwork"
+                      >
+                        <ZoomIn className="w-4 h-4" />
+                      </button>
+
+                      <div className="absolute bottom-5 left-5 right-5 z-10 space-y-1.5">
+                        <span className="mono text-[9px] text-brand-ochre uppercase font-black tracking-[0.25em] block">
+                          Wed Nov 25 Thanksgiving Pickups • Limited Trays
+                        </span>
+                        <h5 className="serif text-2xl sm:text-3xl font-black text-brand-cream leading-tight">
+                          Order Now For <span className="italic text-brand-ochre font-serif">Happier Holidays</span>
+                        </h5>
+                        <p className="mono text-xs text-brand-cream/90 font-bold tracking-wide">
+                          Big celebrations. Bigger buns. Questionable restraint.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-brand-ochre/[0.06] border border-brand-ochre/20 flex items-start gap-3">
+                      <span className="serif text-3xl text-brand-ochre font-serif leading-none shrink-0 select-none">“</span>
+                      <div>
+                        <p className="serif text-base sm:text-lg font-black text-brand-cream italic leading-snug">
+                          Baked in full 48-mini baking pans with shared glass jars of Secret Frost &amp; Fru-Fru Caviar.
+                        </p>
+                        <span className="mono text-[9px] uppercase font-bold text-brand-ochre/80 tracking-wider mt-1 block">
+                          Full Menu on Catering Page: Factory 24/48/96/144 • Holiday Feasts • 12/24 Dozens • CinnaCakes
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Details & Variant Selection */}
-                  <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
+                  {/* Details Card & Holiday Package Picker */}
+                  <div className="lg:col-span-6 flex flex-col justify-between space-y-5">
                     <div className="space-y-4">
                       <div className="flex justify-between items-baseline border-b border-brand-ochre/10 pb-4">
                         <div>
-                          <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block mb-1">
-                            Selected Flight Variant
+                          <span className="mono text-[10px] text-brand-terracotta uppercase font-black tracking-widest block mb-1">
+                            Holiday Catering Drop • Spot 01 / 03
                           </span>
-                          <h4 className="serif text-2xl font-black text-brand-cream uppercase tracking-tight">{selectedRendezvousVariant.name}</h4>
+                          <h4 className="serif text-3xl md:text-4xl font-black text-brand-cream uppercase tracking-tight">
+                            {selectedHolidayPkg.name}
+                          </h4>
                         </div>
-                        <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
-                          ${selectedRendezvousVariant.price.toFixed(2)}
-                        </span>
+                        <div className="text-right">
+                          <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
+                            ${selectedHolidayPkg.price.toFixed(2)}
+                          </span>
+                          <span className="mono text-[10px] text-brand-cream/60 block tracking-wider uppercase font-bold">
+                            {selectedHolidayPkg.badge}
+                          </span>
+                        </div>
                       </div>
 
-                      <p className="text-brand-cream/70 text-xs md:text-sm leading-relaxed">
-                        {selectedRendezvousVariant.description}
+                      <p className="text-brand-cream/80 text-xs md:text-sm leading-relaxed">
+                        {selectedHolidayPkg.description}
                       </p>
 
-                      {/* Custom Bun & Companion Dropdown Selection Lists */}
-                      <div className="space-y-4 pt-2 border-t border-brand-ochre/10">
-                        <div className="flex items-center space-x-2">
-                          <Sparkles className="w-3.5 h-3.5 text-brand-ochre" />
-                          <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
-                            Customize Your Selection ({rollCount} Rolls & {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
-                          </span>
-                        </div>
-
-                        {/* Bun Flavor Choices */}
-                        <div className="space-y-2">
-                          <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
-                            Select {rollCount} Bun Flavors:
-                          </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            {Array.from({ length: rollCount }).map((_, i) => (
-                              <div key={`bun-select-${i}`} className="space-y-1">
-                                <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
-                                  <span>Bun #{i + 1}</span>
-                                  <span className="text-brand-ochre">★ Roll</span>
-                                </label>
-                                <select
-                                  value={selectedBuns[i] || BUN_FLAVOR_OPTIONS[0]}
-                                  onChange={(e) => handleBunChange(i, e.target.value)}
-                                  className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
-                                >
-                                  {BUN_FLAVOR_OPTIONS.map((flavor) => (
-                                    <option key={flavor} value={flavor} className="bg-brand-ink text-brand-cream">
-                                      {flavor}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Companion Choices (Cups or Jars) */}
-                        <div className="space-y-2 pt-1">
-                          <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
-                            Select {jarCount} {isJarType ? 'Coupe de Frost / Caviar Jars (8 oz)' : 'Petit de Frost / Caviar Cups (3.5 oz)'}:
-                          </span>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            {Array.from({ length: jarCount }).map((_, i) => (
-                              <div key={`jar-select-${i}`} className="space-y-1">
-                                <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
-                                  <span>Companion #{i + 1}</span>
-                                  <span className="text-brand-terracotta">{companionLabel}</span>
-                                </label>
-                                <select
-                                  value={selectedJars[i] || currentCompanionOptions[0]}
-                                  onChange={(e) => handleJarChange(i, e.target.value)}
-                                  className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
-                                >
-                                  {currentCompanionOptions.map((opt) => (
-                                    <option key={opt} value={opt} className="bg-brand-ink text-brand-cream">
-                                      {opt}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Included Items Checklist Dynamic Summary */}
-                      <div className="space-y-2 pt-2 border-t border-brand-ochre/10">
-                        <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
-                          Your Selection Summary ({rollCount} Rolls + {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
+                      {/* Anchor Packages Selector */}
+                      <div className="space-y-2">
+                        <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
+                          Select Featured Holiday Package:
                         </span>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-brand-cream">
-                          {selectedBuns.slice(0, rollCount).map((bun, idx) => (
-                            <div key={`summary-bun-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
-                              <Check className="w-4 h-4 text-brand-ochre shrink-0" />
-                              <span className="truncate">Roll {idx + 1}: {bun}</span>
-                            </div>
-                          ))}
-                          {selectedJars.slice(0, jarCount).map((jar, idx) => (
-                            <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
-                              <Check className="w-4 h-4 text-brand-terracotta shrink-0" />
-                              <span className="truncate">{isJarType ? 'Coupe' : 'Petit'} {idx + 1}: {jar}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Variant Buttons to Match Box Selection Cards */}
-                      <div className="space-y-2 pt-2">
-                        <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
-                          Choose Size & Pricing Variant:
-                        </span>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                          {RENDEZVOUS_VARIANTS.map((variant) => {
-                            const isSelected = rendezvousVariant === variant.id;
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {SPOTLIGHT_HOLIDAY_PACKAGES.map((pkg) => {
+                            const isSelected = selectedHolidayPkgId === pkg.id;
                             return (
                               <button
-                                key={variant.id}
-                                onClick={() => setRendezvousVariant(variant.id as any)}
-                                className={`p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
+                                key={pkg.id}
+                                onClick={() => setSelectedHolidayPkgId(pkg.id)}
+                                className={`p-3 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
                                   isSelected
-                                    ? 'border-brand-terracotta bg-brand-terracotta/10 text-brand-cream shadow-lg ring-1 ring-brand-terracotta/40'
-                                    : 'border-brand-ochre/20 bg-brand-ink/60 hover:border-brand-ochre/50 hover:bg-white/[0.02] text-brand-cream/70'
+                                    ? 'border-brand-terracotta bg-brand-terracotta/15 text-brand-cream shadow-lg ring-1 ring-brand-terracotta/40'
+                                    : 'border-brand-ochre/20 bg-brand-ink/60 hover:border-brand-ochre/50 text-brand-cream/75'
                                 }`}
                               >
-                                <div className="flex justify-between items-center mb-1.5">
+                                <div className="flex justify-between items-center mb-1">
                                   <span className="mono text-[8px] font-black uppercase tracking-wider text-brand-ochre">
-                                    {variant.badge}
+                                    {pkg.badge}
                                   </span>
                                   {isSelected && <Check className="w-3.5 h-3.5 text-brand-terracotta" />}
                                 </div>
-                                <span className="serif text-xs font-black block text-brand-cream leading-tight uppercase">{variant.name}</span>
-                                <span className="mono text-[10px] text-brand-cream/50 mt-1">{variant.rollsCount}</span>
-                                <span className="mono text-xs font-black text-brand-ochre mt-2">${variant.price.toFixed(2)}</span>
+                                <span className="serif text-sm font-black text-brand-cream leading-tight">
+                                  {pkg.name}
+                                </span>
+                                <span className="mono text-[10px] text-brand-cream/55 mt-0.5 line-clamp-1">
+                                  {pkg.subtitle}
+                                </span>
+                                <span className="mono text-xs font-black text-brand-ochre mt-1.5">
+                                  ${pkg.price.toFixed(2)}
+                                </span>
                               </button>
                             );
                           })}
                         </div>
                       </div>
+
+                      {/* Caviar Picker if Feast or CinnaCake+Caviar */}
+                      {selectedHolidayPkg.caviarChoiceCount > 0 && (
+                        <div className="p-4 rounded-2xl border border-brand-ochre/20 bg-brand-ochre/[0.04] space-y-3">
+                          <span className="mono text-[10px] font-black uppercase tracking-widest text-brand-ochre flex items-center gap-1.5">
+                            <Gift className="w-3.5 h-3.5 text-brand-ochre" />
+                            <span>
+                              Choose Your {selectedHolidayPkg.caviarChoiceCount === 2 ? 'Two' : ''} Thanksgiving Fru-Fru Caviar
+                              {selectedHolidayPkg.caviarChoiceCount === 2 ? 's' : ''}:
+                            </span>
+                          </span>
+                          <div className={`grid grid-cols-1 ${selectedHolidayPkg.caviarChoiceCount === 2 ? 'sm:grid-cols-2' : ''} gap-2.5`}>
+                            <select
+                              value={holidayCaviar1}
+                              onChange={(e) => setHolidayCaviar1(e.target.value)}
+                              className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:border-brand-ochre focus:outline-none cursor-pointer"
+                            >
+                              {THANKSGIVING_CAVIAR_FLAVORS.map((fl) => (
+                                <option key={fl} value={fl} className="bg-brand-ink text-brand-cream">
+                                  Caviar #1: {fl}
+                                </option>
+                              ))}
+                            </select>
+
+                            {selectedHolidayPkg.caviarChoiceCount === 2 && (
+                              <select
+                                value={holidayCaviar2}
+                                onChange={(e) => setHolidayCaviar2(e.target.value)}
+                                className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:border-brand-ochre focus:outline-none cursor-pointer"
+                              >
+                                {THANKSGIVING_CAVIAR_FLAVORS.map((fl) => (
+                                  <option key={fl} value={fl} className="bg-brand-ink text-brand-cream">
+                                    Caviar #2: {fl}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Drop Reservation Date Selector */}
+                      <div className="space-y-2 pt-1 border-t border-brand-ochre/10">
+                        <label className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest flex items-center justify-between">
+                          <span>Choose Holiday Pickup Date:</span>
+                          <span className="text-brand-cream/60 mono text-[9px] font-normal">Prepaid Reservation</span>
+                        </label>
+                        <select
+                          value={holidayDropDate}
+                          onChange={(e) => setHolidayDropDate(e.target.value)}
+                          className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
+                        >
+                          {HOLIDAY_DROP_DATES.map((date) => (
+                            <option key={date} value={date} className="bg-brand-ink text-brand-cream">
+                              {date}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
-                    {/* Add to Box Button */}
-                    <button
-                      onClick={handleAddRendezvous}
-                      className={`w-full py-5 rounded-2xl font-mono font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-xl ${
-                        rendezvousAdded
-                          ? 'bg-emerald-600 text-brand-cream'
-                          : 'bg-brand-terracotta hover:bg-brand-ochre text-brand-cream hover:text-brand-ink'
-                      }`}
-                    >
-                      {rendezvousAdded ? (
-                        <>
-                          <Check className="w-4 h-4 text-brand-cream" />
-                          <span>✓ Added The Rendezvous to Box!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-4 h-4" />
-                          <span>Add The Rendezvous to Box — ${selectedRendezvousVariant.price.toFixed(2)}</span>
-                        </>
-                      )}
-                    </button>
+                    {/* Pre-Order Action Buttons */}
+                    <div className="space-y-3 pt-1">
+                      <button
+                        onClick={handlePreorderHolidayBundle}
+                        className={`w-full py-5 rounded-2xl font-mono font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-xl ${
+                          holidayBundleAdded
+                            ? 'bg-emerald-600 text-brand-cream'
+                            : 'bg-brand-terracotta hover:bg-brand-ochre text-brand-cream hover:text-brand-ink'
+                        }`}
+                      >
+                        {holidayBundleAdded ? (
+                          <>
+                            <Check className="w-4 h-4 text-brand-cream" />
+                            <span>✓ Added {selectedHolidayPkg.name} to Order!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4" />
+                            <span>Pre-Order {selectedHolidayPkg.name} — ${selectedHolidayPkg.price.toFixed(2)}</span>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="flex items-center justify-between text-[10px] mono text-brand-cream/70 px-1">
+                        <Link
+                          to="/catering"
+                          className="text-brand-ochre hover:text-brand-cream transition-colors uppercase font-bold flex items-center gap-1"
+                        >
+                          <span>See All Holiday Trays &amp; Feasts →</span>
+                        </Link>
+                        <button
+                          onClick={() => setSpotlightSlide(1)}
+                          className="text-brand-cream/70 hover:text-brand-ochre transition-colors uppercase font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>Next: The Minis →</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* SLIDE 1: THE MINIS (SQUARE MENU EDITIONS & QUIPS) */}
+            {/* SLIDE 1: THE MINIS (48-PAN & SQUARE MENU EDITIONS) */}
             {spotlightSlide === 1 && (
               <motion.div
                 key="slide-minis"
@@ -638,18 +712,16 @@ const Home: React.FC<HomeProps> = ({
                         alt="The Minis - Golden Bite-Sized Cinnamon Roll Trays" 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
                       />
-                      {/* Top Badges */}
                       <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                         <div className="bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
                           <Star className="w-3 h-3 fill-brand-ochre" />
-                          <span>Square Menu Original</span>
+                          <span>48-Pan Factory Standard</span>
                         </div>
                         <div className="bg-brand-terracotta/90 backdrop-blur-md text-brand-cream border border-brand-terracotta/40 px-3 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest shadow-lg">
                           {selectedMiniPack.count}-Pack Selected
                         </div>
                       </div>
 
-                      {/* Photo view switcher pills */}
                       <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 bg-brand-ink/90 backdrop-blur-md p-1 rounded-full border border-brand-ochre/20">
                         <button
                           onClick={() => setMiniView('tray')}
@@ -674,7 +746,6 @@ const Home: React.FC<HomeProps> = ({
                       </div>
                     </div>
 
-                    {/* Selected Quip Quote Box */}
                     <div className="p-4 rounded-2xl bg-brand-ochre/[0.06] border border-brand-ochre/20 flex items-start gap-3">
                       <span className="serif text-3xl text-brand-ochre font-serif leading-none shrink-0 select-none">“</span>
                       <div>
@@ -694,7 +765,7 @@ const Home: React.FC<HomeProps> = ({
                       <div className="flex justify-between items-baseline border-b border-brand-ochre/10 pb-4">
                         <div>
                           <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block mb-1">
-                            Square Menu Original • Spot 02 / 03
+                            Bite-Sized Collection • Spot 02 / 03
                           </span>
                           <h4 className="serif text-3xl md:text-4xl font-black text-brand-cream uppercase tracking-tight">
                             The <span className="italic text-brand-ochre font-serif">Minis</span>
@@ -714,11 +785,11 @@ const Home: React.FC<HomeProps> = ({
                         {selectedMiniPack.description} Baked golden-brown from our signature Tangzhong Japanese milk dough and glazed with velvety Secret Frost.
                       </p>
 
-                      {/* 6 Square Pack Sizes Grid */}
+                      {/* 6 Pack Sizes Grid */}
                       <div className="space-y-2.5 pt-1">
                         <div className="flex justify-between items-center">
                           <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
-                            Choose Pack Size (6 Square Sizes Available):
+                            Choose Pack Size (Drop &amp; Pan Sizes):
                           </span>
                           <span className="mono text-[9px] text-brand-cream/50 uppercase">
                             {selectedMiniPack.badge}
@@ -768,7 +839,7 @@ const Home: React.FC<HomeProps> = ({
                       <div className="space-y-2 pt-2 border-t border-brand-ochre/10">
                         <div className="flex items-center justify-between">
                           <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
-                            Select Dipping Flavor ({selectedMiniPack.dippersIncluded}):
+                            Select Frost / Dipper ({selectedMiniPack.dippersIncluded}):
                           </span>
                           <span className="mono text-[9px] text-emerald-400 font-bold">Included</span>
                         </div>
@@ -785,12 +856,11 @@ const Home: React.FC<HomeProps> = ({
                         </select>
                       </div>
 
-                      {/* Current Selection Summary */}
                       <div className="p-3 rounded-xl bg-brand-ochre/[0.04] border border-brand-ochre/15 text-xs flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <Check className="w-4 h-4 text-brand-terracotta shrink-0" />
                           <span className="text-brand-cream/90 font-medium">
-                            {selectedMiniPack.name} + {selectedMiniDipper}
+                            {selectedMiniPack.name} + {selectedMiniPack.dippersIncluded}
                           </span>
                         </div>
                         <span className="mono text-xs font-black text-brand-ochre">
@@ -799,7 +869,6 @@ const Home: React.FC<HomeProps> = ({
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="space-y-3 pt-2">
                       <button
                         onClick={() => handleAddMini()}
@@ -835,7 +904,7 @@ const Home: React.FC<HomeProps> = ({
                           onClick={() => setSpotlightSlide(2)}
                           className="text-brand-cream/70 hover:text-brand-ochre transition-colors uppercase font-bold flex items-center gap-1 cursor-pointer"
                         >
-                          <span>Next: Happier Holidays Flyer →</span>
+                          <span>Next: The Rendezvous →</span>
                         </button>
                       </div>
                     </div>
@@ -844,195 +913,194 @@ const Home: React.FC<HomeProps> = ({
               </motion.div>
             )}
 
-            {/* SLIDE 2: HAPPIER HOLIDAYS FLYER (WINTER THEMED SPREAD & CAMPAIGN) */}
+            {/* SLIDE 2: THE RENDEZVOUS */}
             {spotlightSlide === 2 && (
               <motion.div
-                key="slide-holidays"
+                key="slide-rendezvous"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.25 }}
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  {/* Flyer Artwork Frame with Zoom & Quip Overlay */}
-                  <div className="lg:col-span-6 space-y-4">
-                    <div 
-                      onClick={() => setIsHolidayFlyerModalOpen(true)}
-                      className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-ochre/30 group bg-brand-ink/40 cursor-zoom-in"
-                    >
+                  {/* Square Photo Container */}
+                  <div className="lg:col-span-6">
+                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden shadow-2xl border-2 border-brand-ochre/20 group bg-brand-ink/40">
                       <img 
-                        src={happierHolidaysFlyer} 
-                        alt="Winter Theme Display: Buns, Minis, Frosting, & Fruit Caviar Jars" 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-95"
+                        src={duoFeaturedDuoSet} 
+                        alt="The Rendezvous - Opened Luxury Gift Box with Frosted Rolls & Glass Companion Jars" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/90 via-brand-ink/20 to-transparent pointer-events-none" />
-
-                      {/* Top Badges */}
-                      <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
-                        <div className="bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
-                          <Snowflake className="w-3.5 h-3.5 text-brand-ochre animate-spin-slow" />
-                          <span>Winter Holiday Festive Drop</span>
-                        </div>
-                        <div className="bg-emerald-950/80 backdrop-blur-md text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest shadow-lg">
-                          Early Booking Open
-                        </div>
-                      </div>
-
-                      {/* Zoom Trigger Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsHolidayFlyerModalOpen(true);
-                        }}
-                        className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-brand-ink/80 text-brand-cream/80 hover:text-brand-ochre hover:bg-brand-ink border border-brand-ochre/30 transition-all cursor-pointer shadow-lg"
-                        title="Enlarge Flyer Artwork"
-                      >
-                        <ZoomIn className="w-4 h-4" />
-                      </button>
-
-                      {/* Bottom Flyer Typography Overlay */}
-                      <div className="absolute bottom-5 left-5 right-5 z-10 space-y-1.5">
-                        <span className="mono text-[9px] text-brand-ochre uppercase font-black tracking-[0.25em] block">
-                          Official Holiday Drop Flyer
-                        </span>
-                        <h5 className="serif text-2xl sm:text-3xl font-black text-brand-cream leading-tight">
-                          Order Now For <span className="italic text-brand-ochre font-serif">Happier Holidays</span>
-                        </h5>
-                        <p className="mono text-xs text-brand-cream/90 font-bold tracking-wide">
-                          Don't forget to order some for the family! 🤣
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Flyer Caption Box */}
-                    <div className="p-4 rounded-2xl bg-brand-ochre/[0.06] border border-brand-ochre/20 flex items-start gap-3">
-                      <span className="serif text-3xl text-brand-ochre font-serif leading-none shrink-0 select-none">“</span>
-                      <div>
-                        <p className="serif text-base sm:text-lg font-black text-brand-cream italic leading-snug">
-                          Don't forget to order some for the family! 🤣
-                        </p>
-                        <span className="mono text-[9px] uppercase font-bold text-brand-ochre/80 tracking-wider mt-1 block">
-                          Holiday Morning Survival Rule #1 • Fresh Milk Bread Rolls, Sharing Minis & Vault Jars
-                        </span>
+                      <div className="absolute top-4 left-4 bg-brand-ink/90 backdrop-blur-md text-brand-ochre border border-brand-ochre/30 px-3.5 py-1.5 rounded-full text-[9px] font-mono font-black uppercase tracking-widest flex items-center space-x-1.5 shadow-lg">
+                        <Star className="w-3 h-3 fill-brand-ochre" />
+                        <span>Square Edition Flight • Spot 03 / 03</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Details Card & Pre-Order Campaign */}
+                  {/* Details & Variant Selection */}
                   <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                       <div className="flex justify-between items-baseline border-b border-brand-ochre/10 pb-4">
                         <div>
-                          <span className="mono text-[10px] text-brand-terracotta uppercase font-black tracking-widest block mb-1">
-                            Winter Holiday Drop • Spot 03 / 03
+                          <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block mb-1">
+                            Selected Flight Variant • Spot 03 / 03
                           </span>
-                          <h4 className="serif text-3xl md:text-4xl font-black text-brand-cream uppercase tracking-tight">
-                            Happier Holidays <span className="italic text-brand-ochre font-serif">Feast</span>
-                          </h4>
+                          <h4 className="serif text-2xl font-black text-brand-cream uppercase tracking-tight">{selectedRendezvousVariant.name}</h4>
                         </div>
-                        <div className="text-right">
-                          <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
-                            $54.00
-                          </span>
-                          <span className="mono text-[10px] text-emerald-400 block tracking-wider uppercase font-bold">
-                            Save $8.00 Bundle Deal
-                          </span>
-                        </div>
+                        <span className="mono text-2xl md:text-3xl font-black text-brand-ochre">
+                          ${selectedRendezvousVariant.price.toFixed(2)}
+                        </span>
                       </div>
 
-                      <p className="text-brand-cream/80 text-xs md:text-sm leading-relaxed">
-                        Avoid holiday morning chaos. Wake up to warm, pillow-soft Japanese milk bread cinnamon rolls, a sharing tray of bite-sized minis, and elegant glass jars of Secret Frost and slow-simmered fruit caviar.
+                      <p className="text-brand-cream/70 text-xs md:text-sm leading-relaxed">
+                        {selectedRendezvousVariant.description}
                       </p>
 
-                      {/* Curated Bundle Breakdown Box */}
-                      <div className="p-4 rounded-2xl border border-brand-ochre/20 bg-brand-ochre/[0.04] space-y-3">
-                        <div className="flex items-center justify-between border-b border-brand-ochre/15 pb-2">
-                          <span className="mono text-[10px] font-black uppercase tracking-widest text-brand-ochre flex items-center gap-1.5">
-                            <Gift className="w-3.5 h-3.5 text-brand-ochre" />
-                            <span>The Happier Holidays Family Spread Includes:</span>
-                          </span>
-                          <span className="mono text-[9px] bg-brand-terracotta/20 text-brand-terracotta px-2 py-0.5 rounded font-black uppercase">
-                            All-In-One Box
+                      {/* Custom Bun & Companion Dropdown Selection Lists */}
+                      <div className="space-y-4 pt-2 border-t border-brand-ochre/10">
+                        <div className="flex items-center space-x-2">
+                          <Sparkles className="w-3.5 h-3.5 text-brand-ochre" />
+                          <span className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest block">
+                            Customize Your Selection ({rollCount} Rolls & {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-brand-cream/90">
-                          <div className="flex items-start space-x-2 bg-brand-ink/60 p-2.5 rounded-xl border border-brand-ochre/10">
-                            <Check className="w-4 h-4 text-brand-ochre shrink-0 mt-0.5" />
-                            <span><strong>6x Classic & Caviar Rolls:</strong> Oversized rolls drenched in Secret Frost</span>
+                        <div className="space-y-2">
+                          <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
+                            Select {rollCount} Bun Flavors:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            {Array.from({ length: rollCount }).map((_, i) => (
+                              <div key={`bun-select-${i}`} className="space-y-1">
+                                <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
+                                  <span>Bun #{i + 1}</span>
+                                  <span className="text-brand-ochre">★ Roll</span>
+                                </label>
+                                <select
+                                  value={selectedBuns[i] || BUN_FLAVOR_OPTIONS[0]}
+                                  onChange={(e) => handleBunChange(i, e.target.value)}
+                                  className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
+                                >
+                                  {BUN_FLAVOR_OPTIONS.map((flavor) => (
+                                    <option key={flavor} value={flavor} className="bg-brand-ink text-brand-cream">
+                                      {flavor}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            ))}
                           </div>
-                          <div className="flex items-start space-x-2 bg-brand-ink/60 p-2.5 rounded-xl border border-brand-ochre/10">
-                            <Check className="w-4 h-4 text-brand-ochre shrink-0 mt-0.5" />
-                            <span><strong>12-Pack Minis Tray:</strong> Golden bite-sized buns for morning grazing</span>
-                          </div>
-                          <div className="flex items-start space-x-2 bg-brand-ink/60 p-2.5 rounded-xl border border-brand-ochre/10">
-                            <Check className="w-4 h-4 text-brand-terracotta shrink-0 mt-0.5" />
-                            <span><strong>Coupe de Frost (8 oz):</strong> Glass jar of whipped cream cheese whip</span>
-                          </div>
-                          <div className="flex items-start space-x-2 bg-brand-ink/60 p-2.5 rounded-xl border border-brand-ochre/10">
-                            <Check className="w-4 h-4 text-brand-terracotta shrink-0 mt-0.5" />
-                            <span><strong>Coupe de Caviar (8 oz):</strong> Mountain Blueberry or Spiced Peach</span>
+                        </div>
+
+                        <div className="space-y-2 pt-1">
+                          <span className="mono text-[9px] uppercase font-black text-brand-cream/50 tracking-wider block">
+                            Select {jarCount} {isJarType ? 'Coupe de Frost / Caviar Jars (8 oz)' : 'Petit de Frost / Caviar Cups (3.5 oz)'}:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            {Array.from({ length: jarCount }).map((_, i) => (
+                              <div key={`jar-select-${i}`} className="space-y-1">
+                                <label className="mono text-[9px] uppercase font-black text-brand-cream/80 flex items-center justify-between">
+                                  <span>Companion #{i + 1}</span>
+                                  <span className="text-brand-terracotta">{companionLabel}</span>
+                                </label>
+                                <select
+                                  value={selectedJars[i] || currentCompanionOptions[0]}
+                                  onChange={(e) => handleJarChange(i, e.target.value)}
+                                  className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3 py-2 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
+                                >
+                                  {currentCompanionOptions.map((opt) => (
+                                    <option key={opt} value={opt} className="bg-brand-ink text-brand-cream">
+                                      {opt}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
 
-                      {/* Drop Reservation Date Selector */}
-                      <div className="space-y-2 pt-1 border-t border-brand-ochre/10">
-                        <label className="mono text-[10px] text-brand-ochre uppercase font-black tracking-widest flex items-center justify-between">
-                          <span>Choose Holiday Drop Date:</span>
-                          <span className="text-brand-cream/60 mono text-[9px] font-normal">Reserved Fresh Baked</span>
-                        </label>
-                        <select
-                          value={holidayDropDate}
-                          onChange={(e) => setHolidayDropDate(e.target.value)}
-                          className="w-full bg-brand-ink/90 border border-brand-ochre/20 text-brand-cream rounded-xl px-3.5 py-2.5 text-xs font-semibold focus:ring-2 focus:ring-brand-ochre focus:border-brand-ochre focus:outline-none cursor-pointer hover:border-brand-ochre/40 transition-colors shadow-inner"
-                        >
-                          {HOLIDAY_DROP_DATES.map((date) => (
-                            <option key={date} value={date} className="bg-brand-ink text-brand-cream">
-                              {date}
-                            </option>
+                      <div className="space-y-2 pt-2 border-t border-brand-ochre/10">
+                        <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
+                          Your Selection Summary ({rollCount} Rolls + {jarCount} {isJarType ? 'Coupe Jars (8 oz)' : 'Petit Cups (3.5 oz)'}):
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold text-brand-cream">
+                          {selectedBuns.slice(0, rollCount).map((bun, idx) => (
+                            <div key={`summary-bun-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
+                              <Check className="w-4 h-4 text-brand-ochre shrink-0" />
+                              <span className="truncate">Roll {idx + 1}: {bun}</span>
+                            </div>
                           ))}
-                        </select>
+                          {selectedJars.slice(0, jarCount).map((jar, idx) => (
+                            <div key={`summary-jar-${idx}`} className="flex items-center space-x-2 bg-brand-ochre/[0.04] p-2.5 rounded-xl border border-brand-ochre/15">
+                              <Check className="w-4 h-4 text-brand-terracotta shrink-0" />
+                              <span className="truncate">{isJarType ? 'Coupe' : 'Petit'} {idx + 1}: {jar}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 pt-2">
+                        <span className="mono text-[9px] text-brand-cream/50 uppercase font-black tracking-widest block">
+                          Choose Size & Pricing Variant:
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                          {RENDEZVOUS_VARIANTS.map((variant) => {
+                            const isSelected = rendezvousVariant === variant.id;
+                            return (
+                              <button
+                                key={variant.id}
+                                onClick={() => setRendezvousVariant(variant.id as any)}
+                                className={`p-3.5 rounded-2xl border-2 text-left transition-all flex flex-col justify-between cursor-pointer ${
+                                  isSelected
+                                    ? 'border-brand-terracotta bg-brand-terracotta/10 text-brand-cream shadow-lg ring-1 ring-brand-terracotta/40'
+                                    : 'border-brand-ochre/20 bg-brand-ink/60 hover:border-brand-ochre/50 hover:bg-white/[0.02] text-brand-cream/70'
+                                }`}
+                              >
+                                <div className="flex justify-between items-center mb-1.5">
+                                  <span className="mono text-[8px] font-black uppercase tracking-wider text-brand-ochre">
+                                    {variant.badge}
+                                  </span>
+                                  {isSelected && <Check className="w-3.5 h-3.5 text-brand-terracotta" />}
+                                </div>
+                                <span className="serif text-xs font-black block text-brand-cream leading-tight uppercase">{variant.name}</span>
+                                <span className="mono text-[10px] text-brand-cream/50 mt-1">{variant.rollsCount}</span>
+                                <span className="mono text-xs font-black text-brand-ochre mt-2">${variant.price.toFixed(2)}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Pre-Order Action Button */}
-                    <div className="space-y-3 pt-2">
+                    <div className="space-y-3">
                       <button
-                        onClick={handlePreorderHolidayBundle}
+                        onClick={handleAddRendezvous}
                         className={`w-full py-5 rounded-2xl font-mono font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-xl ${
-                          holidayBundleAdded
+                          rendezvousAdded
                             ? 'bg-emerald-600 text-brand-cream'
                             : 'bg-brand-terracotta hover:bg-brand-ochre text-brand-cream hover:text-brand-ink'
                         }`}
                       >
-                        {holidayBundleAdded ? (
+                        {rendezvousAdded ? (
                           <>
                             <Check className="w-4 h-4 text-brand-cream" />
-                            <span>✓ Reserved Happier Holidays Family Bundle!</span>
+                            <span>✓ Added The Rendezvous to Box!</span>
                           </>
                         ) : (
                           <>
                             <Plus className="w-4 h-4" />
-                            <span>Pre-Order Holiday Bundle — $54.00</span>
+                            <span>Add The Rendezvous to Box — ${selectedRendezvousVariant.price.toFixed(2)}</span>
                           </>
                         )}
                       </button>
-
-                      <div className="flex items-center justify-between text-[10px] mono text-brand-cream/60 px-1">
-                        <button
-                          onClick={() => {
-                            document.getElementById('menu-section')?.scrollIntoView({ behavior: 'smooth' });
-                          }}
-                          className="text-brand-ochre hover:text-brand-cream transition-colors uppercase font-bold flex items-center gap-1 cursor-pointer"
-                        >
-                          <span>Build a Custom Box Instead ↓</span>
-                        </button>
+                      <div className="flex justify-end px-1">
                         <button
                           onClick={() => setSpotlightSlide(0)}
-                          className="text-brand-cream/70 hover:text-brand-ochre transition-colors uppercase font-bold flex items-center gap-1 cursor-pointer"
+                          className="mono text-[10px] text-brand-cream/70 hover:text-brand-ochre transition-colors uppercase font-bold cursor-pointer"
                         >
-                          <span>← Back to Rendezvous (Spot 01)</span>
+                          ← Back to Holiday Orders (Spot 01)
                         </button>
                       </div>
                     </div>
@@ -1224,7 +1292,7 @@ const Home: React.FC<HomeProps> = ({
                       className="bg-brand-terracotta text-brand-cream px-6 py-3 font-mono font-black text-[10px] uppercase tracking-widest hover:bg-brand-ochre hover:text-brand-ink transition-all duration-300 shadow-md cursor-pointer rounded-xl flex items-center gap-2"
                     >
                       <Plus className="w-3.5 h-3.5" />
-                      <span>Pre-Order Bundle ($54.00)</span>
+                      <span>Pre-Order {selectedHolidayPkg.name} (${selectedHolidayPkg.price.toFixed(2)})</span>
                     </button>
                   </div>
                 </div>
@@ -1363,9 +1431,9 @@ const Home: React.FC<HomeProps> = ({
             <h3 className="serif text-4xl md:text-6xl font-black text-brand-ink uppercase tracking-tighter">The Topping Vault Jars</h3>
             <div className="w-16 h-[2px] bg-brand-terracotta" />
             <p className="text-brand-ink/70 text-sm max-w-xl leading-relaxed animate-pulse">
-              Our signature slow-simmered regional fruit caviars and Velvety Secret Frost whips are now available in a curated hierarchy of premium sizes.
+              Our signature slow-simmered Fru-Fru Caviars and Velvety Secret Frost whips are available in curated 8 oz, 16 oz, and 32 oz glass jars for home &amp; holiday tables.
               <br/>
-              <span className="font-extrabold text-brand-terracotta">Le Petit Duo — $5 (Any 2 Petit Jars) • Any 2 Coupe Jars for $12!</span> Added automatically.
+              <span className="font-extrabold text-brand-terracotta">Le Petit Duo — $5 (Any 2 Petit 3.5 oz Cups)</span> Added automatically on Saturday drop cups.
             </p>
           </div>
 

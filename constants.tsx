@@ -42,6 +42,9 @@ import velvetAppleBun from './src/assets/images/apple_velvet_chunky_coulis_17816
 import classicSingleBun from './src/assets/images/classic_single_bun_1782936257003.jpg';
 import chocolateCherryCaviar from './src/assets/images/cherry_bomb_roll_1781638531994.jpg';
 import cookiesCreamTopping from './src/assets/images/cookies_cream_roll_1781638548197.jpg';
+import cateringHeroSpread from './src/assets/images/catering_hero_spread_1784912007707.jpg';
+import miniBunTraySide from './src/assets/images/mini_bun_tray_side_1785015555305.jpg';
+import happierHolidaysFlyer from './src/assets/images/happier_holidays_flyer_1792963741971.jpg';
 
 // Export imported local images for other pages (like Instagram grid)
 export { 
@@ -328,7 +331,7 @@ export const JAR_PRODUCTS: Product[] = [
   {
     id: 'petit-caviar-jar',
     name: 'Petit de Caviar',
-    description: '3.5 oz of slow-simmered regional fruit caviar in an airtight plastic cup.',
+    description: '3.5 oz of slow-simmered regional fruit caviar in an airtight cup (Saturday Drops & single-bun add-on).',
     price: 3.00,
     image: petitCaviarCup,
     type: 'jar',
@@ -338,7 +341,7 @@ export const JAR_PRODUCTS: Product[] = [
   {
     id: 'petit-frost-jar',
     name: 'Petit de Frost',
-    description: '3.5 oz of temperature-calibrated velvety frosting whip served in an airtight plastic cup.',
+    description: '3.5 oz of temperature-calibrated velvety Secret Frost cream whip in an airtight cup.',
     price: 3.00,
     image: petitFrostCup,
     type: 'jar',
@@ -348,7 +351,7 @@ export const JAR_PRODUCTS: Product[] = [
   {
     id: 'petit-duo-caviar',
     name: 'Le Petit Duo',
-    description: 'Any 2 Petit cups (3.5 oz each). Mix and match our Petit de Frost and Petit de Caviar cups.',
+    description: 'Any 2 Petit cups (3.5 oz each). Mix and match Petit de Frost and Petit de Caviar cups.',
     price: 5.00,
     image: petitDuoCaviarCups,
     type: 'jar',
@@ -357,69 +360,69 @@ export const JAR_PRODUCTS: Product[] = [
   },
   {
     id: 'coupe-caviar-jar',
-    name: 'Coupe de Caviar',
-    description: '8 oz of slow-simmered regional fruit caviar in an elegant glass mason jar.',
-    price: 9.00,
+    name: 'Coupe de Caviar (8 oz)',
+    description: '8 oz of slow-simmered Fru-Fru Caviar in an elegant glass mason jar.',
+    price: 12.00,
     image: coupeCaviarJar,
     type: 'jar',
-    tags: ['Coupe de Caviar (8 oz)', 'Fruit Caviar'],
+    tags: ['Fru-Fru Caviar (8 oz)', 'Fruit Caviar'],
     color: '#FDF5FF'
   },
   {
     id: 'coupe-frost-jar',
-    name: 'Coupe de Frost',
-    description: '8 oz of temperature-calibrated velvety frosting whip in an elegant glass mason jar.',
+    name: 'Secret Frost — 8 oz',
+    description: '8 oz of temperature-calibrated velvety Secret Frost whip in a glass mason jar.',
     price: 9.00,
     image: coupeFrostJar,
     type: 'jar',
-    tags: ['Coupe de Frost (8 oz)', 'Secret Frost Jar'],
+    tags: ['Secret Frost (8 oz)', 'Secret Frost Jar'],
     color: '#FDF2F2'
   },
   {
     id: 'pint-caviar-jar',
-    name: 'Pint de Caviar',
-    description: '16 oz of slow-simmered regional fruit caviar in a classic glass mason jar.',
-    price: 14.00,
+    name: 'Pint de Caviar (16 oz)',
+    description: '16 oz of slow-simmered Fru-Fru Caviar in a classic glass mason jar.',
+    price: 20.00,
     image: pintCaviarJar,
     type: 'jar',
-    tags: ['Pint de Caviar (16 oz)', 'Fruit Caviar'],
+    tags: ['Fru-Fru Caviar (16 oz)', 'Fruit Caviar'],
     color: '#F0F8FF'
   },
   {
     id: 'pint-frost-jar',
-    name: 'Pint de Frost',
-    description: '16 oz of temperature-calibrated velvety frosting whip in a classic glass mason jar.',
-    price: 14.00,
+    name: 'Secret Frost — 16 oz',
+    description: '16 oz of velvety Secret Frost whip in a classic glass mason jar.',
+    price: 16.00,
     image: pintFrostJar,
     type: 'jar',
-    tags: ['Pint de Frost (16 oz)', 'Secret Frost Jar'],
+    tags: ['Secret Frost (16 oz)', 'Secret Frost Jar'],
     color: '#FFF8F5'
   },
   {
     id: 'grande-caviar-jar',
-    name: 'Vrai Grande Caviar',
-    description: '32 oz (Quart Size) of slow-simmered regional fruit caviar in a heavy-duty wide-mouth glass mason jar.',
-    price: 20.00,
+    name: 'Vrai Grande Caviar (32 oz)',
+    description: '32 oz (Quart Size) of slow-simmered Fru-Fru Caviar in a wide-mouth glass mason jar.',
+    price: 36.00,
     image: grandeCaviarJar,
     type: 'jar',
-    tags: ['Vrai Grande Caviar (32 oz)', 'Fruit Caviar'],
+    tags: ['Fru-Fru Caviar (32 oz)', 'Fruit Caviar'],
     color: '#FFF0F5'
   },
   {
     id: 'grande-frost-jar',
-    name: 'Vrai Grande Frost',
-    description: '32 oz of temperature-calibrated velvety frosting whip in a heavy duty wide-mouth classic glass mason jar.',
-    price: 20.00,
+    name: 'Secret Frost — 32 oz',
+    description: '32 oz of velvety Secret Frost whip in a heavy-duty wide-mouth glass mason jar.',
+    price: 28.00,
     image: grandeFrostJar,
     type: 'jar',
-    tags: ['Vrai Grande Frost (32 oz)', 'Secret Frost Jar'],
+    tags: ['Secret Frost (32 oz)', 'Secret Frost Jar'],
     color: '#F5FFF5'
   },
   {
     id: 'double-grande-frost-jars',
-    name: '2x Vrai Grande Jars',
-    description: 'A special bundle of two 32 oz wide-mouth classic glass mason jars packed with our signature velvety cream whip frosting.',
-    price: 36.00,
+    name: '2x Vrai Grande Frost Jars',
+    description: 'Special bundle of two 32 oz wide-mouth glass mason jars packed with our signature Secret Frost.',
+    price: 52.00,
     image: doubleGrandeJars,
     type: 'jar',
     tags: ['Double Pack', 'Best Value Combo', 'Secret Frost Jar'],
@@ -487,6 +490,175 @@ export const CAVIAR_FLAVORS: CaviarFlavor[] = [
   { id: 'wild-berry', name: 'Wildberry', category: 'premium', description: 'Forest raspberries, dark blackberries, sweet blueberries', image: caviarWildberry }
 ];
 
+export const THANKSGIVING_CAVIAR_FLAVORS = [
+  'Velvet Apple',
+  'Georgia Peach Cobbler',
+  'Strawberry',
+  'Blueberry'
+] as const;
+
+export interface HolidayPackage {
+  id: string;
+  category: 'tray' | 'feast' | 'rolls' | 'cake';
+  name: string;
+  subtitle: string;
+  price: number;
+  frostIncluded: string;
+  caviarIncluded?: string;
+  caviarChoiceCount: number;
+  badge?: string;
+  featuredAnchor?: boolean;
+  description: string;
+  image: string;
+}
+
+export const HOLIDAY_CATERING_PACKAGES: HolidayPackage[] = [
+  // 1. Factory Party Trays (48-pan multiples, shared Secret Frost jars)
+  {
+    id: 'factory-24',
+    category: 'tray',
+    name: 'The Factory 24',
+    subtitle: '24 Minis (1/2 Pan) • 8 oz Secret Frost Jar',
+    price: 48.00,
+    frostIncluded: '1x 8 oz Secret Frost Glass Jar',
+    caviarChoiceCount: 0,
+    badge: 'Half Pan',
+    description: 'Half-sheet pan of 24 warm catering minis served in a sharing tray with an 8 oz glass jar of Secret Frost.',
+    image: miniBunTraySide
+  },
+  {
+    id: 'factory-48',
+    category: 'tray',
+    name: 'The Factory 48',
+    subtitle: '48 Minis (1 Full Pan) • 8 oz Secret Frost Jar',
+    price: 85.00,
+    frostIncluded: '1x 8 oz Secret Frost Glass Jar',
+    caviarChoiceCount: 0,
+    badge: 'Full Pan • Popular',
+    featuredAnchor: true,
+    description: 'A full baking pan of 48 warm catering-size minis with a shared 8 oz jar of Secret Frost. Built for family tables & office treats.',
+    image: miniBunTraySide
+  },
+  {
+    id: 'factory-96',
+    category: 'tray',
+    name: 'The Factory 96',
+    subtitle: '96 Minis (2 Full Pans) • 16 oz Secret Frost Jar',
+    price: 165.00,
+    frostIncluded: '1x 16 oz Secret Frost Glass Jar',
+    caviarChoiceCount: 0,
+    badge: '2 Full Pans',
+    featuredAnchor: true,
+    description: 'Two full baking pans (96 minis) paired with a 16 oz pint jar of Secret Frost for larger family celebrations and holiday parties.',
+    image: cateringHeroSpread
+  },
+  {
+    id: 'factory-144',
+    category: 'tray',
+    name: 'The Factory 144',
+    subtitle: '144 Minis (3 Full Pans) • 24 oz Secret Frost (3× 8 oz Jars)',
+    price: 240.00,
+    frostIncluded: '3x 8 oz Secret Frost Glass Jars (24 oz total)',
+    caviarChoiceCount: 0,
+    badge: '3 Full Pans • Event Scale',
+    description: 'Three full baking pans (144 minis) with 24 oz of Secret Frost split across three 8 oz glass jars for easy table serving.',
+    image: cateringHeroSpread
+  },
+
+  // 2. The Fru-Fru Holiday Feasts (Minis + Secret Frost + Pick 2 Thanksgiving Caviars)
+  {
+    id: 'petite-holiday-feast',
+    category: 'feast',
+    name: 'Petite Holiday Feast',
+    subtitle: '48 Minis + 8 oz Frost + Two 8 oz Caviars',
+    price: 109.00,
+    frostIncluded: '1x 8 oz Secret Frost Glass Jar',
+    caviarIncluded: 'Two 8 oz Fru-Fru Caviar Jars',
+    caviarChoiceCount: 2,
+    badge: 'Feast Favorite',
+    featuredAnchor: true,
+    description: 'Full 48-mini pan with 8 oz Secret Frost plus your choice of any two 8 oz Fru-Fru Caviar jars for dipping.',
+    image: happierHolidaysFlyer
+  },
+  {
+    id: 'grand-holiday-feast',
+    category: 'feast',
+    name: 'Grand Holiday Feast',
+    subtitle: '96 Minis + 16 oz Frost + Two 16 oz Caviars',
+    price: 205.00,
+    frostIncluded: '1x 16 oz Secret Frost Glass Jar',
+    caviarIncluded: 'Two 16 oz Fru-Fru Caviar Jars',
+    caviarChoiceCount: 2,
+    badge: '2 Full Pans + Pints',
+    description: '96 warm minis (2 full pans) with a 16 oz Secret Frost jar and two 16 oz Pint jars of your chosen Fru-Fru Caviars.',
+    image: happierHolidaysFlyer
+  },
+  {
+    id: 'vrai-grande-holiday-feast',
+    category: 'feast',
+    name: 'Vrai Grande Holiday Feast',
+    subtitle: '144 Minis + 24 oz Frost (3× 8 oz) + Two 32 oz Caviars',
+    price: 299.00,
+    frostIncluded: '3x 8 oz Secret Frost Glass Jars (24 oz total)',
+    caviarIncluded: 'Two 32 oz Fru-Fru Caviar Jars',
+    caviarChoiceCount: 2,
+    badge: 'Showstopper',
+    description: '3 full pans (144 minis), three 8 oz jars of Secret Frost (24 oz total), and two quart-sized 32 oz jars of Fru-Fru Caviar.',
+    image: cateringHeroSpread
+  },
+
+  // 3. Classic Full-Size Dozens & Holiday CinnaCake
+  {
+    id: 'holiday-12-classics',
+    category: 'rolls',
+    name: '12 Classic Full-Size Rolls',
+    subtitle: '1 Dozen Full-Size Rolls • 8 oz Secret Frost',
+    price: 50.00,
+    frostIncluded: '1x 8 oz Secret Frost Glass Jar',
+    caviarChoiceCount: 0,
+    badge: 'Full Dozen',
+    description: 'Twelve signature oversized Japanese milk bread cinnamon rolls with an 8 oz jar of Secret Frost. Optional +$12 fruit topping upgrade.',
+    image: sixPackHorizontal
+  },
+  {
+    id: 'holiday-24-classics',
+    category: 'rolls',
+    name: '24 Classic Full-Size Rolls',
+    subtitle: '2 Dozen Full-Size Rolls • 16 oz Secret Frost',
+    price: 96.00,
+    frostIncluded: '1x 16 oz Secret Frost Glass Jar',
+    caviarChoiceCount: 0,
+    badge: '2 Dozen Box',
+    description: 'Twenty-four signature oversized cinnamon rolls paired with a 16 oz jar of Secret Frost. Optional +$12/dozen fruit topping upgrade.',
+    image: sixPackHorizontal
+  },
+  {
+    id: 'holiday-cinnacake',
+    category: 'cake',
+    name: 'Large Holiday CinnaCake',
+    subtitle: 'Giant Pull-Apart Centerpiece (Serves 8–10)',
+    price: 38.00,
+    frostIncluded: 'Finished in Secret Frost',
+    caviarChoiceCount: 0,
+    badge: 'Centerpiece',
+    description: 'A giant multi-layered spiral cinnamon roll cake made for holiday breakfast tables.',
+    image: singleFruitCaviarBun
+  },
+  {
+    id: 'holiday-cinnacake-caviar',
+    category: 'cake',
+    name: 'Holiday CinnaCake + 8 oz Caviar',
+    subtitle: 'Centerpiece Cake + One 8 oz Fru-Fru Caviar Jar',
+    price: 48.00,
+    frostIncluded: 'Finished in Secret Frost',
+    caviarIncluded: 'One 8 oz Fru-Fru Caviar Jar',
+    caviarChoiceCount: 1,
+    badge: 'Elevated Centerpiece',
+    description: 'Our signature 8–10 roll Holiday CinnaCake paired with an 8 oz glass jar of your favorite Fru-Fru Caviar.',
+    image: velvetAppleBun
+  }
+];
+
 export interface MiniPack {
   id: string;
   name: string;
@@ -548,26 +720,27 @@ export const MINI_PACKS: MiniPack[] = [
   },
   {
     id: 'minis-24pack',
-    name: '24-Pack Minis',
+    name: '24-Pack Minis (1/2 Pan)',
     count: 24,
     price: 48.00,
     quip: 'Now its a Party... Send the invites through MySpace.',
-    dippersIncluded: '4x Petit Secret Frost Cups (3.5 oz)',
-    dipperCount: 4,
-    badge: 'Party Tray',
+    dippersIncluded: '1x 8 oz Secret Frost Glass Jar',
+    dipperCount: 1,
+    badge: 'Half Pan',
     popular: true,
-    description: 'Two dozen fluffy minis packaged for celebrations, game days, and office morning wins.'
+    description: 'Two dozen fluffy catering minis baked in a half-sheet tray with a shared 8 oz jar of Secret Frost.'
   },
   {
-    id: 'minis-40pack',
-    name: '40-Pack Minis',
-    count: 40,
-    price: 75.00,
+    id: 'minis-48pack',
+    name: '48-Pack Minis (Full Pan)',
+    count: 48,
+    price: 85.00,
     quip: 'Share the Love!',
-    dippersIncluded: '6x Petit Secret Frost Cups (3.5 oz)',
-    dipperCount: 6,
-    badge: 'Grand Spread',
-    description: 'Our ultimate bite-sized catering tray of 40 warm minis with a six-pack of Secret Frost dippers.'
+    dippersIncluded: '1x 8 oz Secret Frost Glass Jar',
+    dipperCount: 1,
+    badge: 'Full Baking Pan',
+    popular: true,
+    description: 'A full 48-count baking pan of warm catering minis served together with an 8 oz glass jar of Secret Frost.'
   }
 ];
 

@@ -132,30 +132,23 @@ const App: React.FC = () => {
       grandTotal += (item.product.price + (item.modifier?.price || 0)) * item.quantity;
     });
     
-    // 2. Classify and collect jar item prices
+    // 2. Classify and collect small cup prices for Le Petit Duo ($5 per pair of 3.5 oz cups)
     const smallPrices: number[] = [];
-    const mediumPrices: number[] = [];
     
     jarItems.forEach(item => {
       const isSmall = item.product.id === 'petit-caviar-jar' || item.product.id === 'petit-frost-jar';
-      const isMedium = item.product.id === 'coupe-caviar-jar' || item.product.id === 'coupe-frost-jar';
       
       for (let i = 0; i < item.quantity; i++) {
         if (isSmall) {
           smallPrices.push(item.product.price);
-        } else if (isMedium) {
-          mediumPrices.push(item.product.price);
         } else {
           grandTotal += item.product.price;
         }
       }
     });
     
-    // Sort prices descending to pair the most costly ones first
     smallPrices.sort((a, b) => b - a);
-    mediumPrices.sort((a, b) => b - a);
     
-    // Match small jars in pairs for Le Petit Duo ($5)
     let sIdx = 0;
     while (sIdx < smallPrices.length) {
       if (sIdx + 1 < smallPrices.length) {
@@ -164,18 +157,6 @@ const App: React.FC = () => {
       } else {
         grandTotal += smallPrices[sIdx];
         sIdx += 1;
-      }
-    }
-    
-    // Match medium jars in pairs for $12
-    let mIdx = 0;
-    while (mIdx < mediumPrices.length) {
-      if (mIdx + 1 < mediumPrices.length) {
-        grandTotal += 12.00;
-        mIdx += 2;
-      } else {
-        grandTotal += mediumPrices[mIdx];
-        mIdx += 1;
       }
     }
     
@@ -216,7 +197,15 @@ const App: React.FC = () => {
             } 
           />
           <Route path="/about" element={<About />} />
-          <Route path="/catering" element={<Catering />} />
+          <Route
+            path="/catering"
+            element={
+              <Catering
+                handleAddToCart={handleAddToCart}
+                setPickupDate={setPickupDate}
+              />
+            }
+          />
           <Route path="/locations" element={<Locations />} />
           <Route path="/franchise" element={<Franchise />} />
           <Route path="/contact" element={<Contact />} />
